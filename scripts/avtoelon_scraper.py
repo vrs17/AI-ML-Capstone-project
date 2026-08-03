@@ -45,16 +45,19 @@ from playwright.async_api import async_playwright
 # ─────────────────────────────────────────────────────────────────────────────
 BASE = "https://avtoelon.uz"
 
+# NOTE: robots.txt disallows arbitrary query strings (Disallow: /*?* and /*?*=*), so we use
+# the CLEAN model paths (the site's own address bar adds ?price-currency=1, which is NOT on
+# the robots Allow-list — stripped here). Page 1 is the clean path; pagination below uses the
+# one query param robots explicitly whitelists (Allow: /*/?page=).
 MODELS = {
-    # "cobalt":  "https://avtoelon.uz/PASTE-COBALT-FILTER-URL",
-    # "nexia3":  "https://avtoelon.uz/PASTE-NEXIA-3-FILTER-URL",
-    # "spark":   "https://avtoelon.uz/PASTE-SPARK-FILTER-URL",
-    # "gentra":  "https://avtoelon.uz/PASTE-GENTRA-FILTER-URL",
-    # "damas":   "https://avtoelon.uz/PASTE-DAMAS-FILTER-URL",
+    "cobalt": "https://avtoelon.uz/avto/chevrolet/cobalt/",
+    "nexia3": "https://avtoelon.uz/avto/chevrolet/nexia3/",
+    "spark":  "https://avtoelon.uz/avto/chevrolet/spark/",
+    "gentra": "https://avtoelon.uz/avto/chevrolet/gentra/",
+    "damas":  "https://avtoelon.uz/avto/chevrolet/damas/",
 }
 
-# Pagination: how the site adds page numbers to the listing URL. Confirm in your browser
-# (click "next page" and look at the URL). Common patterns: "?page={n}" or "/p{n}".
+# Pagination uses ?page= — the param robots.txt explicitly ALLOWS (Allow: /*/?page=).
 PAGE_PARAM = "?page={n}"
 
 # Selectors — sensible defaults + heuristic fallbacks. Confirm/override from DevTools
