@@ -1,0 +1,33 @@
+# ── Data & model artifacts (never commit scraped images or large binaries) ──
+data/raw/
+data/interim/
+data/crops/
+*.jpg
+*.jpeg
+*.png
+*.webp
+models/*.pt
+models/*.pth
+models/*.onnx
+*.ckpt
+
+# ── Course workflow: local-only Claude instructions ──
+CLAUDE.md
+
+# ── Experiment tracking / notebooks ──
+mlruns/
+mlartifacts/
+.ipynb_checkpoints/
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+
+# ── Secrets & OS cruft ──
+.env
+*.key
+.DS_Store
