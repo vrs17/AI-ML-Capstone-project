@@ -66,12 +66,33 @@ PAGE_PARAM = "?page={n}"
 LISTING_LINK_SELECTOR = "a[href]"          # filtered by LISTING_HREF_RE below
 GALLERY_IMG_SELECTOR = "img"               # filtered by IMG_URL_RE below
 
-# A listing URL on avtoelon typically contains a long numeric id. Adjust if needed.
-LISTING_HREF_RE = re.compile(r"/(\d{6,})")
+# Listing detail pages are /a/show/<numeric-id>. Anchor on that exact path so we don't
+# pick up unrelated URLs that merely contain 6+ digits (e.g. third-party ad/tracker links
+# like yandex.ru/adfox/354309/... that appear in the page's markup).
+LISTING_HREF_RE = re.compile(r"/a/show/(\d{6,})")
 # Listing photos are served from the site's image CDN; keep only real photo URLs.
 IMG_URL_RE = re.compile(r"https?://[^\s\"']+\.(?:jpe?g|png|webp)", re.I)
 # Skip tiny thumbnails/sprites/logos by URL hints (edit if it drops real photos).
 IMG_SKIP_RE = re.compile(r"(sprite|logo|icon|placeholder|avatar|/40x|/50x|/100x)", re.I)
+
+# Real car photos live on the kcdn.online image CDN as
+#   .../webp/<xx>/<uuid>/<n>-<WxH>.webp   (sized thumbnail)
+#   .../webp/<xx>/<uuid>/<n>-full.webp    (full resolution, linked from the <a> gallery)
+# Restricting to this host drops the site's own og-image/footer logos and ad banners
+# (which are NOT on kcdn), and we normalize every sized thumbnail up to its -full variant
+# so we save training-usable photos, not 120x90 thumbs.
+PHOTO_HOST_RE = re.compile(r"kcdn\.online", re.I)
+_SIZE_SUFFIX_RE = re.compile(r"-(?:\d+x\d+|full)\.(?:jpe?g|png|webp)$", re.I)
+
+
+def to_full(u: str) -> str:
+    """Rewrite a sized thumbnail URL (…-408x306.webp) to its full-resolution variant."""
+    return re.sub(r"-\d+x\d+\.(jpe?g|png|webp)$", r"-full.\1", u, flags=re.I)
+
+
+def photo_base(u: str) -> str:
+    """Size-independent key so each distinct photo is saved once, not once per size."""
+    return _SIZE_SUFFIX_RE.sub("", u)
 
 OUT_DIR = Path("data/raw")
 USER_AGENT = (
@@ -131,6 +152,27 @@ def append_manifest(rows):
 # ─────────────────────────────────────────────────────────────────────────────
 # 4. Scrape logic.
 # ─────────────────────────────────────────────────────────────────────────────
+# Politeness knobs (kept deliberately gentle — this is a courteous collector, not a swarm).
+IMG_DOWNLOAD_DELAY = 0.4   # seconds to pause between individual image downloads
+LISTING_SETTLE = 2.0       # base seconds to hold each listing (spaces out our request rate)
+BACKOFF_SECONDS = 60       # on a site connection-timeout, wait this long and retry once
+
+
+async def goto_polite(page, url, timeout=45000):
+    """Navigate to url. If the site throttles us with a connection timeout, back off once
+    (BACKOFF_SECONDS) and retry; if it still fails, raise so the caller skips it — the
+    manifest-resume logic will pick it up on a later run."""
+    try:
+        await page.goto(url, wait_until="domcontentloaded", timeout=timeout)
+    except Exception as e:
+        if "ERR_CONNECTION_TIMED_OUT" in str(e) or "Timeout" in str(e):
+            print(f"[backoff] {url} timed out — waiting {BACKOFF_SECONDS}s and retrying once")
+            await asyncio.sleep(BACKOFF_SECONDS)
+            await page.goto(url, wait_until="domcontentloaded", timeout=timeout)
+        else:
+            raise
+
+
 async def collect_listing_urls(page, model, search_url, max_pages, delay, rp):
     """Walk paginated search pages and gather unique listing URLs."""
     found, seen = [], set()
@@ -140,7 +182,7 @@ async def collect_listing_urls(page, model, search_url, max_pages, delay, rp):
             print(f"[robots] disallowed, skipping {url}")
             break
         try:
-            await page.goto(url, wait_until="domcontentloaded", timeout=45000)
+            await goto_polite(page, url)
         except Exception as e:
             print(f"[{model}] page {n} load failed: {e}")
             break
@@ -168,27 +210,36 @@ async def scrape_one_listing(context, model, url, delay, rp):
     page = await context.new_page()
     rows = []
     try:
-        await page.goto(url, wait_until="domcontentloaded", timeout=45000)
-        await asyncio.sleep(delay + random.uniform(0, delay))
-        # grab <img src> + srcset + og:image, then filter to real photos
+        await goto_polite(page, url)
+        # Hold each listing briefly so the page settles AND our request rate stays gentle
+        # (~2s between listings). Combined with the per-image delay below, this keeps us
+        # comfortably under the rate limit that a faster burst can trip.
+        await asyncio.sleep(LISTING_SETTLE + random.uniform(0, delay))
+        # Grab <img> thumbnail srcs AND the <a> gallery links (the latter point at the
+        # full-resolution -full.webp photos). Filter to the photo CDN, normalize every
+        # sized thumbnail up to its full-res variant, and dedupe by photo (not by size).
         srcs = await page.eval_on_selector_all(
             GALLERY_IMG_SELECTOR,
             "els => els.flatMap(e => [e.src, e.currentSrc, e.getAttribute('data-src')])",
         )
-        og = await page.eval_on_selector_all(
-            "meta[property='og:image']", "els => els.map(e => e.content)"
+        hrefs = await page.eval_on_selector_all(
+            "a[href]", "els => els.map(e => e.href)"
         )
         urls, seen = [], set()
-        for s in (srcs + og):
+        for s in (srcs + hrefs):
             if not s:
                 continue
             m = IMG_URL_RE.search(s)
             if not m:
                 continue
             u = m.group(0)
-            if IMG_SKIP_RE.search(u) or u in seen:
+            if not PHOTO_HOST_RE.search(u) or IMG_SKIP_RE.search(u):
                 continue
-            seen.add(u)
+            u = to_full(u)                 # 120x90 thumb -> full-resolution photo
+            base = photo_base(u)
+            if base in seen:
+                continue
+            seen.add(base)
             urls.append(u)
 
         dest = OUT_DIR / model
@@ -209,6 +260,7 @@ async def scrape_one_listing(context, model, url, delay, rp):
                                      image_url=u, local_path=str(out)))
             except Exception as e:
                 print(f"[{model}] img fail {u}: {e}")
+            await asyncio.sleep(IMG_DOWNLOAD_DELAY)   # politeness: pace image downloads
         print(f"[{model}] listing {lid}: {len(rows)} images")
     except Exception as e:
         print(f"[{model}] listing {url} failed: {e}")
@@ -225,8 +277,23 @@ async def run(args):
     print(f"[resume] {len(done)} (model,listing) pairs already collected")
 
     async with async_playwright() as pw:
-        browser = await pw.chromium.launch(headless=not args.show)
-        context = await browser.new_context(user_agent=USER_AGENT)
+        # --channel drives an installed branded browser (e.g. "chrome" or "msedge") instead
+        # of Playwright's bundled Chromium. Handy on machines/networks where the bundled-
+        # Chromium download is blocked. Default (None) uses the bundled build.
+        launch_kwargs = {"headless": not args.show}
+        if args.channel:
+            launch_kwargs["channel"] = args.channel
+        browser = await pw.chromium.launch(**launch_kwargs)
+        # --insecure opts into ignore_https_errors, needed ONLY on networks that intercept /
+        # re-sign TLS (a real browser trusts the intercepting CA, but Playwright's request
+        # context otherwise rejects it: "certificate signature failure"). Default is secure —
+        # normal certificate verification, and no downloads over an untrusted certificate.
+        context = await browser.new_context(
+            user_agent=USER_AGENT,
+            ignore_https_errors=args.insecure,
+        )
+        if args.insecure:
+            print("[warn] --insecure: TLS certificate verification is DISABLED for this run")
         sem = asyncio.Semaphore(args.concurrency)
 
         for model, search_url in MODELS.items():
@@ -255,11 +322,24 @@ async def run(args):
 
 
 def main():
+    # Force UTF-8 stdout so logging a message that contains non-cp1252 characters
+    # (e.g. the "->" arrow in Playwright error text) doesn't crash on Windows consoles.
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
     ap = argparse.ArgumentParser(description="Polite avtoelon.uz car-image collector")
     ap.add_argument("--max-pages", type=int, default=10, help="listing pages per model")
     ap.add_argument("--concurrency", type=int, default=3, help="parallel listing tabs (keep small)")
     ap.add_argument("--delay", type=float, default=1.0, help="base seconds between actions")
     ap.add_argument("--show", action="store_true", help="run headful to watch the browser")
+    ap.add_argument("--channel", default=None,
+                    help="use an installed browser channel (e.g. 'chrome', 'msedge') instead "
+                         "of Playwright's bundled Chromium")
+    ap.add_argument("--insecure", action="store_true",
+                    help="opt in to ignore_https_errors — ONLY for networks that intercept TLS; "
+                         "disables certificate verification for this run")
     asyncio.run(run(ap.parse_args()))
 
 
