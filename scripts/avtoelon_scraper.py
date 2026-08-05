@@ -218,12 +218,26 @@ async def scrape_one_listing(context, model, url, delay, rp):
         # Grab <img> thumbnail srcs AND the <a> gallery links (the latter point at the
         # full-resolution -full.webp photos). Filter to the photo CDN, normalize every
         # sized thumbnail up to its full-res variant, and dedupe by photo (not by size).
+        #
+        # SCOPED to the listing's OWN gallery: skip any <img> that sits inside a link to
+        # another listing (href contains "/a/show/"). Those are the "similar listings"
+        # recommendation thumbnails — other cars' photos that repeat across pages and would
+        # otherwise pollute this listing (and duplicate/contaminate the dataset). The main
+        # gallery photos are wrapped in <a href="...-full.webp"> lightbox links, not /a/show/.
         srcs = await page.eval_on_selector_all(
             GALLERY_IMG_SELECTOR,
-            "els => els.flatMap(e => [e.src, e.currentSrc, e.getAttribute('data-src')])",
+            "els => els"
+            ".filter(e => { const a = e.closest('a[href]');"
+            " return !(a && (a.getAttribute('href') || '').includes('/a/show/')); })"
+            ".flatMap(e => [e.src, e.currentSrc, e.getAttribute('data-src')])",
         )
+        # <a> gallery lightbox links resolve to the -full.webp photos; recommendation cards
+        # link to /a/show/... (dropped here, and they aren't image URLs anyway).
         hrefs = await page.eval_on_selector_all(
-            "a[href]", "els => els.map(e => e.href)"
+            "a[href]",
+            "els => els"
+            ".filter(e => !(e.getAttribute('href') || '').includes('/a/show/'))"
+            ".map(e => e.href)",
         )
         urls, seen = [], set()
         for s in (srcs + hrefs):
