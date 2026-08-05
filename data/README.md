@@ -37,18 +37,23 @@ Raw listing photos → clean, model-ready crops, in four stages:
    survived YOLO and non-target cars sitting under the wrong label.
 4. **Leakage-safe split by listing** *(pending)* — grouped so no listing spans train/test.
 
-### Class counts
+### Class counts (final)
 
-| Class | After dedup | After YOLO crop/filter |
-|---|--:|--:|
-| Cobalt | 3,352 | 2,686 |
-| Nexia 3 | 2,924 | 2,466 |
-| Spark | 2,321 | 1,961 |
-| Gentra | 1,970 | 1,580 |
-| Damas | 534 | 418 |
-| **Total** | **11,101** | **9,111** |
+The Damas class was initially under-represented (534), so ~5,000 additional raw Damas images
+were scraped and merged before finalizing, deduplicated against the existing set.
 
-*(Final counts after CLIP cleaning are filled in once thresholds are locked.)*
+| Class | Raw (deduped) | Clean (final) | train / val / test |
+|---|--:|--:|:--|
+| Cobalt | 3,302 | 2,161 | 1,502 / 298 / 361 |
+| Nexia 3 | 2,912 | 1,935 | 1,343 / 288 / 304 |
+| Spark | 2,312 | 1,523 | 1,066 / 240 / 217 |
+| Gentra | 1,953 | 1,170 | 809 / 171 / 190 |
+| Damas | 4,136 | 2,736 | 1,915 / 422 / 399 |
+| **Total** | **14,615** | **9,525** | 2,563 listings |
+
+Split is **70/15/15 by listing** (not by photo), stratified per class; the leakage check
+confirms **0 listings appear in more than one split**. After the Damas expansion the imbalance
+is a mild **2.3:1** (Damas largest, Gentra smallest).
 
 ---
 
@@ -67,8 +72,8 @@ Raw listing photos → clean, model-ready crops, in four stages:
 - **Observation:** identical photos recur across multiple listings.
 - **Risk:** data leakage — the same car in both train and test inflates accuracy.
 - **Decision:** hash-based deduplication, **plus** a split grouped by listing id (not by photo).
-- **Evidence:** 11,101 unique of the raw set; 475 cross-model duplicates quarantined.
-- **Status:** ✅ Dedup done; leakage-safe split pending.
+- **Evidence:** unique images per hash; cross-model duplicates quarantined; final split grouped by listing id with a runtime assertion of 0 cross-split listings.
+- **Status:** ✅ Resolved — dedup + leakage-safe split by listing (verified 0 leakage).
 
 ### Issue 3 — Surviving interiors + wrong-model contamination *(the main data-quality problem)*
 - **Observation:** after YOLO, some interiors remained (a car seen through a window), and
@@ -85,15 +90,16 @@ Raw listing photos → clean, model-ready crops, in four stages:
     so a loose cutoff would delete *correct* hard examples. We remove only clear outliers now
     and **defer subtle mislabels to post-training confident learning**, where the fine-tuned
     model — which actually distinguishes the five models — is the better judge.
-- **Evidence:** CLIP flagged ~1,530 likely-interior and ~1,428 low-agreement images; review
-  grids and `cleaned_manifest.csv` record every keep/remove decision (nothing deleted blind).
-- **Status:** 🟡 In progress — finalizing thresholds.
+- **Evidence:** CLIP flagged and removed interiors + low-agreement (wrong-model) crops per class
+  (e.g. final run removed 428 interior + 62 wrong-model from Cobalt); `clean_scores.csv` /
+  `split_manifest.csv` record every keep/remove decision (nothing deleted blind).
+- **Status:** ✅ Resolved — 14,615 deduped → 9,525 clean. Subtle residual mislabels deferred to a post-training confident-learning pass.
 
 ### Issue 4 — Class imbalance
-- **Observation:** Cobalt dominates (~6.4:1 over Damas), mirroring real Uzbek market share.
-- **Risk:** a model biased to the majority; plain accuracy is misleading.
-- **Decision:** keep all data; class-weighted loss + **macro-F1** and per-class metrics.
-- **Status:** ⬜ Planned (Model Gate).
+- **Observation:** Cobalt dominated the initial scrape (~6.4:1 over Damas), mirroring real market share, leaving Damas under-represented (534).
+- **Risk:** a model biased to the majority; plain accuracy is misleading; the minority test set too small to trust.
+- **Decision:** scraped ~5,000 more Damas and merged → imbalance now a mild **2.3:1**; still keep class-weighted loss + **macro-F1** and per-class metrics.
+- **Status:** ✅ Resolved — Damas 534 → 2,736 (80 → 757 listings); Gentra (1,170) is now the smallest class to watch.
 
 ---
 
@@ -101,7 +107,7 @@ Raw listing photos → clean, model-ready crops, in four stages:
 
 - **Weak labels:** models are seller-declared, not expert-verified — some residual noise remains after conservative cleaning (to be reduced via confident learning after the first model trains).
 - **Single-source / domain shift:** listing photos are posed and clean; real street photos differ. A separately-collected **street-photo test set** is planned to measure this gap honestly.
-- **Minority class:** Damas is the smallest class and expected to have the highest error.
+- **Smallest class:** after the Damas expansion, Gentra (1,170) is now the smallest class and the one to watch in error analysis.
 - **Detector-based filter is imperfect:** an interior showing a car through a window can still slip through (mitigated by the CLIP interior pass).
 
 ## 5. License & ethics
