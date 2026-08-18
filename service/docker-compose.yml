@@ -1,0 +1,24 @@
+services:
+  recognizer:
+    build: .
+    image: uzbek-car-recognizer:1.0.0
+    ports: ["8000:8000"]
+    volumes:
+      - ./artifacts:/app/artifacts:ro     # model.pt + config.json
+      - yolo-cache:/root/.cache/ultralytics
+    environment:
+      DEVICE: auto
+      FP16: "true"
+      MAX_BATCH: "8"                      # keep activations inside 8 GB VRAM
+      MAX_CONCURRENT: "16"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+
+volumes:
+  yolo-cache:

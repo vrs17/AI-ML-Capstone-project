@@ -31,3 +31,7 @@ env/
 .env
 *.key
 .DS_Store
+
+# service model artifacts (never commit weights)
+service/artifacts/
+service/*.onnx

@@ -74,7 +74,10 @@ report and confusion matrix are in `notebooks/model_gate_v2.ipynb`.
 │   ├── data_gate.ipynb              clean + leakage-safe split (YOLO + CLIP)
 │   ├── model_gate.ipynb             v1: baselines + ConvNeXt/ResNet (5-class)
 │   ├── model_gate_v2.ipynb          v2: ArcFace @384 (6-class, open-set)
-│   └── trust_layer.ipynb            calibration + 99%-precision abstention
+│   ├── trust_layer.ipynb            calibration + 99%-precision abstention
+│   └── export_onnx.ipynb            ONNX export + numerical verification
+├── service/                      FastAPI backend (Docker, GPU, web UI)
+├── docs/index.html               showcase page · docs/demo.html in-browser demo
 └── defense_*.md / capstone_*.md / final_action_plan.md   defense-prep docs
 ```
 
