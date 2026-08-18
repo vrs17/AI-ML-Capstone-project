@@ -11,6 +11,28 @@ Typical steady-state usage is **well under 2 GB**, leaving room for other work o
 
 ## 1. Put the model in place
 
+**Already done for you** — `artifacts/model.pt` and `artifacts/config.json` are committed
+to this repository, so a fresh clone runs immediately. Skip to §2 unless you have
+retrained.
+
+> **⚠️ Temporary.** Committing weights is normally wrong: they are binaries, they bloat
+> history permanently, and each new version adds another 56 MB that cannot be removed
+> without rewriting history. They are here **deliberately and temporarily** for quick
+> testing. See *Temporary decisions* in [`../SETUP.md`](../SETUP.md) for how to move them
+> to a GitHub Release instead.
+>
+> They are stored in **fp16 (~56 MB)** because the fp32 checkpoint is ~114 MB and GitHub
+> rejects any file over 100 MB. Measured cost: none — identical top-1, max logit
+> difference 0.0008, and the service already computes in fp16 on GPU.
+
+After retraining, repack before committing:
+
+```bash
+python ../scripts/pack_weights.py --src /path/to/modelgate_v2_artifacts
+```
+
+<details><summary>Placing them by hand</summary>
+
 Copy the two files out of `modelgate_v2_artifacts.zip` (produced by `notebooks/model_gate_v2.ipynb`,
 then updated by `notebooks/trust_layer.ipynb`):
 
@@ -19,6 +41,8 @@ service/artifacts/
 ├── model.pt        # trained weights
 └── config.json     # classes, img_size, mean/std, head, temperature, abstain_threshold
 ```
+
+</details>
 
 The service reads the **temperature** and **abstain threshold** straight from `config.json`, so the
 API enforces exactly the operating point you measured (T = 2.894, threshold = 0.857 →

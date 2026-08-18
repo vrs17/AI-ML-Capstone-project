@@ -2,6 +2,17 @@
 
 Everything except the dataset images is in this repository. Pick the path you need.
 
+**Just want it running?** `python scripts/setup.py` does steps 1 and 4 for you and checks
+its own work. [`SETUP.md`](SETUP.md) is the full runbook, written so an AI agent can
+execute it start to finish.
+
+> **⚠️ Temporary: the model weights are committed to git.**
+> `service/artifacts/model.pt` (~56 MB, fp16) would normally be in `.gitignore` — binary
+> weights do not belong in version control, and every future version adds another 56 MB
+> to history permanently. It is committed **deliberately and temporarily** so the project
+> runs straight from a clone during testing and demos. Before this repo is treated as
+> long-lived, move it back out — see *Temporary decisions* in [`SETUP.md`](SETUP.md).
+
 ---
 
 ## 1. Run the live service (photo + real-time video)
@@ -80,7 +91,8 @@ python scripts/deduplicate.py --src data/raw --dst data/dedup
 ## 4. Weights
 
 `service/artifacts/model.pt` + `config.json` are committed, so a fresh clone runs
-without downloading anything else.
+without downloading anything else. **This is a temporary convenience** — see the note at
+the top of this file and *Temporary decisions* in [`SETUP.md`](SETUP.md).
 
 They are stored in **fp16 (~56 MB)**. Not a quality trade — the service already computes
 in fp16 on GPU, and `load_state_dict` casts back up for CPU (measured: identical top-1,

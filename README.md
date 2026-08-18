@@ -60,6 +60,7 @@ report and confusion matrix are in `notebooks/model_gate_v2.ipynb`.
 
 ```
 ├── README.md                     ← you are here
+├── SETUP.md                      executable runbook — start the project end to end
 ├── QUICKSTART.md                 clone → running service, and how to retrain
 ├── ROADMAP.md                    end-to-end methodology, each step → its artifact
 ├── PROJECT_STATUS.md             living status
@@ -72,7 +73,8 @@ report and confusion matrix are in `notebooks/model_gate_v2.ipynb`.
 │   ├── avtoelon_scraper.py          polite, robots-compliant image scraper
 │   ├── deduplicate.py               hash dedup + cross-folder quarantine
 │   ├── resolution_sweep.py          accuracy vs. capture size — the operating envelope
-│   └── pack_weights.py              fp16 repack so the checkpoint fits GitHub's 100 MB cap
+│   ├── pack_weights.py              fp16 repack so the checkpoint fits GitHub's 100 MB cap
+│   └── setup.py                     one-command install + verification
 ├── notebooks/
 │   ├── data_gate.ipynb              clean + leakage-safe split (YOLO + CLIP)
 │   ├── model_gate.ipynb             v1: baselines + ConvNeXt/ResNet (5-class)
@@ -91,6 +93,14 @@ report and confusion matrix are in `notebooks/model_gate_v2.ipynb`.
 
 Weights are committed, so a clone runs with nothing else to download:
 
+> **⚠️ Temporary: the model weights are committed to git.**
+> `service/artifacts/model.pt` (~56 MB, fp16) would normally be in `.gitignore` — binary
+> weights do not belong in version control, and every future version adds another 56 MB
+> to history permanently. It is committed **deliberately and temporarily** so the project
+> runs straight from a clone during testing and demos. Before this repo is treated as
+> long-lived, move it back out — see *Temporary decisions* in [`SETUP.md`](SETUP.md).
+
+
 ```bash
 git clone https://github.com/vrs17/AI-ML-Capstone-project.git
 cd AI-ML-Capstone-project/service
@@ -98,7 +108,9 @@ pip install -r requirements.txt      # plus torch, see QUICKSTART
 uvicorn app:app --port 8000          # -> http://localhost:8000
 ```
 
-Full instructions, including Colab reproduction, are in **[`QUICKSTART.md`](QUICKSTART.md)**.
+Or run **`python scripts/setup.py`**, which does all of the above and verifies it.
+Full instructions are in **[`SETUP.md`](SETUP.md)** (step-by-step, with every failure mode
+and its fix) and **[`QUICKSTART.md`](QUICKSTART.md)** (the short version).
 
 ## Reproduce it
 
