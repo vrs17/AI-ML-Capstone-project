@@ -1,0 +1,46 @@
+# Publish docs/ to GitHub Pages.
+#
+# configure-pages runs with `enablement: true`, so this workflow turns Pages ON for the
+# repository the first time it runs — there is nothing to click in Settings. It deploys
+# the artifact directly rather than using the classic "deploy from a branch" mode, so
+# Jekyll never touches the files (docs/.nojekyll covers the branch mode too, in case
+# anyone switches later).
+name: Deploy showcase to GitHub Pages
+
+on:
+  push:
+    branches: [claude/aiml-capstone-planning-fnkas1]
+    paths: ['docs/**', '.github/workflows/pages.yml']
+  workflow_dispatch:          # lets you re-publish by hand from the Actions tab
+
+permissions:
+  contents: read
+  pages: write                # required both to enable Pages and to deploy
+  id-token: write             # deploy-pages authenticates with OIDC
+
+concurrency:                  # a newer push supersedes an in-flight deploy
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enable and configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload docs/
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
