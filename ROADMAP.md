@@ -136,19 +136,28 @@ has its own written procedure (`docs/manual_review.md`) instead of a script.
   SnapMix** arm (semantic-proportion labels, off by default). It compares a plain-softmax
   @384 baseline against the ArcFace head and picks the winner on validation. Precision is
   reported on the five known models, with `others` as the reject bucket.
-- **Status:** ✅ notebook built — ready to run on the 6-class dataset.
+- **Result:** sub-center ArcFace @384 won on validation and scored **0.950 acc / 0.936
+  macro-F1** on the sealed 6-class test (**0.971** on the five known models) — beating v1 on a
+  harder, open-set task. Test ≈ validation (0.950 vs 0.949) → no overfitting. The
+  Cobalt/Gentra/Nexia 3 look-alike confusion collapsed to single digits; `others` is the
+  weakest class (F1 0.789), the expected open-set difficulty.
+- **Status:** ✅ complete.
 
 ## Stage 6 · Trust Layer — calibration + abstention
 
 - **What:** make the confidences honest and only answer above a precision-safe threshold.
 - **Why:** the headline promise is **precision**, achieved by *abstaining* on the hard
   cases rather than guessing.
-- **How (→ `notebooks/trust_layer.ipynb`):** **temperature scaling** (Cell 4) → find the
-  **≥99%-precision threshold on validation** (Cell 5) → apply it **once** to the sealed
-  test + **precision–coverage curve** (Cell 6) → reliability diagrams (Cell 7) → grid of the
-  most confident mistakes (Cell 8) → save calibration into the artifact (Cell 9).
-- **Open-set note:** precision is measured on the **five known models**; `others` is a
-  legitimate "unknown" answer and the abstention threshold is the final safety net.
+- **How (→ `notebooks/trust_layer.ipynb`):** reloads the trained model (head-aware — it carries
+  the ArcFace/SnapMix class definitions so it can rebuild the v2 winner), then **temperature
+  scaling** (Cell 4) → find the **≥99%-precision threshold on validation** (Cell 5) → apply it
+  **once** to the sealed test + **precision–coverage curve** (Cell 6) → reliability diagrams
+  (Cell 7) → grid of the most confident precision-breaking mistakes (Cell 8) → save calibration
+  into the artifact (Cell 9).
+- **Open-set framing:** we "answer" only when the model predicts one of the **five known
+  models** and is confident enough; predicting `others` (reject) or falling below the threshold
+  (abstain) both route to a human. Precision is measured on the answers that matter.
+- **Status:** ✅ notebook updated for the ArcFace v2 model — ready to run.
 
 ## Stage 7 · Production direction (post-capstone)
 
@@ -172,8 +181,8 @@ has its own written procedure (`docs/manual_review.md`) instead of a script.
 | 2 · Data Gate (clean + split) | `notebooks/data_gate.ipynb` | ✅ |
 | 3 · Model Gate v1 (+ error analysis) | `notebooks/model_gate.ipynb` | ✅ |
 | 4 · Manual golden review (open-set) | `docs/manual_review.md`, `data/README.md` (Issue 5) | ✅ |
-| 5 · Model Gate v2 (6-class, ArcFace, 384px) | `notebooks/model_gate_v2.ipynb` | ✅ built · ready to run |
-| 6 · Trust Layer (calibration) | `notebooks/trust_layer.ipynb` | ✅ v1 · re-run for 6-class |
+| 5 · Model Gate v2 (6-class, ArcFace, 384px) | `notebooks/model_gate_v2.ipynb` | ✅ trained — 0.950 / 0.936 |
+| 6 · Trust Layer (calibration) | `notebooks/trust_layer.ipynb` | ✅ updated for ArcFace · ready to run |
 | 7 · Production direction | `PROJECT_STATUS.md` | 🔭 documented |
 
 ## Known code↔step gaps (full honesty for the defense)
