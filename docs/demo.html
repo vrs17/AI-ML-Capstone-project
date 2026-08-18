@@ -186,8 +186,8 @@ const CFG = {
   resize:  438,                       // Resize(438) -> CenterCrop(384), matching training
   mean: [0.485,0.456,0.406],
   std:  [0.229,0.224,0.225],
-  temperature: 1.0,                   // ← set from the Trust Layer
-  abstainThreshold: null,             // ← set from the Trust Layer (e.g. 0.93); null = no abstention
+  temperature: 2.8943023681640625,    // fitted on validation (Trust Layer, Cell 4)
+  abstainThreshold: 0.8573934435844421, // chosen on validation for the precision target (Cell 5)
   rejectClass: "others",
   modelUrl: ""                        // ← optional: preload a public .onnx URL
 };
