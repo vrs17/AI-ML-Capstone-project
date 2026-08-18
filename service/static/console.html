@@ -36,13 +36,13 @@
       <rect x="12" y="13" width="8" height="6" rx="1.6" fill="#30d158"/></svg>
     <div class="n">Vehicle Intelligence <span>· Operations</span></div>
   </div>
-  <div style="flex:1"></div>
   <nav class="seg"><a href="/" aria-current="page">Live</a><a href="/photo">Snapshot</a><a href="/docs" target="_blank" rel="noopener">API<svg class="ext" viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5h5v5M9.5 2.5 3 9" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav>
-  <div style="flex:1"></div>
-  <canvas class="wave" id="wave" title="processing activity"></canvas>
-  <span class="tag" id="srcTag"><i class="led"></i><span id="srcName">no source</span></span>
-  <span class="tag"><i class="led" id="devLed"></i><span id="devTxt">connecting</span></span>
-  <button class="btn" id="fsBtn" title="Presenter fullscreen (F)">⛶</button>
+  <div class="barR">
+    <canvas class="wave opt" id="wave" title="processing activity"></canvas>
+    <span class="tag opt" id="srcTag"><i class="led"></i><span id="srcName">no source</span></span>
+    <span class="tag"><i class="led" id="devLed"></i><span id="devTxt">connecting</span></span>
+    <button class="btn" id="fsBtn" title="Presenter fullscreen (F)">⛶</button>
+  </div>
 </header>
 
 <div class="wrap">
@@ -95,7 +95,9 @@
       <!-- live -->
       <section class="card armed" id="stagePanel" style="display:none;--i:1">
         <div class="ch"><i class="led live"></i><h2 id="stageTitle">Live</h2><div class="sp"></div>
-          <button class="btn" id="rawBtn">Overlay on</button>
+          <label class="switch" title="Draw detections into the frame">
+            <input type="checkbox" id="rawToggle" checked><span class="sw"></span>
+            <span class="lb">Overlay</span></label>
           <button class="btn" id="newBtn">Change source</button></div>
         <div class="stage waiting" id="stage">
           <img id="video" alt="annotated vehicle stream">
@@ -271,11 +273,10 @@ $("camBtn").onclick=()=>camera($("cam").value.trim()||"0");
 $("cam").addEventListener("keydown",e=>e.key==="Enter"&&$("camBtn").click());
 $("newBtn").onclick=()=>{ if(timer)clearInterval(timer); jobId=null; $("video").src="";
   $("stagePanel").style.display="none"; $("sigCard").style.display="none"; $("picker").style.display=""; };
-$("rawBtn").onclick=()=>{
-  overlayOn=!overlayOn;
-  $("rawBtn").textContent = overlayOn ? "Overlay on" : "Overlay off";
-  $("rawBtn").classList.toggle("on", !overlayOn);
-  if(jobId) $("video").src = `/video/stream/${jobId}` + (overlayOn ? "" : "?raw=1");
+$("rawToggle").onchange = e => {
+  overlayOn = e.target.checked;
+  if(jobId){ $("stage").classList.add("waiting");     // the raw feed may differ in shape
+             $("video").src = `/video/stream/${jobId}` + (overlayOn ? "" : "?raw=1"); }
 };
 const fail = m => $("err").innerHTML = m ? `<div class="err">${m}</div>` : "";
 
@@ -297,7 +298,7 @@ function setSource(n){ $("stageTitle").textContent=clip(n,44); $("srcName").text
 
 function start(j, name){
   jobId=j.job_id; lastSeq=0; history=[]; fpsHist=[]; overlayOn=true; shown={};
-  $("rawBtn").textContent="Overlay on"; $("rawBtn").classList.remove("on");
+  $("rawToggle").checked=true;
   $("feed").innerHTML='<div class="blank">Waiting for the first vehicle…</div>';
   $("mix").innerHTML='<div class="blank">No vehicles identified yet.</div>';
   $("picker").style.display="none"; $("stagePanel").style.display=""; $("sigCard").style.display="";
