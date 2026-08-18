@@ -10,16 +10,17 @@ Endpoints
 """
 from __future__ import annotations
 
-import asyncio, logging, os
+import asyncio, logging, os, uuid, tempfile, shutil
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from config import settings
 from pipeline import recognizer
+import video as vid
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -112,6 +113,59 @@ async def predict_batch(files: list[UploadFile] = File(...)):
                 return {"filename": name, "error": str(e)}
 
     return {"results": await asyncio.gather(*[one(n, d) for n, d in blobs])}
+
+
+# ─────────────────────────── video / realtime ────────────────────────────
+@app.get("/video", include_in_schema=False)
+async def video_page():
+    return FileResponse(os.path.join(_here, "static", "video.html"))
+
+
+@app.post("/video/upload")
+async def video_upload(file: UploadFile = File(...)):
+    """Accept a video, start a tracking job, return its id."""
+    if not recognizer.ready:
+        raise HTTPException(503, "model still loading")
+    suffix = os.path.splitext(file.filename or "")[1] or ".mp4"
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+    try:
+        shutil.copyfileobj(file.file, tmp)
+    finally:
+        tmp.close()
+    job_id = uuid.uuid4().hex[:12]
+    vid.jobs[job_id] = vid.VideoProcessor(tmp.name)
+    log.info("video job %s -> %s", job_id, tmp.name)
+    return {"job_id": job_id, "filename": file.filename,
+            "stream_url": f"/video/stream/{job_id}", "summary_url": f"/video/summary/{job_id}"}
+
+
+@app.post("/video/camera")
+async def video_camera(source: str = "0"):
+    """Start a job from a live camera: 0 for the local webcam, or an RTSP/HTTP URL."""
+    if not recognizer.ready:
+        raise HTTPException(503, "model still loading")
+    src = int(source) if source.isdigit() else source
+    job_id = uuid.uuid4().hex[:12]
+    vid.jobs[job_id] = vid.VideoProcessor(src)
+    return {"job_id": job_id, "source": source, "stream_url": f"/video/stream/{job_id}"}
+
+
+@app.get("/video/stream/{job_id}")
+async def video_stream(job_id: str):
+    """Annotated MJPEG stream — drop straight into an <img src=...>."""
+    job = vid.jobs.get(job_id)
+    if job is None:
+        raise HTTPException(404, "unknown job id")
+    return StreamingResponse(job.frames(),
+                             media_type="multipart/x-mixed-replace; boundary=frame")
+
+
+@app.get("/video/summary/{job_id}")
+async def video_summary(job_id: str):
+    job = vid.jobs.get(job_id)
+    if job is None:
+        raise HTTPException(404, "unknown job id")
+    return job.summary()
 
 
 if __name__ == "__main__":

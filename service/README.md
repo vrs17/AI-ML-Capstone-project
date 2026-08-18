@@ -51,6 +51,11 @@ Open <http://localhost:8000> for the UI, or <http://localhost:8000/docs> for Ope
 | `GET` | `/metrics` | request counters + realised coverage |
 | `POST` | `/predict` | one image (multipart `file`) |
 | `POST` | `/predict/batch` | up to 32 images (multipart `files`) |
+| `GET` | `/video` | **real-time video UI** |
+| `POST` | `/video/upload` | start a tracking job from a video file |
+| `POST` | `/video/camera?source=0` | start from a webcam (`0`) or an RTSP/HTTP URL |
+| `GET` | `/video/stream/{id}` | annotated MJPEG stream |
+| `GET` | `/video/summary/{id}` | live tally of unique vehicles |
 
 ```bash
 curl -F "file=@car.jpg" http://localhost:8000/predict
@@ -79,6 +84,24 @@ curl -F "file=@car.jpg" http://localhost:8000/predict
 | `no_car` | The detector found no car | discard the frame |
 
 Only `answer` carries the 99%-precision guarantee — that is the whole point of the trust layer.
+
+## 3b. Video mode
+
+`/video` runs the same pipeline over a video source, with two additions:
+
+- **Tracking (ByteTrack).** Every car gets a persistent track id, so the system counts
+  **unique vehicles**, not per-frame hits — which is what a gas-station operator actually wants.
+- **Temporal voting.** Each track is classified on several frames. Every look is judged with the
+  *calibrated* threshold, and the track takes the **majority of the looks that passed**. We
+  deliberately do **not** average raw probabilities: the threshold was calibrated on single-frame
+  confidences, and one blurred or half-occluded frame would otherwise drag a certain track below
+  it. A weak look simply does not vote.
+
+Once a track has enough confident looks it stops being re-classified — cheaper *and* steadier.
+
+On CPU the classifier cannot keep up frame-for-frame at 384 px, so the processor skips frames
+(`frame_stride`, default 3 on CPU / 1 on GPU). This is reported in `/video/summary` rather than
+hidden.
 
 ## 4. Tuning for your box
 
