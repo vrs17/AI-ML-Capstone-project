@@ -12,9 +12,8 @@ What's left between now and the defense. Ordered by priority. Check items off as
       → Then fill the "*fill after running*" cells in `capstone_evidence_matrix.md`,
       `defense_pitch_outline.md` §5, and `defense_question_bank.md` (precision-cost answer).
 
-- [ ] **Write the top-level `README.md`** (owed for C2). Should include: one-paragraph problem,
-      the two-stage architecture, headline results (0.950 / 0.936; 0.971 on 5 known), how to
-      reproduce (point to `ROADMAP.md`), and repo layout. *(Ask Claude to draft it.)*
+- [x] **Write the top-level `README.md`** (owed for C2). ✅ Done — problem, two-stage
+      architecture (with diagram), headline results, reproduce steps, repo layout, ethics.
 
 - [ ] **Prepare the presentation** using the course's PPTX. Mirror `defense_pitch_outline.md`.
       Have ready to show on demand: the **confusion matrix**, the **precision–coverage curve**,
@@ -51,7 +50,7 @@ What's left between now and the defense. Ordered by priority. Check items off as
 | Model Gate v1 (5-class ConvNeXt, 0.923) | ✅ done |
 | Model Gate v2 (6-class ArcFace @384, **0.950 / 0.936**, 0.971 on 5 known) | ✅ done |
 | Trust Layer (calibration + abstention) | 🟡 notebook ready — **run + record** |
-| Top-level README | 🔴 to write |
+| Top-level README | ✅ done |
 | Presentation + rehearsal | 🔴 to do |
 
 **Definition of done for the defense:** trust-layer operating point recorded, README written,

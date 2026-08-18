@@ -33,7 +33,7 @@ to the sealed test → precision–coverage curve + reliability diagrams. Record
 ## Next
 - **Run the Trust Layer** and record the operating point (threshold, coverage at 99% known-class precision, abstain/reject rates).
 - **Production track (post-capstone):** add an embedding-distance OOD score as the production-facing backstop; distill into a MobileNetV4 edge student (INT8) with a prototype/kNN gallery to scale to 20–50+ models.
-- **C2 gate:** top-level `README.md`.
+- **Defense prep:** presentation + rehearse the Q&A (`defense_*.md`). Top-level `README.md` ✅ done.
 - **Production track (post-capstone):** MobileNetV4-Conv-Medium student distilled from a heavier teacher, INT8 via ONNX→TensorRT/OpenVINO, prototype/kNN gallery to add models without full retrains.
 
 ## Known problems / blockers

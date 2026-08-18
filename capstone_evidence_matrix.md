@@ -57,7 +57,7 @@ Legend: 📓 notebook · 🐍 script · 📄 doc.
 | Version discipline | Meaningful commits per stage on a feature branch | git history | Clean, staged history |
 | Ethics / license | Public data, robots.txt honored, plates masked, images not redistributed | 📄 `data/README.md` §5 | Documented |
 | Production thinking | Edge backbone + INT8 + OOD + scaling plan | 📄 `PROJECT_STATUS.md`, `ROADMAP.md` (Stage 7) | Post-capstone roadmap |
-| Top-level README | Repo entry point | ⏳ **owed** (see `final_action_plan.md`) | Pending |
+| Top-level README | Repo entry point | 📄 `README.md` | ✅ done |
 
 ---
 
