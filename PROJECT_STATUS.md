@@ -12,7 +12,7 @@ stations / car washes, scaling to 20–50+ models.
 
 ## Completed
 - Planning & scope: problem, two-stage architecture (YOLO detector → fine-tuned classifier), key model decisions (fine-tune ConvNeXt-Tiny; 99%-precision-via-abstention).
-- Repo setup: branch, `.gitignore`, scraper, data-collection runbook.
+- Repo setup: branch, `.gitignore`, scraper, deduplication script, data-collection runbook.
 - Dataset collected from avtoelon.uz, deduplicated, and Damas expanded (+~5,000 raw) → **14,615 deduped images**.
 - YOLO crop + exterior/interior filter, then CLIP label cleaning → **9,525 clean crops**.
 - **Leakage-safe split by listing** (70/15/15, stratified), verified **0 cross-split listings**.

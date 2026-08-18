@@ -19,7 +19,8 @@ never drift apart.
 ```mermaid
 flowchart TD
     A["Stage 0 · Scope & decisions<br/>PROJECT_STATUS.md · ROADMAP.md"] --> B
-    B["Stage 1 · Data collection (scrape)<br/>scripts/avtoelon_scraper.py<br/>docs/data_collection_runbook.md"] --> C
+    B["Stage 1 · Data collection (scrape)<br/>scripts/avtoelon_scraper.py<br/>docs/data_collection_runbook.md"] --> B2
+    B2["Data prep · Deduplicate + quarantine<br/>scripts/deduplicate.py"] --> C
     C["Stage 2 · Data Gate — automated cleaning + split<br/>notebooks/data_gate.ipynb"] --> D
     D["Stage 3 · Model Gate v1 — first model + error analysis<br/>notebooks/model_gate.ipynb"] --> E
     E["Stage 4 · Manual golden review + open-set pivot (HUMAN)<br/>docs/manual_review.md · data/README.md (Issue 5)"] --> F
@@ -63,6 +64,9 @@ has its own written procedure (`docs/manual_review.md`) instead of a script.
 - **In the repo:** `scripts/avtoelon_scraper.py` · handoff/run instructions in
   `docs/data_collection_runbook.md`.
 - **Output:** raw listing photos in per-model folders (git-ignored, not redistributed).
+- **Then (data prep):** `scripts/deduplicate.py` removes exact duplicate files and
+  quarantines images that appear under more than one model label (cross-folder = untrusted),
+  writing a `dedup_report.csv` — the deduped set is what the Data Gate consumes.
 
 ## Stage 2 · Data Gate — automated cleaning + leakage-safe split
 
@@ -71,10 +75,9 @@ has its own written procedure (`docs/manual_review.md`) instead of a script.
   across listings — both must be removed before training or the evaluation is a lie.
 - **How (→ `notebooks/data_gate.ipynb`):**
   - **Cell 3** — loads the **already-deduplicated** dataset zip from Drive + class counts.
-    ⚠️ *Deduplication (hash-based) and the ambiguous-image quarantine were applied during
-    data preparation **before upload** — documented in `data/README.md` §2 (stage 1) but
-    performed offline, so they are not a committed cell. The notebook starts from the
-    deduped set.* (See **Known code↔step gaps** below.)
+    Deduplication (hash-based) + the cross-folder ambiguous quarantine run *before* the
+    notebook, as a committed script — **`scripts/deduplicate.py`** — whose deduped output
+    is what this cell consumes.
   - **Cell 4** — **YOLO11s** detector crops the car (classes car/bus/truck) and drops
     photos with no car (interiors, docs, stock images).
   - **Cell 5** — **CLIP** label cleaning: zero-shot interior detection + embedding-neighbor
@@ -160,6 +163,7 @@ has its own written procedure (`docs/manual_review.md`) instead of a script.
 |---|---|---|
 | 0 · Scope & decisions | `PROJECT_STATUS.md`, `ROADMAP.md` | ✅ |
 | 1 · Data collection | `scripts/avtoelon_scraper.py`, `docs/data_collection_runbook.md` | ✅ |
+| 1 · Data prep — deduplicate | `scripts/deduplicate.py` | ✅ |
 | 2 · Data Gate (clean + split) | `notebooks/data_gate.ipynb` | ✅ |
 | 3 · Model Gate v1 (+ error analysis) | `notebooks/model_gate.ipynb` | ✅ |
 | 4 · Manual golden review (open-set) | `docs/manual_review.md`, `data/README.md` (Issue 5) | ✅ |
@@ -169,27 +173,31 @@ has its own written procedure (`docs/manual_review.md`) instead of a script.
 
 ## Known code↔step gaps (full honesty for the defense)
 
-Every stage above is backed by a committed artifact, **except** two steps that are
-described in the docs but are **not runnable code** in this repo. Naming them explicitly so
-the "narrative == repository" claim holds up under questioning:
+Every stage above is backed by a committed artifact. **One** step is intentionally not
+code — the human review — and it is documented instead. Naming it explicitly so the
+"narrative == repository" claim holds up under questioning:
 
 | Step | Where it's documented | Why there's no committed code | Reproducible? |
 |---|---|---|---|
-| **Deduplication + ambiguous-image quarantine** | `data/README.md` §2 (stage 1) | Applied offline during data prep before the dataset was uploaded; the Data Gate notebook consumes the deduped zip (Cell 3) | Yes — described, and trivially re-implementable (hash the files, drop duplicates + cross-folder collisions) |
 | **Manual golden review + `others` class** | `docs/manual_review.md`, `data/README.md` (Issue 5) | Human judgment (an eye-run), not an algorithm | Yes — the decision rule and leakage re-check are written down; a second annotator could repeat it |
 
-*Optional next step to close the first gap:* add a small `scripts/deduplicate.py` that
-reproduces the hash-dedup + quarantine, so the offline step becomes committed code too.
+*Previously a gap, now closed:* deduplication + the cross-folder ambiguous quarantine were
+originally an offline data-prep step; they are now committed as
+[`scripts/deduplicate.py`](scripts/deduplicate.py), so the only non-code step left is the
+human review above.
 
 ## Reproduce end-to-end
 
 1. **Scrape** — run `scripts/avtoelon_scraper.py` (see `docs/data_collection_runbook.md`).
-2. **Data Gate** — run `notebooks/data_gate.ipynb` → clean 5-class `dataset_split.zip`.
-3. **Model Gate v1** — run `notebooks/model_gate.ipynb` → first model + error analysis.
-4. **Manual review** — follow `docs/manual_review.md` → 6-class golden `dataset_split.zip`.
-5. **Model Gate v2** — re-run `notebooks/model_gate.ipynb` on the 6-class data (ArcFace +
+2. **Deduplicate** — run `scripts/deduplicate.py --src data/raw --dst data/dedup` → unique
+   images + `_ambiguous/` quarantine + `dedup_report.csv`.
+3. **Data Gate** — run `notebooks/data_gate.ipynb` on the deduped set → clean 5-class
+   `dataset_split.zip`.
+4. **Model Gate v1** — run `notebooks/model_gate.ipynb` → first model + error analysis.
+5. **Manual review** — follow `docs/manual_review.md` → 6-class golden `dataset_split.zip`.
+6. **Model Gate v2** — re-run `notebooks/model_gate.ipynb` on the 6-class data (ArcFace +
    384px + SnapMix).
-6. **Trust Layer** — run `notebooks/trust_layer.ipynb` → calibrated, abstaining system.
+7. **Trust Layer** — run `notebooks/trust_layer.ipynb` → calibrated, abstaining system.
 
 Data is documented in `data/README.md` (provenance, counts, and the issue log) but the
 images themselves are git-ignored and not redistributed.

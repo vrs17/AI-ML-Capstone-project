@@ -33,6 +33,8 @@ Raw listing photos → clean, model-ready crops, in five stages:
 1. **Deduplication (hash-based).** Removed exact duplicate files (same car reposted).
    → **11,101** unique labeled images. 475 images that appeared under *multiple* model
    folders were quarantined as `_ambiguous` (can't be trusted to one label) and excluded.
+   Reproducible via [`scripts/deduplicate.py`](../scripts/deduplicate.py) (content hash +
+   cross-folder quarantine, writes a per-file `dedup_report.csv`).
 2. **Crop + exterior filter (YOLO11s, object detection).** A COCO-pretrained detector
    finds the car (classes car/bus/truck — Damas is a microvan), crops to the largest box
    with 8% padding, and **drops photos with no car** (interiors / engine / documents /
