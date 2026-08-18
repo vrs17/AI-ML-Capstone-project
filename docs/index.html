@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Recognizes five Uzbek-market car models from a photo, rejects unknown cars, and abstains when unsure.">
+<meta name="theme-color" content="#07101f">
+<title>Uzbek Car Model Recognizer — AI/ML Capstone</title>
+<style>
+
+:root{
+  --bg:#07101f;
+  --bg-2:#0b1830;
+  --surface:rgba(15,28,52,.72);
+  --surface-strong:#10213d;
+  --surface-soft:rgba(255,255,255,.055);
+  --line:rgba(180,205,255,.16);
+  --line-strong:rgba(180,205,255,.28);
+  --text:#f5f8ff;
+  --muted:#9caac1;
+  --accent:#6ce5ff;
+  --accent-2:#8b7cff;
+  --accent-3:#64f0b5;
+  --danger:#ff6b8b;
+  --warning:#ffc86b;
+  --shadow:0 24px 80px rgba(0,0,0,.42);
+  --radius-xl:30px;
+  --radius-lg:22px;
+  --radius-md:16px;
+  --max:1180px;
+  --mouse-x:50%;
+  --mouse-y:20%;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:
+  radial-gradient(900px 700px at var(--mouse-x) var(--mouse-y), color-mix(in srgb,var(--accent) 13%,transparent), transparent 70%),
+  radial-gradient(880px 620px at 92% 4%, color-mix(in srgb,var(--accent-2) 17%,transparent), transparent 70%),
+  linear-gradient(155deg,var(--bg),var(--bg-2) 58%,var(--bg));overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:-3;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:52px 52px;mask-image:linear-gradient(to bottom,black,transparent 86%)}
+body::after{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;opacity:.5;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.92' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E");mix-blend-mode:overlay}
+a{color:inherit}.wrap{width:min(var(--max),calc(100% - 40px));margin-inline:auto}.progress{position:fixed;z-index:50;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2),var(--accent-3));box-shadow:0 0 18px var(--accent)}
+svg{display:block}.icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.icon.fill{fill:currentColor;stroke:none}
+.nav-shell{position:sticky;top:0;z-index:40;padding:16px 0;backdrop-filter:blur(18px);background:linear-gradient(to bottom,color-mix(in srgb,var(--bg) 88%,transparent),transparent);border-bottom:1px solid transparent;transition:.25s}.nav-shell.scrolled{border-color:var(--line);background:color-mix(in srgb,var(--bg) 83%,transparent)}
+nav{display:flex;align-items:center;justify-content:space-between;gap:28px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:800;letter-spacing:-.02em}.brand-mark{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 25%,transparent),color-mix(in srgb,var(--accent-2) 35%,transparent));border:1px solid color-mix(in srgb,var(--accent) 50%,transparent);box-shadow:inset 0 1px rgba(255,255,255,.15),0 10px 32px color-mix(in srgb,var(--accent-2) 24%,transparent)}.brand-mark::before{content:"";width:13px;height:13px;border:2px solid var(--accent);border-radius:4px;transform:rotate(45deg);box-shadow:0 0 15px var(--accent)}.brand small{display:block;color:var(--muted);font-weight:600;font-size:10px;letter-spacing:.16em;text-transform:uppercase;margin-top:2px}.nav-links{display:flex;align-items:center;gap:24px}.nav-links a{text-decoration:none;color:var(--muted);font-size:14px;font-weight:650;transition:.2s}.nav-links a:hover{color:var(--text)}.nav-cta{display:flex;align-items:center;gap:10px}.mini-btn{border:1px solid var(--line-strong);background:var(--surface-soft);color:var(--text);height:42px;padding:0 14px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font-weight:700;font-size:13px;cursor:pointer;transition:.2s;backdrop-filter:blur(12px)}.mini-btn:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--accent) 65%,transparent);box-shadow:0 10px 30px color-mix(in srgb,var(--accent) 12%,transparent)}
+.hero{min-height:calc(100vh - 76px);padding:70px 0 80px;display:grid;grid-template-columns:1.05fr .95fr;align-items:center;gap:68px;position:relative}.eyebrow{display:inline-flex;align-items:center;gap:9px;padding:8px 12px;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent) 38%,transparent);background:color-mix(in srgb,var(--accent) 9%,transparent);color:var(--accent);font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.eyebrow-dot{width:7px;height:7px;border-radius:50%;background:var(--accent-3);box-shadow:0 0 14px var(--accent-3)}h1{font-size:clamp(48px,6.4vw,88px);line-height:.94;letter-spacing:-.065em;margin:24px 0 24px;max-width:850px}.gradient-text{background:linear-gradient(105deg,var(--text) 4%,var(--accent) 48%,var(--accent-2) 75%,var(--accent-3));-webkit-background-clip:text;background-clip:text;color:transparent}.lead{font-size:clamp(17px,1.7vw,21px);line-height:1.7;color:var(--muted);max-width:690px;margin:0}.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}.btn{min-height:52px;padding:0 20px;border-radius:15px;display:inline-flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;font-weight:800;font-size:14px;letter-spacing:-.01em;border:1px solid transparent;transition:.22s;position:relative;overflow:hidden}.btn-primary{background:linear-gradient(110deg,var(--accent),var(--accent-2));color:#04111b;box-shadow:0 14px 42px color-mix(in srgb,var(--accent) 22%,transparent)}.btn-primary::after{content:"";position:absolute;inset:-100% auto -100% -35%;width:34%;transform:rotate(16deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);transition:.65s}.btn-primary:hover::after{left:115%}.btn:hover{transform:translateY(-3px)}.btn-secondary{background:var(--surface-soft);border-color:var(--line-strong);color:var(--text);backdrop-filter:blur(14px)}.btn-secondary:hover{border-color:var(--accent)}.hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}.chip{padding:8px 11px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.035);color:var(--muted);font-size:12px;font-weight:700}.chip strong{color:var(--text)}
+.hero-visual{position:relative;isolation:isolate}.orb{position:absolute;border-radius:50%;filter:blur(5px);opacity:.85;z-index:-1}.orb.a{width:240px;height:240px;right:-45px;top:-75px;background:radial-gradient(circle,var(--accent-2),transparent 70%);animation:float 7s ease-in-out infinite}.orb.b{width:190px;height:190px;left:-70px;bottom:-50px;background:radial-gradient(circle,var(--accent),transparent 72%);animation:float 9s ease-in-out infinite reverse}@keyframes float{50%{transform:translateY(18px) scale(1.04)}}
+.cockpit{position:relative;border-radius:var(--radius-xl);border:1px solid var(--line-strong);background:linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.035));box-shadow:var(--shadow);backdrop-filter:blur(22px);overflow:hidden;transform:perspective(1200px) rotateY(-3deg) rotateX(1deg);transition:.4s}.cockpit:hover{transform:perspective(1200px) rotateY(0) rotateX(0) translateY(-4px)}.cockpit::before{content:"";position:absolute;inset:0;padding:1px;border-radius:inherit;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 90%,transparent),transparent 34%,transparent 68%,color-mix(in srgb,var(--accent-2) 80%,transparent));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}.windowbar{height:52px;padding:0 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);background:rgba(3,9,20,.35)}.dots{display:flex;gap:7px}.dots i{width:8px;height:8px;border-radius:50%;background:var(--line-strong)}.dots i:first-child{background:var(--danger)}.dots i:nth-child(2){background:var(--warning)}.dots i:nth-child(3){background:var(--accent-3)}.window-title{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:800}.cockpit-body{padding:23px}.status-row{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.status-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:800}.status-value{font-size:21px;font-weight:850;margin-top:7px;letter-spacing:-.03em}.pulse{display:flex;align-items:center;gap:8px;color:var(--accent-3);font-size:12px;font-weight:800}.pulse::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;box-shadow:0 0 0 5px color-mix(in srgb,currentColor 14%,transparent);animation:pulse 2s infinite}@keyframes pulse{50%{box-shadow:0 0 0 10px transparent}}
+.chart-card{margin-top:20px;border-radius:20px;padding:18px;background:rgba(4,12,25,.38);border:1px solid var(--line)}.chart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.chart-head strong{font-size:13px}.chart-head span{font-size:11px;color:var(--muted)}.chart-svg{width:100%;height:auto}.chart-grid{stroke:rgba(255,255,255,.08);stroke-width:1}.chart-line{fill:none;stroke:url(#chartGradient);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--accent) 52%,transparent))}.chart-area{fill:url(#areaGradient)}.chart-dot{fill:var(--bg);stroke:var(--accent);stroke-width:4}.mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}.mini-card{border-radius:15px;padding:13px;background:rgba(255,255,255,.045);border:1px solid var(--line)}.mini-card span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:800}.mini-card strong{display:block;margin-top:7px;font-size:17px;letter-spacing:-.03em}
+.section{padding:92px 0;position:relative}.section-kicker{color:var(--accent);font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.15em;margin-bottom:14px}.section h2{font-size:clamp(34px,4.4vw,58px);line-height:1.03;letter-spacing:-.05em;margin:0;max-width:790px}.section-intro{display:flex;justify-content:space-between;align-items:flex-end;gap:36px;margin-bottom:42px}.section-intro p{max-width:520px;color:var(--muted);font-size:16px;line-height:1.75;margin:0}.glass{border:1px solid var(--line);background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.025));backdrop-filter:blur(18px);box-shadow:0 16px 55px rgba(0,0,0,.2)}.problem-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.card{border-radius:var(--radius-lg);padding:27px}.card-icon{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;color:var(--accent);background:color-mix(in srgb,var(--accent) 11%,transparent);border:1px solid color-mix(in srgb,var(--accent) 25%,transparent);margin-bottom:20px}.card h3{font-size:22px;letter-spacing:-.035em;margin:0 0 10px}.card p{color:var(--muted);line-height:1.75;margin:0}.audience-card{display:grid;grid-template-columns:auto 1fr;gap:17px;align-items:start}.audience-card .card-icon{margin:0}.tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.tag{border:1px solid var(--line);border-radius:999px;padding:7px 10px;color:var(--muted);font-size:11px;font-weight:750}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;counter-reset:step}.step{position:relative;border-radius:20px;padding:24px 20px;min-height:205px;overflow:hidden}.step::before{counter-increment:step;content:"0" counter(step);position:absolute;right:16px;top:12px;font-size:47px;font-weight:900;color:rgba(255,255,255,.045);letter-spacing:-.08em}.step-icon{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 18%,transparent),color-mix(in srgb,var(--accent-2) 12%,transparent));color:var(--accent);border:1px solid var(--line);margin-bottom:34px}.step h3{font-size:18px;margin:0 0 9px}.step p{font-size:13px;line-height:1.65;color:var(--muted);margin:0}.step:not(:last-child)::after{content:"";position:absolute;right:-9px;top:50%;width:18px;height:18px;border-top:1px solid var(--accent);border-right:1px solid var(--accent);transform:translateY(-50%) rotate(45deg);z-index:3}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.metric{border-radius:20px;padding:23px;position:relative;overflow:hidden}.metric::after{content:"";position:absolute;width:110px;height:110px;border-radius:50%;right:-45px;bottom:-60px;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 22%,transparent),transparent 70%)}.metric .label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;font-weight:850}.metric .value{font-size:39px;letter-spacing:-.055em;font-weight:900;margin:12px 0 6px}.metric .note{font-size:12px;color:var(--muted);line-height:1.45}.metric.primary{background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 15%,var(--surface)),color-mix(in srgb,var(--accent-2) 13%,var(--surface)));border-color:color-mix(in srgb,var(--accent) 42%,transparent)}
+.evidence-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;margin-top:18px}.evidence-panel{border-radius:var(--radius-lg);padding:27px}.evidence-panel h3{margin:0 0 16px;font-size:20px}.bar-list{display:grid;gap:15px}.bar-label{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:7px}.bar-label strong{color:var(--text)}.bar{height:9px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}.bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--accent-2));box-shadow:0 0 18px color-mix(in srgb,var(--accent) 28%,transparent)}.result-list{display:grid;gap:12px}.result-line{display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}.result-line:last-child{border:0}.result-dot{width:9px;height:9px;margin-top:5px;border-radius:50%;background:var(--accent-3);box-shadow:0 0 12px var(--accent-3)}.result-line strong{display:block;font-size:13px}.result-line span{display:block;color:var(--muted);font-size:12px;margin-top:4px;line-height:1.55}
+.demo-shell{border-radius:var(--radius-xl);overflow:hidden;display:grid;grid-template-columns:.95fr 1.05fr}.demo-copy{padding:40px}.demo-copy h3{font-size:30px;letter-spacing:-.045em;margin:0 0 15px}.demo-copy p{color:var(--muted);line-height:1.75;margin:0 0 26px}.sample{padding:28px;background:rgba(1,7,17,.55);border-left:1px solid var(--line);font-family:"SFMono-Regular",Consolas,monospace}.sample-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;font-family:Inter,ui-sans-serif}.sample-top span{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:800}.code-row{display:grid;grid-template-columns:115px 1fr;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:12px}.code-row:last-child{border:0}.code-row .key{color:var(--accent)}.code-row .val{color:#e9efff}.risk-card{margin-top:19px;border-radius:16px;padding:15px;background:color-mix(in srgb,var(--accent-3) 10%,transparent);border:1px solid color-mix(in srgb,var(--accent-3) 28%,transparent);display:flex;align-items:center;justify-content:space-between;gap:14px}.risk-card strong{font-family:Inter,ui-sans-serif;font-size:14px}.risk-score{font-family:Inter,ui-sans-serif;font-size:24px;font-weight:900;color:var(--accent-3)}
+.limit-box{border-radius:var(--radius-xl);padding:34px;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:start;background:linear-gradient(120deg,color-mix(in srgb,var(--warning) 7%,var(--surface)),var(--surface));border:1px solid color-mix(in srgb,var(--warning) 28%,transparent)}.limit-icon{width:56px;height:56px;border-radius:17px;display:grid;place-items:center;color:var(--warning);background:color-mix(in srgb,var(--warning) 12%,transparent);border:1px solid color-mix(in srgb,var(--warning) 28%,transparent)}.limit-box h3{margin:0 0 9px;font-size:21px}.limit-box p{margin:0;color:var(--muted);line-height:1.75}.cta{margin:70px 0 92px;border-radius:36px;padding:55px;position:relative;overflow:hidden;text-align:center;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 14%,var(--surface-strong)),color-mix(in srgb,var(--accent-2) 20%,var(--surface-strong)));border:1px solid color-mix(in srgb,var(--accent) 36%,transparent);box-shadow:var(--shadow)}.cta::before{content:"";position:absolute;inset:-50%;background:conic-gradient(from 90deg,transparent,var(--accent),transparent,var(--accent-2),transparent);opacity:.07;animation:spin 16s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.cta>*{position:relative}.cta h2{margin:0 auto 16px;font-size:clamp(36px,5vw,62px);letter-spacing:-.06em;max-width:820px}.cta p{color:var(--muted);max-width:630px;margin:0 auto 28px;line-height:1.7}.cta-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px}footer{padding:25px 0 42px;border-top:1px solid var(--line)}.foot{display:flex;justify-content:space-between;gap:24px;align-items:center;color:var(--muted);font-size:12px}.foot strong{color:var(--text)}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s ease}.reveal.visible{opacity:1;transform:none}.placeholder{display:inline;border-radius:6px;padding:0 .2em;background:color-mix(in srgb,var(--accent) 12%,transparent);box-shadow:inset 0 -1px color-mix(in srgb,var(--accent) 45%,transparent);color:var(--accent)}.template-note{position:fixed;right:18px;bottom:18px;z-index:30;max-width:280px;padding:13px 15px;border-radius:15px;background:color-mix(in srgb,var(--bg) 85%,transparent);border:1px solid var(--line-strong);backdrop-filter:blur(18px);box-shadow:0 14px 45px rgba(0,0,0,.35);font-size:11px;line-height:1.55;color:var(--muted)}.template-note strong{display:block;color:var(--accent);font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+@media (max-width:980px){.hero{grid-template-columns:1fr;gap:45px;padding-top:55px}.hero-visual{max-width:720px}.cockpit{transform:none}.problem-grid,.evidence-grid{grid-template-columns:1fr}.pipeline{grid-template-columns:repeat(2,1fr)}.step:nth-child(2)::after{display:none}.metrics{grid-template-columns:repeat(2,1fr)}.demo-shell{grid-template-columns:1fr}.sample{border-left:0;border-top:1px solid var(--line)}.nav-links{display:none}}
+@media (max-width:650px){.wrap{width:min(100% - 24px,var(--max))}.nav-shell{padding:11px 0}.brand span:last-child{font-size:14px}.nav-cta .mini-btn span{display:none}.hero{padding:45px 0 65px;min-height:auto}.hero-actions .btn{width:100%}h1{font-size:clamp(43px,14vw,64px)}.lead{font-size:16px}.cockpit-body{padding:17px}.mini-grid{grid-template-columns:1fr}.section{padding:66px 0}.section-intro{display:block}.section-intro p{margin-top:18px}.problem-grid,.pipeline,.metrics{grid-template-columns:1fr}.step::after{display:none}.card,.evidence-panel{padding:22px}.demo-copy{padding:28px 22px}.sample{padding:22px 18px}.code-row{grid-template-columns:1fr;gap:5px}.limit-box{grid-template-columns:1fr;padding:25px}.cta{padding:40px 20px;margin:45px 0 70px}.foot{display:block;text-align:center}.foot span{display:block;margin-top:8px}.template-note{position:static;margin:18px 12px 0;max-width:none}.hero-meta{gap:7px}.chip{font-size:11px}.window-title{display:none}}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.reveal{opacity:1;transform:none}}
+
+
+:root{--bg:#07101f;--bg-2:#11152e;--surface:rgba(15,28,52,.72);--surface-strong:#10213d;--accent:#6ce5ff;--accent-2:#9a7bff;--accent-3:#69f1b9}
+
+
+
+@media (max-width:650px){
+  .hero-visual{overflow:clip;border-radius:32px}
+  .demo-shell>*{min-width:0}
+  .placeholder{overflow-wrap:anywhere;word-break:break-word}
+}
+</style>
+</head>
+<body>
+<div class="progress" aria-hidden="true"></div>
+
+<svg aria-hidden="true" width="0" height="0" style="position:absolute;overflow:hidden">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.87c-2.78.6-3.37-1.18-3.37-1.18-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.35 1.09 2.92.83.09-.65.35-1.09.64-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.55 9.55 0 0 1 12 6.84a9.5 9.5 0 0 1 2.5.34c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 5h5v5M19 5l-9 9"/><path d="M19 13v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M22 12h-3M12 22v-3M2 12h3"/></symbol>
+  <symbol id="i-model" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="2"/><rect x="14" y="4" width="6" height="6" rx="2"/><rect x="9" y="14" width="6" height="6" rx="2"/><path d="M7 10v2a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-2M12 14v-4"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 5 3 8 7 10 4-2 7-5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-5"/></symbol>
+  <symbol id="i-data" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.6 2.5 17a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z"/></symbol>
+</svg>
+
+
+<header class="nav-shell"><div class="wrap"><nav>
+  <a class="brand" href="#top"><span class="brand-mark"></span><span>Uzbek Car ID<small>AI/ML Capstone Showcase</small></span></a>
+  <div class="nav-links"><a href="#problem">Problem</a><a href="#workflow">Workflow</a><a href="#evidence">Evidence</a><a href="#limitations">Limitations</a></div>
+  <div class="nav-cta"><a class="mini-btn" href="https://github.com/vrs17/AI-ML-Capstone-project" target="_blank" rel="noreferrer"><svg class="icon fill" aria-hidden="true"><use href="#i-github"></use></svg><span>Repository</span></a></div>
+</nav></div></header>
+<main id="top">
+<section class="wrap hero">
+  <div class="hero-copy reveal">
+    <div class="eyebrow"><span class="eyebrow-dot"></span>Computer vision · fine-grained + open-set</div>
+    <h1><span class="gradient-text">Uzbek Car Model Recognizer</span><br>that knows when it doesn’t know.</h1>
+    <p class="lead">Identifies Chevrolet Cobalt, Nexia 3, Spark, Gentra and Damas from a single photo, flags any other car as <em>unknown</em>, and abstains when it is not confident — built as the core of camera analytics for gas stations and car washes.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="https://colab.research.google.com/github/vrs17/AI-ML-Capstone-project/blob/claude/aiml-capstone-planning-fnkas1/notebooks/model_gate_v2.ipynb" target="_blank" rel="noreferrer">Open Live Demo <svg class="icon" aria-hidden="true"><use href="#i-external"></use></svg></a>
+      <a class="btn btn-secondary" href="https://github.com/vrs17/AI-ML-Capstone-project" target="_blank" rel="noreferrer"><svg class="icon fill" aria-hidden="true"><use href="#i-github"></use></svg> View Repository</a>
+    </div>
+    <div class="hero-meta">
+      <span class="chip"><strong>Task</strong> Image classification (6-class, open-set)</span>
+      <span class="chip"><strong>Model</strong> ConvNeXt-Tiny + sub-center ArcFace @384px</span>
+      <span class="chip"><strong>Status</strong> Student project</span>
+    </div>
+  </div>
+  <div class="hero-visual reveal">
+    <i class="orb a"></i><i class="orb b"></i>
+    <div class="cockpit">
+      <div class="windowbar"><div class="dots"><i></i><i></i><i></i></div><div class="window-title">project signal / verified evidence</div></div>
+      <div class="cockpit-body">
+        <div class="status-row"><div><div class="status-label">Primary outcome</div><div class="status-value">Car model + confidence, or abstain</div></div><div class="pulse">DEMO READY</div></div>
+        <div class="chart-card">
+          <div class="chart-head"><strong>Sealed-test accuracy by model</strong><span>majority → v1 → final</span></div>
+          <svg class="chart-svg" viewBox="0 0 440 180" role="img" aria-label="Placeholder performance chart">
+            <defs><linearGradient id="chartGradient" x1="0" x2="1"><stop stop-color="var(--accent)"/><stop offset="1" stop-color="var(--accent-2)"/></linearGradient><linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1"><stop stop-color="var(--accent)" stop-opacity=".24"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs>
+            <path class="chart-grid" d="M15 35H425M15 85H425M15 135H425"/>
+            <path class="chart-area" d="M18 129L220 45L422 42V165H18Z"/>
+            <path class="chart-line" d="M18 129L220 45L422 42"/>
+            <circle class="chart-dot" cx="422" cy="42" r="6"/>
+          </svg>
+        </div>
+        <div class="mini-grid"><div class="mini-card"><span>Dataset</span><strong>9,523 images</strong></div><div class="mini-card"><span>Accuracy</span><strong>0.950</strong></div><div class="mini-card"><span>Demo</span><strong>Public ↗</strong></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section" id="problem"><div class="wrap">
+  <div class="section-intro reveal"><div><div class="section-kicker">01 · Context</div><h2>The project in one clear story.</h2></div><p>Replace the placeholders with facts from your README, results, screenshots, or working demo. Do not invent business impact.</p></div>
+  <div class="problem-grid">
+    <article class="card glass reveal"><div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-target"></use></svg></div><h3>The problem</h3><p>No public tool — or dataset — recognizes the specific cars common on Uzbekistan’s roads. Three of the five targets are near-identical sedans (Cobalt, Gentra, Nexia 3), and a real camera constantly sees cars that are not on the list at all, which a normal classifier is forced to mislabel.</p></article>
+    <article class="card glass reveal"><div class="audience-card"><div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-user"></use></svg></div><div><h3>Who uses it</h3><p>Owners and operators of gas stations and car washes who want automatic counts of which car models visit their site.</p><div class="tag-row"><span class="tag">Automatic model counts from camera photos</span><span class="tag">Wrong answers must be rare, not just frequent-and-fast</span></div></div></div></article>
+  </div>
+</div></section>
+<section class="section" id="workflow"><div class="wrap">
+  <div class="section-intro reveal"><div><div class="section-kicker">02 · System</div><h2>How it works, without the notebook noise.</h2></div><p>Keep this to three or four stages. A visitor should understand the route in under twenty seconds.</p></div>
+  <div class="pipeline">
+    <article class="step glass reveal"><div class="step-icon"><svg class="icon" aria-hidden="true"><use href="#i-data"></use></svg></div><h3>Photo in</h3><p>A single car photo. The dataset was collected from public avtoelon.uz listings, deduplicated, and human-verified.</p></article>
+    <article class="step glass reveal"><div class="step-icon"><svg class="icon" aria-hidden="true"><use href="#i-model"></use></svg></div><h3>Detect &amp; crop</h3><p>A pretrained YOLO detector locates the car and crops to it, dropping photos that contain no car (interiors, engines, documents).</p></article>
+    <article class="step glass reveal"><div class="step-icon"><svg class="icon" aria-hidden="true"><use href="#i-chart"></use></svg></div><h3>Classify</h3><p>A fine-tuned ConvNeXt-Tiny with a sub-center ArcFace head at 384px separates the five look-alike models plus an <em>others</em> class.</p></article>
+    <article class="step glass reveal"><div class="step-icon"><svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg></div><h3>Answer or abstain</h3><p>Temperature-scaled confidence decides: name the model, reject it as <em>others</em>, or abstain and route the photo to a human.</p></article>
+  </div>
+</div></section>
+<section class="section" id="evidence"><div class="wrap">
+  <div class="section-intro reveal"><div><div class="section-kicker">03 · Evidence</div><h2>Show one result that you can defend.</h2></div><p>Use protected test results, a baseline comparison, or another verifiable artifact. Remove cards you cannot support.</p></div>
+  <div class="metrics">
+    <article class="metric primary glass reveal"><div class="label">Accuracy · sealed test</div><div class="value">0.950</div><div class="note">Six classes, leakage-free split, evaluated once at the very end.</div></article>
+    <article class="metric glass reveal"><div class="label">Macro-F1</div><div class="value">0.936</div><div class="note">Averages all six classes equally, so the small classes cannot hide.</div></article>
+    <article class="metric glass reveal"><div class="label">Baseline</div><div class="value">0.279</div><div class="note">Majority-class floor on the same six-class split.</div></article>
+    <article class="metric glass reveal"><div class="label">Models compared</div><div class="value">6</div><div class="note">Majority, scratch CNN, ResNet-50, ConvNeXt, ConvNeXt@384, +ArcFace — tracked in MLflow.</div></article>
+  </div>
+  <div class="evidence-grid">
+    <article class="evidence-panel glass reveal"><h3>Comparison</h3><div class="bar-list"><div><div class="bar-label"><span>Majority baseline</span><strong>0.279</strong></div><div class="bar"><i style="width:28%"></i></div></div><div><div class="bar-label"><span>Final model (6-class sealed test)</span><strong>0.950</strong></div><div class="bar"><i style="width:95%"></i></div></div><div><div class="bar-label"><span>Accuracy on the five known models</span><strong>0.971</strong></div><div class="bar"><i style="width:97%"></i></div></div></div></article>
+    <article class="evidence-panel glass reveal"><h3>What this proves</h3><div class="result-list"><div class="result-line"><i class="result-dot"></i><div><strong>The evaluation is leakage-free</strong><span>The split groups photos by listing, not by photo, so no car appears on both sides. Zero cross-split listings, asserted at build time.</span></div></div><div class="result-line"><i class="result-dot"></i><div><strong>It generalizes — it did not memorize</strong><span>Sealed test 0.950 versus validation 0.949. A memorizing model would drop sharply on the unseen set.</span></div></div><div class="result-line"><i class="result-dot"></i><div><strong>The look-alike sedans are separated</strong><span>After the ArcFace margin head, Cobalt / Gentra / Nexia 3 cross-confusions fell to single digits; all three reach F1 ≥ 0.953.</span></div></div></div></article>
+  </div>
+</div></section>
+<section class="section"><div class="wrap"><div class="demo-shell glass reveal">
+  <div class="demo-copy"><div class="section-kicker">04 · Visitor journey</div><h3>From public page to a working prediction.</h3><p>Upload a photo of a car and the model returns the predicted model with its confidence — or tells you it is not one of the five, or that it is not confident enough to answer.</p><a class="btn btn-primary" href="https://colab.research.google.com/github/vrs17/AI-ML-Capstone-project/blob/claude/aiml-capstone-planning-fnkas1/notebooks/model_gate_v2.ipynb" target="_blank" rel="noreferrer">Open Live Demo <svg class="icon" aria-hidden="true"><use href="#i-external"></use></svg></a></div>
+  <div class="sample"><div class="sample-top"><span>example output</span><span>verified demo</span></div><div class="code-row"><span class="key">input</span><span class="val">car photo (JPEG / PNG)</span></div><div class="code-row"><span class="key">prediction</span><span class="val">nexia3</span></div><div class="code-row"><span class="key">confidence</span><span class="val">temperature-scaled softmax</span></div><div class="risk-card"><strong>Chevrolet Nexia 3 · per-class F1</strong><span class="risk-score">0.973</span></div></div>
+</div></div></section>
+<section class="section" id="limitations"><div class="wrap"><div class="limit-box reveal"><div class="limit-icon"><svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg></div><div><h3>Known limitation</h3><p>The <em>others</em> class — every car outside the five — is the weakest at 0.789 F1, because it is not one thing but many. All training photos also come from a single marketplace, so posed listing images may not match real street or camera conditions; a separate street-photo test set is planned. The 99%-precision abstention threshold is implemented but its operating point has not yet been measured on the sealed test.</p></div></div></div></section>
+<section class="wrap"><div class="cta reveal"><div class="section-kicker">Project front door</div><h2>Ready to see the <span class="gradient-text">real demo?</span></h2><p>Try the model on your own photo, or read the full method, data issue log and results in the repository.</p><div class="cta-actions"><a class="btn btn-primary" href="https://colab.research.google.com/github/vrs17/AI-ML-Capstone-project/blob/claude/aiml-capstone-planning-fnkas1/notebooks/model_gate_v2.ipynb" target="_blank" rel="noreferrer">Open Live Demo <svg class="icon" aria-hidden="true"><use href="#i-external"></use></svg></a><a class="btn btn-secondary" href="https://github.com/vrs17/AI-ML-Capstone-project" target="_blank" rel="noreferrer"><svg class="icon fill" aria-hidden="true"><use href="#i-github"></use></svg> Repository</a></div></div></section>
+</main>
+<footer><div class="wrap foot"><div><strong class="placeholder">[[YOUR NAME — fill this in]]</strong> · AI/ML Fundamentals Capstone</div><span>Built as a static showcase · <span data-year></span></span></div></footer>
+
+<script>
+
+const root=document.documentElement;
+const progress=document.querySelector('.progress');
+const nav=document.querySelector('.nav-shell');
+window.addEventListener('scroll',()=>{
+  const max=document.documentElement.scrollHeight-innerHeight;
+  progress.style.width=(max>0?(scrollY/max)*100:0)+'%';
+  nav.classList.toggle('scrolled',scrollY>12);
+},{passive:true});
+window.addEventListener('pointermove',e=>{
+  root.style.setProperty('--mouse-x',e.clientX+'px');
+  root.style.setProperty('--mouse-y',e.clientY+'px');
+},{passive:true});
+const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+document.querySelector('[data-year]').textContent=new Date().getFullYear();
+
+
+</script>
+</body>
+</html>
