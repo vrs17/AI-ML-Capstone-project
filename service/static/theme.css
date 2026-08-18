@@ -43,9 +43,15 @@ body{
 /* segmented control — the page switcher */
 .seg{display:flex;gap:2px;padding:2px;border-radius:9px;background:var(--surface-2);
   border:1px solid var(--hair)}
-.seg a{padding:5px 14px;border-radius:7px;font-size:12.5px;font-weight:500;color:var(--fg-2);
-  text-decoration:none;transition:.18s var(--spring)}
-.seg a:hover{color:var(--fg)}
+.seg a{display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:7px;
+  font-size:12.5px;font-weight:500;color:var(--fg-2);text-decoration:none;
+  transition:.18s var(--spring)}
+.ext{width:9px;height:9px;flex:none;opacity:.5}      /* sized globally: an inline
+     svg with no width/height falls back to 300x150 */
+.seg a .ext{opacity:.5}
+.seg a:hover .ext{opacity:.9}
+.seg a:hover{color:var(--fg);text-decoration:none}   /* the global a:hover underline
+     must not apply to a segmented control */
 .seg a[aria-current]{background:var(--raised);color:var(--fg);
   box-shadow:0 1px 2px rgba(0,0,0,.4)}
 
