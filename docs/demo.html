@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Live in-browser demo of the Uzbek Car Model Recognizer">
+<meta name="theme-color" content="#07101f">
+<title>Live Demo — Uzbek Car Model Recognizer</title>
+<style>
+:root{
+  --bg:#07101f;--bg-2:#11152e;--surface:rgba(15,28,52,.72);--surface-soft:rgba(255,255,255,.055);
+  --line:rgba(180,205,255,.16);--line-strong:rgba(180,205,255,.28);--text:#f5f8ff;--muted:#9caac1;
+  --accent:#6ce5ff;--accent-2:#9a7bff;--accent-3:#69f1b9;--danger:#ff6b8b;--warning:#ffc86b;
+  --shadow:0 24px 80px rgba(0,0,0,.42);--radius-lg:22px;--radius-md:16px;--max:1080px;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);
+  background:radial-gradient(900px 700px at 20% 0%,color-mix(in srgb,var(--accent) 12%,transparent),transparent 70%),
+             radial-gradient(880px 620px at 92% 4%,color-mix(in srgb,var(--accent-2) 16%,transparent),transparent 70%),
+             linear-gradient(155deg,var(--bg),var(--bg-2) 58%,var(--bg));
+  background-attachment:fixed;overflow-x:hidden}
+.wrap{width:min(var(--max),calc(100% - 40px));margin-inline:auto}
+a{color:var(--accent)}
+header{padding:20px 0;border-bottom:1px solid var(--line);margin-bottom:34px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;font-weight:800}
+.brand-mark{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 25%,transparent),color-mix(in srgb,var(--accent-2) 35%,transparent));
+  border:1px solid color-mix(in srgb,var(--accent) 50%,transparent)}
+.brand-mark::before{content:"";width:12px;height:12px;border:2px solid var(--accent);border-radius:4px;transform:rotate(45deg)}
+.brand small{display:block;color:var(--muted);font-weight:600;font-size:10px;letter-spacing:.15em;text-transform:uppercase;margin-top:2px}
+.mini-btn{border:1px solid var(--line-strong);background:var(--surface-soft);color:var(--text);height:40px;padding:0 14px;border-radius:12px;
+  display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:700;font-size:13px;cursor:pointer}
+.mini-btn:hover{border-color:var(--accent)}
+h1{font-size:clamp(30px,4.4vw,46px);line-height:1.05;letter-spacing:-.045em;margin:0 0 12px}
+.gradient-text{background:linear-gradient(105deg,var(--text) 4%,var(--accent) 48%,var(--accent-2) 80%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--muted);line-height:1.7;margin:0 0 28px;max-width:680px}
+.glass{border:1px solid var(--line);background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.025));backdrop-filter:blur(18px);box-shadow:0 16px 55px rgba(0,0,0,.2)}
+.panel{border-radius:var(--radius-lg);padding:24px;margin-bottom:18px}
+.panel h2{font-size:19px;margin:0 0 6px;letter-spacing:-.02em}
+.panel .hint{color:var(--muted);font-size:13px;line-height:1.6;margin:0 0 18px}
+.step-badge{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:8px;
+  background:color-mix(in srgb,var(--accent) 16%,transparent);border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);
+  color:var(--accent);font-size:12px;font-weight:900;margin-right:9px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{min-height:46px;padding:0 18px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  font-weight:800;font-size:14px;border:1px solid transparent;cursor:pointer;font-family:inherit;transition:.2s}
+.btn-primary{background:linear-gradient(110deg,var(--accent),var(--accent-2));color:#04111b}
+.btn-primary:hover:not(:disabled){transform:translateY(-2px)}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-secondary{background:var(--surface-soft);border-color:var(--line-strong);color:var(--text)}
+.btn-secondary:hover{border-color:var(--accent)}
+input[type=text]{flex:1;min-width:240px;height:46px;padding:0 14px;border-radius:13px;border:1px solid var(--line-strong);
+  background:rgba(3,9,20,.45);color:var(--text);font-family:inherit;font-size:13px}
+input[type=text]:focus{outline:none;border-color:var(--accent)}
+input[type=file]{display:none}
+.status{margin-top:14px;padding:13px 15px;border-radius:13px;font-size:13px;line-height:1.6;display:none}
+.status.show{display:block}
+.status.info{background:color-mix(in srgb,var(--accent) 9%,transparent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);color:var(--text)}
+.status.ok{background:color-mix(in srgb,var(--accent-3) 10%,transparent);border:1px solid color-mix(in srgb,var(--accent-3) 30%,transparent)}
+.status.err{background:color-mix(in srgb,var(--danger) 10%,transparent);border:1px solid color-mix(in srgb,var(--danger) 35%,transparent)}
+.status.warn{background:color-mix(in srgb,var(--warning) 9%,transparent);border:1px solid color-mix(in srgb,var(--warning) 32%,transparent)}
+.progress-track{height:7px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:11px}
+.progress-fill{height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .18s}
+.drop{border:2px dashed var(--line-strong);border-radius:var(--radius-md);padding:30px 20px;text-align:center;cursor:pointer;transition:.2s;color:var(--muted)}
+.drop:hover,.drop.over{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 7%,transparent);color:var(--text)}
+.drop strong{display:block;color:var(--text);font-size:15px;margin-bottom:5px}
+.result-grid{display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start}
+#preview{width:100%;border-radius:var(--radius-md);border:1px solid var(--line);display:block;background:rgba(0,0,0,.3)}
+.verdict{border-radius:var(--radius-md);padding:18px;margin-bottom:16px;border:1px solid var(--line)}
+.verdict.answer{background:color-mix(in srgb,var(--accent-3) 12%,transparent);border-color:color-mix(in srgb,var(--accent-3) 38%,transparent)}
+.verdict.reject{background:color-mix(in srgb,var(--warning) 11%,transparent);border-color:color-mix(in srgb,var(--warning) 36%,transparent)}
+.verdict.abstain{background:color-mix(in srgb,var(--accent-2) 12%,transparent);border-color:color-mix(in srgb,var(--accent-2) 38%,transparent)}
+.verdict .vlabel{font-size:10px;text-transform:uppercase;letter-spacing:.14em;font-weight:900;color:var(--muted)}
+.verdict .vmain{font-size:29px;font-weight:900;letter-spacing:-.04em;margin:7px 0 4px}
+.verdict .vsub{font-size:13px;color:var(--muted);line-height:1.55}
+.bars{display:grid;gap:11px}
+.bar-row .bar-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+.bar-row .bar-label strong{color:var(--text);font-variant-numeric:tabular-nums}
+.bar-track{height:9px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}
+.bar-fill{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .35s}
+.bar-row.top .bar-fill{background:linear-gradient(90deg,var(--accent-3),var(--accent))}
+.meta{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:12px}
+.meta b{color:var(--text)}
+.note{border-radius:var(--radius-md);padding:15px;background:color-mix(in srgb,var(--warning) 8%,transparent);border:1px solid color-mix(in srgb,var(--warning) 28%,transparent);color:var(--muted);font-size:13px;line-height:1.65}
+.note b{color:var(--text)}
+footer{padding:26px 0 44px;margin-top:34px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+code{background:rgba(255,255,255,.07);padding:1px 6px;border-radius:5px;font-size:12px;font-family:"SFMono-Regular",Consolas,monospace}
+#stage{display:none}
+@media (max-width:760px){.result-grid{grid-template-columns:1fr}.wrap{width:min(100% - 24px,var(--max))}}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<header><div class="wrap topbar">
+  <a class="brand" href="index.html"><span class="brand-mark"></span><span>Uzbek Car ID<small>Live model demo</small></span></a>
+  <a class="mini-btn" href="index.html">← Back to showcase</a>
+</div></header>
+
+<main class="wrap">
+
+  <h1><span class="gradient-text">Test the model</span> on a real photo.</h1>
+  <p class="lead">The classifier runs <strong>entirely in your browser</strong> — the photo never leaves your
+  device and there is no server. Load the model once, then try any car photo.</p>
+
+  <!-- STEP 1 — load the model -->
+  <section class="panel glass">
+    <h2><span class="step-badge">1</span>Load the model</h2>
+    <p class="hint">Export it first with <code>notebooks/export_onnx.ipynb</code>. Then either pick the
+    <code>.onnx</code> file from your computer (works offline, nothing to host) or paste a public URL.</p>
+    <div class="row">
+      <button class="btn btn-secondary" id="pickModelBtn">📁 Choose .onnx from your computer</button>
+      <input type="file" id="modelFile" accept=".onnx">
+    </div>
+    <div class="row" style="margin-top:10px">
+      <input type="text" id="modelUrl" placeholder="…or paste a public model URL (e.g. Hugging Face resolve link)">
+      <button class="btn btn-secondary" id="loadUrlBtn">Load from URL</button>
+    </div>
+    <div class="progress-track" id="dlTrack" style="display:none"><div class="progress-fill" id="dlFill"></div></div>
+    <div class="status" id="modelStatus"></div>
+  </section>
+
+  <!-- STEP 2 — pick a photo -->
+  <section class="panel glass">
+    <h2><span class="step-badge">2</span>Choose a car photo</h2>
+    <p class="hint">Use a clear exterior photo of the whole car. The model was trained on cropped cars,
+    so a tight shot works best.</p>
+    <div class="drop" id="drop">
+      <strong>Drop a photo here, or click to browse</strong>
+      JPEG or PNG · stays on your device
+    </div>
+    <input type="file" id="imgFile" accept="image/*">
+    <div class="status" id="imgStatus"></div>
+  </section>
+
+  <!-- STEP 3 — result -->
+  <section class="panel glass" id="stage">
+    <h2><span class="step-badge">3</span>Prediction</h2>
+    <p class="hint">Exactly what the trained model outputs — no post-editing.</p>
+    <div class="result-grid">
+      <div>
+        <img id="preview" alt="The 384×384 crop the model actually sees">
+        <p class="hint" style="margin:9px 0 0;font-size:11px">The 384×384 crop the model actually sees.</p>
+      </div>
+      <div>
+        <div class="verdict" id="verdict">
+          <div class="vlabel" id="vlabel">Result</div>
+          <div class="vmain" id="vmain">—</div>
+          <div class="vsub" id="vsub"></div>
+        </div>
+        <div class="bars" id="bars"></div>
+        <div class="meta" id="meta"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="note">
+    <b>How to read this.</b> The system answers only when it is confident the car is one of the five known
+    models. A car that is none of them is returned as <b>others</b> (rejected), and a photo the model is
+    unsure about is <b>abstained</b> and would be routed to a human. That is the design: precision on the
+    answers that matter, not a guess on every photo.
+  </div>
+
+</main>
+
+<footer><div class="wrap">
+  Uzbek Car Model Recognizer · in-browser inference with ONNX Runtime Web ·
+  <a href="https://github.com/vrs17/AI-ML-Capstone-project">repository</a>
+</div></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.27.0/dist/ort.min.js"></script>
+<script>
+"use strict";
+
+/* ── Config ───────────────────────────────────────────────────────────────
+   Replace with demo_config.json produced by notebooks/export_onnx.ipynb.
+   temperature / abstainThreshold come from the Trust Layer; until it is run,
+   T = 1 and there is no abstention (every confident-enough answer is shown). */
+const CFG = {
+  classes: ["cobalt","damas","gentra","nexia3","others","spark"],
+  pretty:  {cobalt:"Chevrolet Cobalt", damas:"Chevrolet Damas", gentra:"Chevrolet Gentra",
+            nexia3:"Chevrolet Nexia 3", others:"Not one of the five", spark:"Chevrolet Spark"},
+  imgSize: 384,
+  resize:  438,                       // Resize(438) -> CenterCrop(384), matching training
+  mean: [0.485,0.456,0.406],
+  std:  [0.229,0.224,0.225],
+  temperature: 1.0,                   // ← set from the Trust Layer
+  abstainThreshold: null,             // ← set from the Trust Layer (e.g. 0.93); null = no abstention
+  rejectClass: "others",
+  modelUrl: ""                        // ← optional: preload a public .onnx URL
+};
+
+const $ = id => document.getElementById(id);
+let session = null;
+
+function say(el, msg, kind){
+  el.className = "status show " + (kind || "info");
+  el.innerHTML = msg;
+}
+
+/* ── Model loading ─────────────────────────────────────────────────────── */
+ort.env.wasm.numThreads = 1;   // GitHub Pages is not cross-origin isolated -> no threads
+ort.env.wasm.simd = true;
+ort.env.wasm.wasmPaths = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.27.0/dist/";
+
+async function createSession(buffer){
+  const providers = [];
+  if (navigator.gpu) providers.push("webgpu");     // much faster when available
+  providers.push("wasm");
+  try {
+    session = await ort.InferenceSession.create(buffer, {
+      executionProviders: providers, graphOptimizationLevel: "all"
+    });
+  } catch (e) {
+    session = await ort.InferenceSession.create(buffer, { executionProviders: ["wasm"] });
+  }
+  const ep = navigator.gpu ? "WebGPU (or WASM fallback)" : "WASM";
+  say($("modelStatus"), `✅ Model loaded and ready — running on <b>${ep}</b>. Now choose a photo below.`, "ok");
+  $("stage").dataset.ready = "1";
+}
+
+async function loadFromFile(file){
+  say($("modelStatus"), `Reading <b>${file.name}</b> (${(file.size/1e6).toFixed(1)} MB)…`, "info");
+  try {
+    await createSession(new Uint8Array(await file.arrayBuffer()));
+  } catch (e) {
+    say($("modelStatus"), `❌ Could not load that file.<br><code>${e.message}</code>`, "err");
+  }
+}
+
+async function loadFromUrl(url){
+  if (!url) { say($("modelStatus"), "Paste a URL first.", "warn"); return; }
+  $("dlTrack").style.display = "block"; $("dlFill").style.width = "0%";
+  say($("modelStatus"), "Downloading the model… (one time — your browser caches it)", "info");
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+    const total = +res.headers.get("content-length") || 0;
+    const chunks = []; let got = 0;
+    const reader = res.body.getReader();
+    for (;;){
+      const {done, value} = await reader.read();
+      if (done) break;
+      chunks.push(value); got += value.length;
+      if (total) $("dlFill").style.width = (got/total*100).toFixed(1) + "%";
+    }
+    const buf = new Uint8Array(got); let off = 0;
+    for (const c of chunks){ buf.set(c, off); off += c.length; }
+    $("dlFill").style.width = "100%";
+    await createSession(buf);
+  } catch (e) {
+    $("dlTrack").style.display = "none";
+    say($("modelStatus"),
+      `❌ Download failed: <code>${e.message}</code><br><br>` +
+      `Most often this is <b>CORS</b>. OneDrive and Google Drive share links do <b>not</b> work here — ` +
+      `they redirect to a viewer page and block cross-origin reads. Use a Hugging Face model repo ` +
+      `(<code>https://huggingface.co/USER/REPO/resolve/main/model.onnx</code>) or just pick the file ` +
+      `from your computer above.`, "err");
+  }
+}
+
+/* ── Preprocessing: Resize(shortest→438) → CenterCrop(384) → normalize ──── */
+function preprocess(img){
+  const S = CFG.imgSize, R = CFG.resize;
+  const scale = R / Math.min(img.width, img.height);   // shortest side → 438
+  const crop  = S / scale;                             // the 384 crop, in source pixels
+  const sx = (img.width  - crop) / 2;
+  const sy = (img.height - crop) / 2;
+
+  const cv = document.createElement("canvas"); cv.width = S; cv.height = S;
+  const ctx = cv.getContext("2d", {willReadFrequently:true});
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(img, sx, sy, crop, crop, 0, 0, S, S);
+  $("preview").src = cv.toDataURL("image/jpeg", 0.9);
+
+  const {data} = ctx.getImageData(0, 0, S, S);         // RGBA, 0..255
+  const out = new Float32Array(3 * S * S);             // NCHW
+  const px = S * S;
+  for (let i = 0; i < px; i++){
+    out[i]        = (data[i*4]  /255 - CFG.mean[0]) / CFG.std[0];
+    out[i + px]   = (data[i*4+1]/255 - CFG.mean[1]) / CFG.std[1];
+    out[i + 2*px] = (data[i*4+2]/255 - CFG.mean[2]) / CFG.std[2];
+  }
+  return new ort.Tensor("float32", out, [1, 3, S, S]);
+}
+
+function softmax(logits, T){
+  const z = Array.from(logits, v => v / (T || 1));
+  const m = Math.max(...z);
+  const e = z.map(v => Math.exp(v - m));
+  const s = e.reduce((a,b) => a+b, 0);
+  return e.map(v => v / s);
+}
+
+/* ── Run ──────────────────────────────────────────────────────────────── */
+async function predict(img){
+  if (!session){ say($("imgStatus"), "Load the model in step 1 first.", "warn"); return; }
+  say($("imgStatus"), "Running the model…", "info");
+  const t0 = performance.now();
+  try {
+    const input = preprocess(img);
+    const name  = session.inputNames[0];
+    const out   = await session.run({ [name]: input });
+    const logits = out[session.outputNames[0]].data;
+    const ms = performance.now() - t0;
+
+    const probs = softmax(logits, CFG.temperature);
+    const order = probs.map((p,i) => [p,i]).sort((a,b) => b[0]-a[0]);
+    const [topP, topI] = order[0];
+    const topName = CFG.classes[topI];
+
+    render(topName, topP, probs, ms);
+    $("imgStatus").className = "status";
+    $("stage").style.display = "block";
+    $("stage").scrollIntoView({behavior:"smooth", block:"nearest"});
+  } catch (e) {
+    say($("imgStatus"), `❌ Inference failed: <code>${e.message}</code>`, "err");
+  }
+}
+
+function render(topName, topP, probs, ms){
+  const thr = CFG.abstainThreshold;
+  const v = $("verdict");
+  let kind, label, main, sub;
+
+  if (thr !== null && topP < thr){
+    kind  = "abstain"; label = "Abstained — routed to a human";
+    main  = "Not confident enough";
+    sub   = `Best guess was <b>${CFG.pretty[topName]}</b> at ${(topP*100).toFixed(1)}%, below the
+             ${(thr*100).toFixed(1)}% threshold chosen on validation. The system stays silent rather than risk a wrong answer.`;
+  } else if (topName === CFG.rejectClass){
+    kind  = "reject"; label = "Rejected — outside the catalogue";
+    main  = "Not one of the five";
+    sub   = `The model is ${(topP*100).toFixed(1)}% confident this is a car it was not trained to name
+             (open-set rejection). In production this would be logged as “other vehicle”.`;
+  } else {
+    kind  = "answer"; label = "Recognised";
+    main  = CFG.pretty[topName] || topName;
+    sub   = `Confidence ${(topP*100).toFixed(1)}%` + (thr !== null
+              ? ` — above the ${(thr*100).toFixed(1)}% threshold, so the system answers.`
+              : ` (no abstention threshold set — run the Trust Layer to enable it).`);
+  }
+  v.className = "verdict " + kind;
+  $("vlabel").textContent = label; $("vmain").innerHTML = main; $("vsub").innerHTML = sub;
+
+  const rows = probs.map((p,i) => ({p, name: CFG.classes[i]})).sort((a,b) => b.p - a.p);
+  $("bars").innerHTML = rows.map((r,i) => `
+    <div class="bar-row ${i===0?"top":""}">
+      <div class="bar-label"><span>${r.name}</span><strong>${(r.p*100).toFixed(1)}%</strong></div>
+      <div class="bar-track"><i class="bar-fill" style="width:${(r.p*100).toFixed(2)}%"></i></div>
+    </div>`).join("");
+
+  $("meta").innerHTML =
+    `<span>inference <b>${ms.toFixed(0)} ms</b></span>` +
+    `<span>input <b>${CFG.imgSize}×${CFG.imgSize}</b></span>` +
+    `<span>temperature <b>${CFG.temperature}</b></span>` +
+    `<span>threshold <b>${CFG.abstainThreshold ?? "not set"}</b></span>`;
+}
+
+/* ── Wiring ───────────────────────────────────────────────────────────── */
+$("pickModelBtn").onclick = () => $("modelFile").click();
+$("modelFile").onchange = e => { if (e.target.files[0]) loadFromFile(e.target.files[0]); };
+$("loadUrlBtn").onclick = () => loadFromUrl($("modelUrl").value.trim());
+
+const drop = $("drop");
+drop.onclick = () => $("imgFile").click();
+drop.addEventListener("dragover", e => { e.preventDefault(); drop.classList.add("over"); });
+drop.addEventListener("dragleave", () => drop.classList.remove("over"));
+drop.addEventListener("drop", e => {
+  e.preventDefault(); drop.classList.remove("over");
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith("image/")) handleImage(f);
+});
+$("imgFile").onchange = e => { if (e.target.files[0]) handleImage(e.target.files[0]); };
+
+function handleImage(file){
+  const img = new Image();
+  img.onload = () => predict(img);
+  img.onerror = () => say($("imgStatus"), "❌ Could not read that image.", "err");
+  img.src = URL.createObjectURL(file);
+}
+
+if (CFG.modelUrl) { $("modelUrl").value = CFG.modelUrl; loadFromUrl(CFG.modelUrl); }
+else say($("modelStatus"),
+  "No model loaded yet. Export it with <code>notebooks/export_onnx.ipynb</code>, then load it above — " +
+  "picking the file from your computer is the quickest way and needs no hosting.", "info");
+</script>
+</body>
+</html>
