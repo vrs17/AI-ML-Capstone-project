@@ -1,0 +1,40 @@
+# Publish docs/ to GitHub Pages.
+#
+# Requires Settings -> Pages -> Source = "GitHub Actions" (one dropdown, then Save).
+# Creating the Pages site cannot be automated: GITHUB_TOKEN may deploy to an existing
+# site but not create one, so actions/configure-pages with `enablement: true` fails with
+# "Resource not accessible by integration". Once the source is set, everything below runs
+# on its own for every push that touches docs/.
+#
+# Deploying the artifact directly means Jekyll never processes the files.
+name: Deploy showcase to GitHub Pages
+
+on:
+  push:
+    branches: [claude/aiml-capstone-planning-fnkas1]
+    paths: ['docs/**', '.github/workflows/pages.yml']
+  workflow_dispatch:          # re-publish by hand from the Actions tab
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write             # deploy-pages authenticates with OIDC
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - id: deployment
+        uses: actions/deploy-pages@v4
