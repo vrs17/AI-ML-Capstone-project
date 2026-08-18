@@ -60,6 +60,7 @@ report and confusion matrix are in `notebooks/model_gate_v2.ipynb`.
 
 ```
 ├── README.md                     ← you are here
+├── QUICKSTART.md                 clone → running service, and how to retrain
 ├── ROADMAP.md                    end-to-end methodology, each step → its artifact
 ├── PROJECT_STATUS.md             living status
 ├── data/
@@ -70,7 +71,8 @@ report and confusion matrix are in `notebooks/model_gate_v2.ipynb`.
 ├── scripts/
 │   ├── avtoelon_scraper.py          polite, robots-compliant image scraper
 │   ├── deduplicate.py               hash dedup + cross-folder quarantine
-│   └── resolution_sweep.py          accuracy vs. capture size — the operating envelope
+│   ├── resolution_sweep.py          accuracy vs. capture size — the operating envelope
+│   └── pack_weights.py              fp16 repack so the checkpoint fits GitHub's 100 MB cap
 ├── notebooks/
 │   ├── data_gate.ipynb              clean + leakage-safe split (YOLO + CLIP)
 │   ├── model_gate.ipynb             v1: baselines + ConvNeXt/ResNet (5-class)
@@ -84,6 +86,19 @@ report and confusion matrix are in `notebooks/model_gate_v2.ipynb`.
 ├── docs/index.html               showcase page · docs/demo.html in-browser demo
 └── defense_*.md / capstone_*.md / final_action_plan.md   defense-prep docs
 ```
+
+## Run it
+
+Weights are committed, so a clone runs with nothing else to download:
+
+```bash
+git clone https://github.com/vrs17/AI-ML-Capstone-project.git
+cd AI-ML-Capstone-project/service
+pip install -r requirements.txt      # plus torch, see QUICKSTART
+uvicorn app:app --port 8000          # -> http://localhost:8000
+```
+
+Full instructions, including Colab reproduction, are in **[`QUICKSTART.md`](QUICKSTART.md)**.
 
 ## Reproduce it
 
