@@ -3,138 +3,268 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Uzbek Car Model Recognizer — Service</title>
+<title>Snapshot Inspector — Vehicle Intelligence</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b1322'/%3E%3Cpath d='M6 12h4M6 12v4M26 12h-4M26 12v4M6 20v-4M26 20v-4M6 20h4M26 20h-4' stroke='%236ce5ff' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='3.4' fill='%2369f1b9'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/theme.css">
 <style>
-:root{--bg:#07101f;--bg2:#11152e;--line:rgba(180,205,255,.16);--line2:rgba(180,205,255,.28);
---text:#f5f8ff;--muted:#9caac1;--acc:#6ce5ff;--acc2:#9a7bff;--acc3:#69f1b9;--warn:#ffc86b;--dan:#ff6b8b;--r:18px}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,-apple-system,"Segoe UI",sans-serif;color:var(--text);
-background:radial-gradient(900px 700px at 20% 0%,color-mix(in srgb,var(--acc) 12%,transparent),transparent 70%),
-radial-gradient(880px 620px at 92% 4%,color-mix(in srgb,var(--acc2) 16%,transparent),transparent 70%),
-linear-gradient(155deg,var(--bg),var(--bg2) 58%,var(--bg));background-attachment:fixed;min-height:100vh}
-.wrap{width:min(1080px,calc(100% - 36px));margin:0 auto;padding:26px 0 60px}
-header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
-padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:26px}
-h1{font-size:clamp(24px,3.2vw,34px);letter-spacing:-.04em;margin:0}
-.grad{background:linear-gradient(105deg,var(--text),var(--acc) 55%,var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
-.pill{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;border:1px solid var(--line2);
-background:rgba(255,255,255,.05);font-size:12px;font-weight:700;color:var(--muted)}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--dan)}.dot.ok{background:var(--acc3)}
-.glass{border:1px solid var(--line);background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.025));
-backdrop-filter:blur(16px);border-radius:var(--r);padding:22px;margin-bottom:16px}
-.drop{border:2px dashed var(--line2);border-radius:14px;padding:34px 20px;text-align:center;cursor:pointer;color:var(--muted);transition:.2s}
-.drop:hover,.drop.over{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 7%,transparent);color:var(--text)}
-.drop b{display:block;color:var(--text);font-size:15px;margin-bottom:5px}
-input[type=file]{display:none}
-.grid{display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start}
-img.prev{width:100%;border-radius:12px;border:1px solid var(--line);display:block}
-.verdict{border-radius:14px;padding:17px;border:1px solid var(--line);margin-bottom:15px}
-.v-answer{background:color-mix(in srgb,var(--acc3) 12%,transparent);border-color:color-mix(in srgb,var(--acc3) 38%,transparent)}
-.v-reject{background:color-mix(in srgb,var(--warn) 11%,transparent);border-color:color-mix(in srgb,var(--warn) 36%,transparent)}
-.v-abstain{background:color-mix(in srgb,var(--acc2) 12%,transparent);border-color:color-mix(in srgb,var(--acc2) 38%,transparent)}
-.v-no_car{background:color-mix(in srgb,var(--dan) 10%,transparent);border-color:color-mix(in srgb,var(--dan) 34%,transparent)}
-.vlab{font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:900;color:var(--muted)}
-.vmain{font-size:27px;font-weight:900;letter-spacing:-.04em;margin:6px 0 4px}
-.vsub{font-size:13px;color:var(--muted);line-height:1.5}
-.bar{margin-bottom:10px}.bl{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px}
-.bl b{color:var(--text);font-variant-numeric:tabular-nums}
-.bt{height:8px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}
-.bf{height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .3s}
-.bar.top .bf{background:linear-gradient(90deg,var(--acc3),var(--acc))}
-.meta{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
-.meta b{color:var(--text)}
-.err{border-radius:12px;padding:13px;background:color-mix(in srgb,var(--dan) 10%,transparent);border:1px solid color-mix(in srgb,var(--dan) 34%,transparent);font-size:13px}
-code{background:rgba(255,255,255,.07);padding:1px 6px;border-radius:5px;font-size:12px}
-a{color:var(--acc)}
-@media(max-width:720px){.grid{grid-template-columns:1fr}}
+  main{grid-template-columns:minmax(0,1fr) 400px}
+  .canvaswrap{position:relative;background:#03070f;display:grid;place-items:center;
+              min-height:300px;padding:10px}
+  .canvaswrap canvas{max-width:100%;max-height:62vh;width:auto;height:auto;display:block;
+              border-radius:8px}
+  .verdict{padding:16px;border-radius:var(--r-sm);border:1px solid var(--line);
+           background:rgba(255,255,255,.02);transition:.3s}
+  .verdict.answer {border-color:rgba(105,241,185,.42);background:rgba(105,241,185,.09)}
+  .verdict.reject {border-color:rgba(255,200,107,.42);background:rgba(255,200,107,.09)}
+  .verdict.abstain{border-color:rgba(154,123,255,.42);background:rgba(154,123,255,.09)}
+  .verdict.no_car {border-color:rgba(255,107,139,.38);background:rgba(255,107,139,.08)}
+  .vlab{font-size:10px;letter-spacing:.15em;text-transform:uppercase;font-weight:800;color:var(--muted)}
+  .vmain{font-size:26px;font-weight:800;letter-spacing:-.04em;margin:7px 0 5px}
+  .vsub{font-size:12.5px;color:var(--muted);line-height:1.6}
+  .bar{margin-bottom:9px}
+  .bl{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-bottom:5px}
+  .bl b{color:var(--text);font-variant-numeric:tabular-nums;font-family:var(--mono)}
+  .bt{height:6px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}
+  .bf{display:block;height:100%;border-radius:inherit;width:0;
+      background:linear-gradient(90deg,var(--sys),var(--esc));transition:width .6s cubic-bezier(.22,1,.36,1)}
+  .bar.top .bf{background:linear-gradient(90deg,var(--ok),var(--sys))}
+  .stage.idle{aspect-ratio:21/7;display:grid;place-items:center;border-bottom:1px solid var(--line)}
+  .idlemsg{text-align:center;z-index:1}
+  .idlemsg .t{font-size:12px;font-weight:800;letter-spacing:.28em;text-transform:uppercase;color:var(--dim)}
+  .idlemsg .s{font-size:12.5px;color:var(--dim);margin-top:8px}
+  .idlemsg .ring{width:44px;height:44px;margin:0 auto 14px;border-radius:50%;
+    border:2px solid rgba(108,229,255,.22);border-top-color:var(--sys);animation:spin 1.5s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .tmg{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 </style>
 </head>
-<body><div class="wrap">
-<header>
-  <h1><span class="grad">Uzbek Car Model Recognizer</span></h1>
-  <div class="row" style="gap:10px"><a class="btn" href="/video" style="height:38px;padding:0 14px;border-radius:11px;border:1px solid var(--line2);background:rgba(255,255,255,.05);color:var(--text);text-decoration:none;font-weight:700;font-size:13px;display:inline-flex;align-items:center">🎥 Video mode</a><span class="pill"><i class="dot" id="dot"></i><span id="status">connecting…</span></span></div>
-</header>
+<body>
+<div class="app">
+  <div class="brandbox"><div class="mark">◈</div></div>
+  <header class="topbar">
+    <div class="wordmark">Snapshot Inspector<small>single-frame diagnosis</small></div>
+    <div style="flex:1"></div>
+    <span class="chip" id="devChip"><i class="dot" id="devDot"></i><span id="devTxt">connecting…</span></span>
+    <a class="btn sm" href="/">← Operations console</a>
+  </header>
+  <nav class="rail">
+    <a href="/" data-tip="Live operations">▦</a>
+    <button class="on" data-tip="Snapshot inspector">▣</button>
+    <a href="/docs" data-tip="API reference">⌘</a>
+  </nav>
 
-<div class="glass">
-  <div class="drop" id="drop"><b>Drop a car photo, or click to browse</b>JPEG / PNG — sent to this service for inference</div>
-  <input type="file" id="file" accept="image/*">
-  <div id="err"></div>
-</div>
-
-<div class="glass" id="out" style="display:none">
-  <div class="grid">
-    <div><img class="prev" id="prev" alt="uploaded photo"></div>
-    <div>
-      <div class="verdict" id="verdict">
-        <div class="vlab" id="vlab"></div><div class="vmain" id="vmain"></div><div class="vsub" id="vsub"></div>
+  <main>
+    <div class="stack">
+      <div class="panel">
+        <div class="phead"><h2>Photo</h2><div class="sp"></div>
+          <span class="chip">detect → crop → classify → trust layer</span></div>
+        <div class="stage idle">
+          <div class="idlemsg"><div class="ring"></div>
+            <div class="t">Awaiting signal</div>
+            <div class="s">Drop a photo below — detection, cropping and the verdict appear here</div></div>
+          <div class="fx"><div class="scan"></div><div class="vig"></div>
+            <span class="tick tl"></span><span class="tick tr"></span>
+            <span class="tick bl"></span><span class="tick br"></span></div>
+        </div>
+        <div class="pbody">
+          <div class="drop" id="drop"><b>▲ Drop a car photo, or click to browse</b>
+            JPEG · PNG — the same pipeline the live cameras run</div>
+          <input type="file" id="file" accept="image/*">
+          <div id="err"></div>
+        </div>
       </div>
-      <div id="bars"></div>
-      <div class="meta" id="meta"></div>
-    </div>
-  </div>
-</div>
 
-<div class="glass" style="color:var(--muted);font-size:13px;line-height:1.65">
-  <b style="color:var(--text)">API</b> — <code>POST /predict</code> (one image) ·
-  <code>POST /predict/batch</code> (up to 32) · <code>GET /health</code> · <code>GET /metrics</code> ·
-  interactive docs at <a href="/docs">/docs</a>.<br><br>
-  The service answers only when it is confident the car is one of the five known models. A car
-  that is none of them is <b style="color:var(--text)">rejected</b>; a photo it is unsure about is
-  <b style="color:var(--text)">abstained</b> and would go to a human.
-</div>
+      <div class="panel" id="stagePanel" style="display:none">
+        <div class="phead"><h2>Detection</h2><div class="sp"></div>
+          <span class="chip" id="boxChip">—</span></div>
+        <div class="canvaswrap"><canvas id="cv"></canvas></div>
+        <div class="stagebar">
+          <span class="legend"><span><i style="background:var(--sys)"></i>stage 1 — YOLO11s finds the car</span></span>
+          <div style="flex:1"></div><span id="tmeta"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="panel" id="resPanel" style="display:none">
+        <div class="phead"><h2>Verdict</h2></div>
+        <div class="pbody">
+          <div class="verdict" id="verdict">
+            <div class="vlab" id="vlab"></div>
+            <div class="vmain" id="vmain"></div>
+            <div class="vsub" id="vsub"></div>
+          </div>
+          <div class="tmg" id="tmg"></div>
+        </div>
+      </div>
+      <div class="panel" id="probPanel" style="display:none">
+        <div class="phead"><h2>Calibrated probabilities</h2><div class="sp"></div>
+          <span class="chip" id="thrChip">—</span></div>
+        <div class="pbody"><div id="bars"></div>
+          <div class="note" style="margin-top:6px">Temperature-scaled, so the number means what it
+            says: across the sealed test, photos scored at <b>90%</b> really were right about 90% of
+            the time.</div></div>
+      </div>
+      <div class="panel">
+        <div class="phead"><h2>What this page is</h2></div>
+        <div class="pbody"><div class="note">A diagnostic view of <b>one</b> frame — the same two
+          stages the live console runs per tracked vehicle, with the intermediate numbers exposed.
+          The console is what an operator watches; this is what you open when you want to know
+          <b>why</b>.<br><br>API: <code>POST /predict</code> · <code>POST /predict/batch</code> ·
+          <code>GET /health</code> · <a href="/docs">/docs</a></div></div>
+      </div>
+    </div>
+  </main>
 </div>
 
 <script>
-const $=id=>document.getElementById(id);
-const LABELS={answer:"Recognised",reject:"Rejected — outside the catalogue",
-              abstain:"Abstained — routed to a human",no_car:"No car detected"};
+const $ = id => document.getElementById(id);
+const LABELS = {answer:"Identified", reject:"Outside the catalogue",
+                abstain:"Sent to staff", no_car:"No vehicle found"};
+const COLOR  = {answer:"#69f1b9", reject:"#ffc86b", abstain:"#9a7bff",
+                no_car:"#ff6b8b", pending:"#6ce5ff"};
+let THR = null;
 
-fetch("/health").then(r=>r.json()).then(h=>{
-  $("dot").className="dot"+(h.ready?" ok":"");
-  const v=h.vram?` · ${h.vram.used_by_us_gb}/${h.vram.total_gb} GB VRAM`:"";
-  $("status").textContent=(h.ready?"ready":"loading")+" · "+h.device+(h.fp16?" fp16":"")+v;
-}).catch(()=>{$("status").textContent="service unreachable"});
+fetch("/health").then(r => r.json()).then(h => {
+  $("devDot").className = "dot" + (h.ready ? " ok" : "");
+  const gpu = h.gpu ? h.gpu.replace(/NVIDIA GeForce /, "") : (h.device || "cpu").toUpperCase();
+  $("devTxt").textContent = gpu + (h.fp16 ? " · fp16" : "");
+  THR = h.abstain_threshold;
+  if (THR) $("thrChip").textContent = `answer above ${(THR * 100).toFixed(1)}%`;
+}).catch(() => $("devTxt").textContent = "service unreachable");
 
-const drop=$("drop");
-drop.onclick=()=>$("file").click();
-drop.addEventListener("dragover",e=>{e.preventDefault();drop.classList.add("over")});
-drop.addEventListener("dragleave",()=>drop.classList.remove("over"));
-drop.addEventListener("drop",e=>{e.preventDefault();drop.classList.remove("over");
-  const f=e.dataTransfer.files[0]; if(f&&f.type.startsWith("image/")) send(f);});
-$("file").onchange=e=>{if(e.target.files[0])send(e.target.files[0])};
+const drop = $("drop");
+drop.onclick = () => $("file").click();
+drop.addEventListener("dragover", e => { e.preventDefault(); drop.classList.add("over"); });
+drop.addEventListener("dragleave", () => drop.classList.remove("over"));
+drop.addEventListener("drop", e => {
+  e.preventDefault(); drop.classList.remove("over");
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith("image/")) send(f);
+});
+$("file").onchange = e => e.target.files[0] && send(e.target.files[0]);
 
-async function send(file){
-  $("err").innerHTML=""; $("prev").src=URL.createObjectURL(file);
-  $("out").style.display="block";
-  $("vlab").textContent="working"; $("vmain").textContent="…"; $("vsub").textContent="";
-  $("bars").innerHTML=""; $("meta").innerHTML="";
-  const fd=new FormData(); fd.append("file",file);
-  try{
-    const r=await fetch("/predict",{method:"POST",body:fd});
-    const j=await r.json();
-    if(!r.ok) throw new Error(j.detail||("HTTP "+r.status));
+let img = null, anim = null;
+
+if (!CanvasRenderingContext2D.prototype.roundRect) {      // Firefox < 112, older Safari
+  CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+    r = Math.min(r, w / 2, h / 2);
+    this.moveTo(x + r, y); this.arcTo(x + w, y, x + w, y + h, r);
+    this.arcTo(x + w, y + h, x, y + h, r); this.arcTo(x, y + h, x, y, r);
+    this.arcTo(x, y, x + w, y, r); this.closePath(); return this;
+  };
+}
+
+async function send(file) {
+  $("err").innerHTML = "";
+  img = new Image();
+  img.onload = () => {
+    document.querySelector(".stage.idle").style.display = "none";
+    $("stagePanel").style.display = ""; animate(null);
+  };
+  img.src = URL.createObjectURL(file);
+
+  const fd = new FormData(); fd.append("file", file);
+  try {
+    const r = await fetch("/predict", { method: "POST", body: fd });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.detail || ("HTTP " + r.status));
     render(j);
-  }catch(e){
-    $("out").style.display="none";
-    $("err").innerHTML=`<div class="err">❌ ${e.message}</div>`;
+  } catch (e) {
+    $("resPanel").style.display = $("probPanel").style.display = "none";
+    $("err").innerHTML = `<div class="err">⚠ ${e.message}</div>`;
   }
 }
 
-function render(j){
-  $("verdict").className="verdict v-"+j.decision;
-  $("vlab").textContent=LABELS[j.decision]||j.decision;
-  $("vmain").textContent=j.display||(j.decision==="no_car"?"No car in this photo":"—");
-  $("vsub").textContent=j.reason||"";
-  const p=j.probabilities||{};
-  const rows=Object.entries(p).sort((a,b)=>b[1]-a[1]);
-  $("bars").innerHTML=rows.map(([k,v],i)=>`<div class="bar ${i===0?'top':''}">
-    <div class="bl"><span>${k}</span><b>${(v*100).toFixed(1)}%</b></div>
-    <div class="bt"><i class="bf" style="width:${(v*100).toFixed(2)}%;display:block"></i></div></div>`).join("");
-  const t=j.timing_ms||{}, d=j.detection||{};
-  $("meta").innerHTML=
-    `<span>total <b>${t.total??"—"} ms</b></span>`+
-    `<span>detect <b>${t.detect??"—"} ms</b></span>`+
-    `<span>classify <b>${t.classify??"—"} ms</b></span>`+
-    (d.score!=null?`<span>car box <b>${d.score}</b></span>`:"");
+/* Draw the photo and lock the bracket onto the box the detector actually returned.
+   The animation is honest: it only ever draws coordinates the server sent back. */
+function animate(pred) {
+  cancelAnimationFrame(anim);
+  const c = $("cv"), x = c.getContext("2d");
+  const W = Math.min(img.naturalWidth, 1280), s = W / img.naturalWidth;
+  c.width = W; c.height = Math.round(img.naturalHeight * s);
+  const box = pred?.detection?.box;
+  const col = COLOR[pred?.decision] || COLOR.pending;
+  const start = performance.now();
+
+  (function frame(now) {
+    const el = (now - start) / 1000;
+    x.drawImage(img, 0, 0, c.width, c.height);
+    if (!box && pred) return;                     // server answered "no car" — leave the photo clean
+    if (!box) {                                   // waiting on the server — sweep the frame
+      const p = (el % 1.6) / 1.6, y = p * c.height;
+      const g = x.createLinearGradient(0, y - c.height * .3, 0, y);
+      g.addColorStop(0, "rgba(108,229,255,0)"); g.addColorStop(1, "rgba(108,229,255,.28)");
+      x.fillStyle = g; x.fillRect(0, y - c.height * .3, c.width, c.height * .3);
+      x.strokeStyle = "#6ce5ff"; x.lineWidth = 1.5;
+      x.beginPath(); x.moveTo(0, y); x.lineTo(c.width, y); x.stroke();
+      anim = requestAnimationFrame(frame); return;
+    }
+    const [bx1, by1, bx2, by2] = box.map(v => v * s);
+    const k = Math.min(el / .55, 1), e = 1 - Math.pow(1 - k, 3);
+    const grow = Math.min(bx2 - bx1, by2 - by1) * .18 * (1 - e);
+    const X1 = bx1 - grow, Y1 = by1 - grow, X2 = bx2 + grow, Y2 = by2 + grow;
+
+    x.fillStyle = "rgba(3,7,15,.5)";              // dim everything that is not the car
+    x.fillRect(0, 0, c.width, c.height);
+    x.save(); x.beginPath(); x.rect(bx1, by1, bx2 - bx1, by2 - by1); x.clip();
+    x.drawImage(img, 0, 0, c.width, c.height); x.restore();
+
+    if (k < 1) {                                  // brief colour wash at the instant of lock
+      x.globalAlpha = .22 * (1 - k); x.fillStyle = col;
+      x.fillRect(bx1, by1, bx2 - bx1, by2 - by1); x.globalAlpha = 1;
+    }
+
+    const L = Math.min(X2 - X1, Y2 - Y1) * .24;
+    x.strokeStyle = col; x.lineWidth = 2.5; x.lineCap = "round";
+    for (const [cx, cy, dx, dy] of [[X1,Y1,1,1],[X2,Y1,-1,1],[X1,Y2,1,-1],[X2,Y2,-1,-1]]) {
+      x.beginPath(); x.moveTo(cx + dx * L, cy); x.lineTo(cx, cy); x.lineTo(cx, cy + dy * L); x.stroke();
+    }
+    if (k >= 1 && pred.display) {                 // label card, matching the in-video chip
+      const pad = 9, fh = 17;
+      x.font = "700 17px Inter, Segoe UI, sans-serif";
+      const tw = x.measureText(pred.display).width;
+      const cw = Math.max(tw + pad * 2 + 6, 150), chh = fh + pad * 2 + 8;
+      let cyv = Y1 - chh - 8; if (cyv < 4) cyv = Y1 + 6;
+      x.fillStyle = "rgba(10,16,28,.92)";
+      x.beginPath(); x.roundRect(X1, cyv, cw, chh, 8); x.fill();
+      x.strokeStyle = col; x.lineWidth = 1; x.stroke();
+      x.fillStyle = col; x.beginPath(); x.roundRect(X1, cyv + 4, 4, chh - 8, 2); x.fill();
+      x.fillStyle = "#f6f9ff"; x.fillText(pred.display, X1 + pad + 6, cyv + pad + fh - 3);
+      if (pred.confidence != null) {
+        x.fillStyle = "rgba(255,255,255,.18)";
+        x.fillRect(X1 + pad + 6, cyv + chh - pad - 1, cw - pad * 2 - 6, 3);
+        x.fillStyle = col;
+        x.fillRect(X1 + pad + 6, cyv + chh - pad - 1, (cw - pad * 2 - 6) * pred.confidence, 3);
+      }
+    }
+    if (k < 1) anim = requestAnimationFrame(frame);
+  })(start);
+}
+
+function render(j) {
+  animate(j);
+  $("resPanel").style.display = ""; $("probPanel").style.display = "";
+  $("verdict").className = "verdict " + j.decision;
+  $("vlab").textContent  = LABELS[j.decision] || j.decision;
+  $("vmain").textContent = j.display || (j.decision === "no_car" ? "No vehicle in this photo"
+                                       : j.decision === "abstain" ? "Not confident enough" : "—");
+  $("vsub").textContent  = j.reason || "";
+
+  const rows = Object.entries(j.probabilities || {}).sort((a, b) => b[1] - a[1]);
+  $("bars").innerHTML = rows.map(([k, v], i) => `<div class="bar ${i ? "" : "top"}">
+      <div class="bl"><span>${k}</span><b>${(v * 100).toFixed(1)}%</b></div>
+      <div class="bt"><i class="bf" data-w="${(v * 100).toFixed(2)}"></i></div></div>`).join("");
+  requestAnimationFrame(() =>
+    $("bars").querySelectorAll(".bf").forEach(b => b.style.width = b.dataset.w + "%"));
+  $("probPanel").style.display = rows.length ? "" : "none";
+
+  const t = j.timing_ms || {}, d = j.detection || {};
+  $("tmg").innerHTML = [["total", t.total], ["detect", t.detect], ["classify", t.classify]]
+    .filter(([, v]) => v != null).map(([k, v]) => `<span class="chip">${k} <b>${v} ms</b></span>`).join("");
+  $("tmeta").textContent = t.total != null ? `${t.total} ms end to end` : "";
+  $("boxChip").textContent = d.score != null ? `car detected · ${(d.score * 100).toFixed(0)}%`
+                           : d.found === false ? "no car found" : "whole frame";
 }
 </script>
 </body></html>

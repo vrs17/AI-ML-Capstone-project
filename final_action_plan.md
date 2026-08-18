@@ -13,6 +13,10 @@ What's left between now and the defense. Ordered by priority. Check items off as
 - [x] **Write the top-level `README.md`** (owed for C2). ✅ Done — problem, two-stage
       architecture (with diagram), headline results, reproduce steps, repo layout, ethics.
 
+- [x] **Stakeholder-facing UI** ✅ Done. Operations console at `/` (live feed with in-frame
+      detection animation, throughput, decision split, fleet mix, decision log, `F` for presenter
+      fullscreen) + snapshot inspector at `/photo`. Have a short forecourt clip ready to drop in.
+
 - [ ] **Prepare the presentation** using the course's PPTX. Mirror `defense_pitch_outline.md`.
       Have ready to show on demand: the **confusion matrix**, the **precision–coverage curve**,
       and the per-class report.
@@ -49,6 +53,8 @@ What's left between now and the defense. Ordered by priority. Check items off as
 | Model Gate v2 (6-class ArcFace @384, **0.950 / 0.936**, 0.971 on 5 known) | ✅ done |
 | Trust Layer (calibration + abstention) | ✅ 99.0% precision @ 83.5% coverage |
 | Top-level README | ✅ done |
+| Production service (photo + real-time video, GPU) | ✅ done |
+| Operations console / stakeholder UI | ✅ done |
 | Presentation + rehearsal | 🔴 to do |
 
 **Definition of done for the defense:** trust-layer operating point recorded, README written,

@@ -1,7 +1,7 @@
 # Recognizer Service
 
 Production backend for the Uzbek Car Model Recognizer: **YOLO crop → ConvNeXt+ArcFace @384 →
-calibrated trust layer**, behind a FastAPI HTTP API with a built-in web UI.
+calibrated trust layer**, behind a FastAPI HTTP API with a built-in **operations console**.
 
 Sized for a **single 8 GB VRAM GPU**. In fp16 the classifier weights are ~56 MB and YOLO11s is
 smaller still — the real consumer is activation memory, which is why `MAX_BATCH` is capped.
@@ -40,22 +40,25 @@ pip install -r requirements.txt
 uvicorn app:app --host 0.0.0.0 --port 8000
 ```
 
-Open <http://localhost:8000> for the UI, or <http://localhost:8000/docs> for OpenAPI.
+Open <http://localhost:8000> for the **operations console**, `/photo` for the snapshot
+inspector, or `/docs` for OpenAPI.
 
 ## 3. API
 
 | Method | Path | Purpose |
 |---|---|---|
-| `GET` | `/` | web UI |
+| `GET` | `/` | **operations console** (live video, counters, decision log) |
+| `GET` | `/photo` | snapshot inspector (one image, with the intermediate numbers) |
 | `GET` | `/health` | readiness, device, VRAM, active thresholds |
 | `GET` | `/metrics` | request counters + realised coverage |
 | `POST` | `/predict` | one image (multipart `file`) |
 | `POST` | `/predict/batch` | up to 32 images (multipart `files`) |
-| `GET` | `/video` | **real-time video UI** |
+| `GET` | `/video` | alias of `/` (kept for older bookmarks) |
 | `POST` | `/video/upload` | start a tracking job from a video file |
 | `POST` | `/video/camera?source=0` | start from a webcam (`0`) or an RTSP/HTTP URL |
-| `GET` | `/video/stream/{id}` | annotated MJPEG stream |
-| `GET` | `/video/summary/{id}` | live tally of unique vehicles |
+| `GET` | `/video/stream/{id}` | annotated MJPEG stream (`?raw=1` for no overlay) |
+| `GET` | `/video/summary/{id}` | live tally, throughput, auto-handled share |
+| `GET` | `/video/events/{id}` | ordered decision log (`?after=<seq>` for the tail) |
 
 ```bash
 curl -F "file=@car.jpg" http://localhost:8000/predict
@@ -103,6 +106,36 @@ On CPU the classifier cannot keep up frame-for-frame at 384 px, so the processor
 (`frame_stride`, default 3 on CPU / 1 on GPU). This is reported in `/video/summary` rather than
 hidden.
 
+## 3c. The two screens
+
+**`/` — Operations console.** What a site operator (and a stakeholder) looks at. Live annotated
+feed, unique-vehicle count and throughput, how every vehicle was handled, fleet mix, and a
+rolling **decision log**. It reports *business* events ("14:32:07 · Chevrolet Cobalt · vehicle #14")
+rather than tensors. `F` toggles presenter fullscreen.
+
+The **value model** panel is deliberately a calculator, not a projection: both inputs are on
+screen and editable, and the outputs are arithmetic over those inputs and the throughput actually
+observed in the current session. The **measured reliability** panel quotes the sealed-test numbers
+and labels them as such.
+
+**`/photo` — Snapshot inspector.** The diagnostic view of a single frame: the detector's box
+animated onto the photo, the verdict, the calibrated per-class probabilities, and stage timings.
+Open this when you want to know *why*.
+
+### Why the detection graphics are drawn server-side
+
+`overlay.py` burns the brackets, scan sweep, lock-on animation and label chip **into the frame**,
+inside the same pass that produced the box. The tempting alternative — stream clean frames and
+draw boxes in a `<canvas>` — decouples geometry from pixels, so on moving cars the box visibly
+trails the vehicle by one network round-trip. Drawing in-frame makes the graphics pixel-locked by
+construction. Chrome that does *not* need to track a car (counters, feed, panels) stays in HTML.
+
+Label text is rendered with PIL into a small cached RGBA patch and alpha-composited, so the type
+is anti-aliased rather than OpenCV's Hershey strokes; a settled track re-uses the same cached
+patch every frame.
+
+`?raw=1` on the stream returns the un-annotated feed — useful for showing the before/after.
+
 ## 4. Tuning for your box
 
 | Env var | Default | Notes |
@@ -129,3 +162,5 @@ load their own copy of the model.
   instead of silently serving a partly-random model.
 - If `ultralytics` or the YOLO weights are unavailable the service still starts and classifies the
   **whole image** (no crop), and `/health` reports `detector: false`.
+- The console and inspector share `static/theme.css`; the overlay palette in `overlay.py` and the
+  CSS custom properties are kept in sync by hand — change both together.

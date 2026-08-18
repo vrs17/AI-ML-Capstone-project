@@ -24,12 +24,15 @@ abstain threshold 0.857). Remaining work is presentation, not modeling.
 - **2026 backbone/deployment research** (multi-agent): decision = keep ConvNeXt-Tiny for the capstone (the gain is in the training recipe, not the architecture); for production use MobileNetV4 + INT8 + embedding-distance OOD + prototype gallery to scale. Documented for the Model/Trust gates.
 - **Trust Layer complete:** T = 2.894, threshold 0.857 → **99.0% precision on the five known models at 83.5% coverage** on the sealed test (8.7% rejected as `others`, 7.8% abstained; 96.1% @ 91.3% without abstention).
 - Showcase page + in-browser ONNX demo in `docs/`; defense docs (`defense_*.md`, `capstone_evidence_matrix.md`, `final_action_plan.md`).
+- **Production service** (`service/`): FastAPI + Docker, running on an RTX 4060 (8 GB) with CUDA + fp16 + channels_last. Photo, batch, and **real-time video** (ByteTrack tracking + temporal voting over calibrated looks).
+- **Stakeholder-grade UI:** an **operations console** at `/` (live annotated feed, unique-vehicle throughput, decision split, fleet mix, rolling decision log, presenter fullscreen) and a **snapshot inspector** at `/photo`. Detection graphics — corner brackets, scan sweep, lock-on animation, PIL-rendered label chips — are rendered **into the frame** by `service/overlay.py`, so they stay pixel-locked to a moving car instead of trailing it as a canvas overlay would.
 - Reproducible `notebooks/data_gate.ipynb`, `notebooks/model_gate.ipynb`, `notebooks/model_gate_v2.ipynb`, `notebooks/trust_layer.ipynb`, `notebooks/export_onnx.ipynb`; `data/README.md` + issue log (now incl. Issue 5, open-set), all pushed.
 
 ## Current task
 Defense preparation: build the slides from `defense_pitch_outline.md` and rehearse
 `defense_question_bank.md`. Optionally export the model (`notebooks/export_onnx.ipynb`) and
-publish the showcase + live demo in `docs/` via GitHub Pages.
+publish the showcase + live demo in `docs/` via GitHub Pages. For a stakeholder demo, run the
+service and present the console at `/` (press `F` for fullscreen).
 
 ## Next
 - **Publish** `docs/` on GitHub Pages; fill the student name in the showcase footer.

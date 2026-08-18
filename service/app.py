@@ -1,12 +1,18 @@
 """FastAPI service for the Uzbek Car Model Recognizer.
 
 Endpoints
-    GET  /                 web UI
-    GET  /health           model + device + VRAM status
-    GET  /metrics          decision counters
-    POST /predict          one image  -> decision
-    POST /predict/batch    many images -> decisions
-    GET  /docs             OpenAPI (automatic)
+    GET  /                     operations console (the stakeholder screen)
+    GET  /photo                snapshot inspector
+    GET  /health               model + device + VRAM status
+    GET  /metrics              decision counters
+    POST /predict              one image  -> decision
+    POST /predict/batch        many images -> decisions
+    POST /video/upload         start a job from a file
+    POST /video/camera         start a job from a webcam / RTSP url
+    GET  /video/stream/{id}    annotated MJPEG   (?raw=1 for un-annotated)
+    GET  /video/summary/{id}   live counters
+    GET  /video/events/{id}    ordered event log (?after=<seq> for the tail)
+    GET  /docs                 OpenAPI (automatic)
 """
 from __future__ import annotations
 
@@ -57,9 +63,19 @@ async def _read(f: UploadFile) -> bytes:
     return data
 
 
+def _page(name: str):
+    return FileResponse(os.path.join(_here, "static", name))
+
+
 @app.get("/", include_in_schema=False)
-async def index():
-    return FileResponse(os.path.join(_here, "static", "index.html"))
+async def console():
+    """The operations console — what a site operator (and a stakeholder) actually looks at."""
+    return _page("console.html")
+
+
+@app.get("/photo", include_in_schema=False)
+async def photo():
+    return _page("index.html")
 
 
 @app.get("/health")
@@ -118,7 +134,7 @@ async def predict_batch(files: list[UploadFile] = File(...)):
 # ─────────────────────────── video / realtime ────────────────────────────
 @app.get("/video", include_in_schema=False)
 async def video_page():
-    return FileResponse(os.path.join(_here, "static", "video.html"))
+    return _page("console.html")          # kept: older bookmarks land on the console
 
 
 @app.post("/video/upload")
@@ -133,7 +149,7 @@ async def video_upload(file: UploadFile = File(...)):
     finally:
         tmp.close()
     job_id = uuid.uuid4().hex[:12]
-    vid.jobs[job_id] = vid.VideoProcessor(tmp.name)
+    vid.jobs[job_id] = vid.VideoProcessor(tmp.name, label=file.filename or "uploaded video")
     log.info("video job %s -> %s", job_id, tmp.name)
     return {"job_id": job_id, "filename": file.filename,
             "stream_url": f"/video/stream/{job_id}", "summary_url": f"/video/summary/{job_id}"}
@@ -145,18 +161,24 @@ async def video_camera(source: str = "0"):
     if not recognizer.ready:
         raise HTTPException(503, "model still loading")
     src = int(source) if source.isdigit() else source
+    label = f"webcam {source}" if source.isdigit() else source.split("@")[-1][:48]
     job_id = uuid.uuid4().hex[:12]
-    vid.jobs[job_id] = vid.VideoProcessor(src)
-    return {"job_id": job_id, "source": source, "stream_url": f"/video/stream/{job_id}"}
+    vid.jobs[job_id] = vid.VideoProcessor(src, label=label)
+    return {"job_id": job_id, "source": source, "stream_url": f"/video/stream/{job_id}",
+            "summary_url": f"/video/summary/{job_id}"}
 
 
 @app.get("/video/stream/{job_id}")
-async def video_stream(job_id: str):
-    """Annotated MJPEG stream — drop straight into an <img src=...>."""
+async def video_stream(job_id: str, raw: int = 0):
+    """Annotated MJPEG stream — drop straight into an <img src=...>.
+
+    `raw=1` streams the un-annotated frames (useful for a side-by-side "before" panel);
+    detection and tracking still run, so the counters stay live either way.
+    """
     job = vid.jobs.get(job_id)
     if job is None:
         raise HTTPException(404, "unknown job id")
-    return StreamingResponse(job.frames(),
+    return StreamingResponse(job.frames(annotate=not raw),
                              media_type="multipart/x-mixed-replace; boundary=frame")
 
 
@@ -166,6 +188,15 @@ async def video_summary(job_id: str):
     if job is None:
         raise HTTPException(404, "unknown job id")
     return job.summary()
+
+
+@app.get("/video/events/{job_id}")
+async def video_events(job_id: str, after: int = 0, limit: int = 60):
+    """Ordered decision log. Poll with the last `seq` you saw to get only what is new."""
+    job = vid.jobs.get(job_id)
+    if job is None:
+        raise HTTPException(404, "unknown job id")
+    return job.recent_events(after=after, limit=limit)
 
 
 if __name__ == "__main__":

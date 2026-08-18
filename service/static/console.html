@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vehicle Intelligence — Operations Console</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b1322'/%3E%3Cpath d='M6 12h4M6 12v4M26 12h-4M26 12v4M6 20v-4M26 20v-4M6 20h4M26 20h-4' stroke='%236ce5ff' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='3.4' fill='%2369f1b9'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/theme.css">
+<style>
+  /* console-only refinements */
+  .idlewrap{display:grid;gap:14px}
+  .valgrid{display:grid;gap:10px;grid-template-columns:1fr auto;align-items:center;font-size:12.5px}
+  .valgrid input{width:96px;text-align:right;height:32px;font-family:var(--mono)}
+  .valgrid .lbl{color:var(--muted)}
+  .outrow{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;
+          border-top:1px solid var(--line);font-size:12.5px}
+  .outrow b{font-size:17px;font-variant-numeric:tabular-nums}
+  .stage.idle{aspect-ratio:21/7;display:grid;place-items:center;border-bottom:1px solid var(--line)}
+  .idlemsg{text-align:center;z-index:1}
+  .idlemsg .t{font-size:12px;font-weight:800;letter-spacing:.28em;text-transform:uppercase;color:var(--dim)}
+  .idlemsg .s{font-size:12.5px;color:var(--dim);margin-top:8px}
+  .idlemsg .ring{width:44px;height:44px;margin:0 auto 14px;border-radius:50%;
+    border:2px solid rgba(108,229,255,.22);border-top-color:var(--sys);animation:spin 1.5s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .trustbar{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="brandbox">
+    <div class="mark">◈</div>
+  </div>
+
+  <header class="topbar">
+    <div class="wordmark">Vehicle Intelligence<small>Uzbek car-model recognition</small></div>
+    <span class="chip" id="siteChip"><i class="dot"></i><span id="siteName">no source</span></span>
+    <div style="flex:1"></div>
+    <span class="chip" id="fpsChip" style="display:none">⚡ <b id="fps">—</b> fps</span>
+    <span class="chip" id="devChip"><i class="dot" id="devDot"></i><span id="devTxt">connecting…</span></span>
+    <span class="chip" style="font-family:var(--mono)"><b id="clock">--:--:--</b></span>
+  </header>
+
+  <nav class="rail">
+    <button class="on" data-tip="Live operations" title="Live">▦</button>
+    <a href="/photo" data-tip="Snapshot inspector">▣</a>
+    <a href="/docs" data-tip="API reference">⌘</a>
+    <div style="flex:1"></div>
+    <button id="fsBtn" data-tip="Presenter fullscreen (F)">⛶</button>
+  </nav>
+
+  <main>
+    <!-- ───────────────────────── left column ───────────────────────── -->
+    <div class="stack">
+
+      <!-- idle: pick a source -->
+      <div class="panel" id="picker">
+        <div class="phead"><h2>Video source</h2><div class="sp"></div>
+          <span class="chip">Stage 1 · YOLO11s → Stage 2 · ConvNeXt+ArcFace @384</span></div>
+        <div class="stage idle">
+          <div class="idlemsg"><div class="ring"></div>
+            <div class="t">Awaiting signal</div>
+            <div class="s">Connect a camera or drop footage to start recognising vehicles</div></div>
+          <div class="fx"><div class="scan"></div><div class="vig"></div>
+            <span class="tick tl"></span><span class="tick tr"></span>
+            <span class="tick bl"></span><span class="tick br"></span></div>
+        </div>
+        <div class="pbody idlewrap">
+          <div class="srcgrid">
+            <div>
+              <div class="drop" id="drop"><b>▲ Upload footage</b>MP4 · MOV · AVI — forecourt, entry lane, wash bay</div>
+              <input type="file" id="file" accept="video/*">
+            </div>
+            <div>
+              <div class="note" style="margin-bottom:8px"><b>Live camera</b> — the site's own feed</div>
+              <div class="row">
+                <input type="text" id="cam" placeholder="0 for webcam, or rtsp://user:pass@camera/stream" style="flex:1">
+                <button class="btn pri" id="camBtn">Connect</button>
+              </div>
+              <div class="note" style="margin-top:8px">Any RTSP / HTTP IP camera works — the same
+                stream your DVR already records.</div>
+            </div>
+          </div>
+          <div id="err"></div>
+        </div>
+      </div>
+
+      <!-- live stage -->
+      <div class="panel" id="stagePanel" style="display:none">
+        <div class="phead">
+          <span class="dot live"></span><h2 id="stageTitle">Live</h2>
+          <div class="sp"></div>
+          <button class="btn sm" id="rawBtn" title="Show the camera feed with no overlay">Raw feed</button>
+          <button class="btn sm" id="newBtn">Change source</button>
+        </div>
+        <div class="stage" id="stage">
+          <img id="video" alt="annotated vehicle stream">
+          <div class="fx">
+            <div class="sweep"></div><div class="scan"></div><div class="vig"></div>
+            <span class="tick tl"></span><span class="tick tr"></span>
+            <span class="tick bl"></span><span class="tick br"></span>
+          </div>
+        </div>
+        <div class="prog"><i id="progBar"></i></div>
+        <div class="stagebar">
+          <div class="legend">
+            <span><i style="background:var(--ok)"></i>identified</span>
+            <span><i style="background:var(--warn)"></i>outside catalogue</span>
+            <span><i style="background:var(--esc)"></i>sent to staff</span>
+            <span><i style="background:var(--sys)"></i>analysing</span>
+          </div>
+          <div style="flex:1"></div>
+          <span id="stageMeta"></span>
+        </div>
+      </div>
+
+      <!-- value model + trust -->
+      <div class="grid2">
+        <div class="panel">
+          <div class="phead"><h2>Measured reliability</h2><div class="sp"></div>
+            <span class="chip">sealed test set</span></div>
+          <div class="pbody">
+            <div class="trustbar">
+              <div class="metric"><div class="k">Precision</div><div class="v" style="color:var(--ok)">99.0%</div></div>
+              <div class="metric"><div class="k">Answered</div><div class="v">83.5%</div></div>
+              <div class="metric"><div class="k">Accuracy</div><div class="v">95.0%</div></div>
+            </div>
+            <div class="note" style="margin-top:11px">Measured once, on a <b>sealed test set</b> the
+              model never trained or tuned on, split so that no car appears on both sides.
+              Of every 100 vehicles it names, <b>99 are right</b> — it earns that by declining the
+              hardest 16.5% instead of guessing: <b>8.7%</b> rejected as not-in-catalogue,
+              <b>7.8%</b> passed to staff.</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="phead"><h2>Value model</h2><div class="sp"></div>
+            <span class="chip">your numbers · our arithmetic</span></div>
+          <div class="pbody">
+            <div class="valgrid">
+              <span class="lbl">Operating hours per day</span><input type="number" id="vHours" value="14" min="1" max="24">
+              <span class="lbl">Staff seconds per manual check</span><input type="number" id="vSec" value="20" min="1" max="600">
+            </div>
+            <div style="margin-top:12px">
+              <div class="outrow"><span>Vehicles per day <span style="color:var(--dim)">at the observed rate</span></span><b id="oVeh">—</b></div>
+              <div class="outrow"><span>Handled with no human touch</span><b id="oAuto" style="color:var(--ok)">—</b></div>
+              <div class="outrow"><span>Checks left for staff</span><b id="oStaff" style="color:var(--esc)">—</b></div>
+              <div class="outrow"><span>Staff time not spent logging</span><b id="oTime">—</b></div>
+            </div>
+            <div class="note" style="margin-top:10px">Every input is on screen and editable — this is
+              arithmetic on <b>your</b> assumptions and the throughput actually observed above,
+              not a projection.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ───────────────────────── right column ──────────────────────── -->
+    <div class="stack">
+
+      <div class="panel">
+        <div class="phead"><h2>Vehicles seen</h2><div class="sp"></div><span class="chip" id="sessChip">idle</span></div>
+        <div class="pbody">
+          <div class="kpi"><span class="big" id="kTotal">0</span><span class="unit">vehicles</span></div>
+          <div class="sub" id="kRate">Connect a source to begin.</div>
+          <canvas class="spark" id="spark"></canvas>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="phead"><h2>How each vehicle was handled</h2></div>
+        <div class="pbody">
+          <div class="split">
+            <i id="sOk"  style="background:var(--ok)"></i>
+            <i id="sWarn"style="background:var(--warn)"></i>
+            <i id="sEsc" style="background:var(--esc)"></i>
+            <i id="sPend"style="background:var(--dim)"></i>
+          </div>
+          <div class="splitkeys">
+            <div class="skey"><span class="sw" style="background:var(--ok)"></span><span class="nm">Identified — model named</span><b id="nOk">0</b><span class="pc" id="pOk"></span></div>
+            <div class="skey"><span class="sw" style="background:var(--warn)"></span><span class="nm">Outside catalogue</span><b id="nWarn">0</b><span class="pc" id="pWarn"></span></div>
+            <div class="skey"><span class="sw" style="background:var(--esc)"></span><span class="nm">Sent to staff</span><b id="nEsc">0</b><span class="pc" id="pEsc"></span></div>
+            <div class="skey"><span class="sw" style="background:var(--dim)"></span><span class="nm">Still analysing</span><b id="nPend">0</b><span class="pc" id="pPend"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="phead"><h2>Fleet mix</h2><div class="sp"></div><span class="chip" id="mixChip">—</span></div>
+        <div class="pbody"><div class="mix" id="mix"><div class="empty">No vehicles identified yet.</div></div></div>
+      </div>
+
+      <div class="panel">
+        <div class="phead"><span class="dot" id="feedDot"></span><h2>Decision log</h2><div class="sp"></div>
+          <span class="chip" id="feedCount">0</span></div>
+        <div class="feed" id="feed"><div class="empty">Events appear here the moment a vehicle is resolved.</div></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const PRETTY = {cobalt:"Chevrolet Cobalt", damas:"Chevrolet Damas", gentra:"Chevrolet Gentra",
+                nexia3:"Chevrolet Nexia 3", spark:"Chevrolet Spark", others:"Outside catalogue"};
+
+let jobId = null, lastSeq = 0, timer = null, raw = false;
+let history = [];                 // {t, total} — real samples, drawn as the sparkline
+let last = {};                    // last summary, for the value model
+const shown = {};                 // animated number state
+
+/* ── clock ─────────────────────────────────────────────────────────── */
+setInterval(() => $("clock").textContent = new Date().toLocaleTimeString('en-GB'), 1000);
+
+/* ── health ────────────────────────────────────────────────────────── */
+fetch("/health").then(r => r.json()).then(h => {
+  $("devDot").className = "dot" + (h.ready ? " ok" : "");
+  const gpu = h.gpu ? h.gpu.replace(/NVIDIA GeForce /, "") : (h.device || "cpu").toUpperCase();
+  $("devTxt").textContent = gpu + (h.fp16 ? " · fp16" : "") +
+    (h.vram ? ` · ${h.vram.total_gb} GB` : "");
+}).catch(() => $("devTxt").textContent = "service unreachable");
+
+/* ── number roll — numbers that count up read as live telemetry ────── */
+function roll(el, to, fmt = v => Math.round(v).toLocaleString()) {
+  const from = shown[el.id] ?? 0;
+  if (from === to) { el.textContent = fmt(to); return; }
+  shown[el.id] = to;
+  const t0 = performance.now(), dur = 520;
+  (function step(now) {
+    const k = Math.min((now - t0) / dur, 1), e = 1 - Math.pow(1 - k, 3);
+    el.textContent = fmt(from + (to - from) * e);
+    if (k < 1) requestAnimationFrame(step);
+  })(t0);
+}
+
+/* ── source handling ───────────────────────────────────────────────── */
+const drop = $("drop");
+drop.onclick = () => $("file").click();
+drop.addEventListener("dragover", e => { e.preventDefault(); drop.classList.add("over"); });
+drop.addEventListener("dragleave", () => drop.classList.remove("over"));
+drop.addEventListener("drop", e => {
+  e.preventDefault(); drop.classList.remove("over");
+  if (e.dataTransfer.files[0]) upload(e.dataTransfer.files[0]);
+});
+$("file").onchange = e => e.target.files[0] && upload(e.target.files[0]);
+$("camBtn").onclick = () => camera($("cam").value.trim() || "0");
+$("cam").addEventListener("keydown", e => e.key === "Enter" && $("camBtn").click());
+$("newBtn").onclick = () => {
+  if (timer) clearInterval(timer);
+  jobId = null; $("video").src = ""; 
+  $("stagePanel").style.display = "none"; $("picker").style.display = "";
+};
+$("rawBtn").onclick = () => {
+  raw = !raw;
+  $("rawBtn").textContent = raw ? "Show detections" : "Raw feed";
+  $("rawBtn").classList.toggle("pri", raw);
+  if (jobId) $("video").src = `/video/stream/${jobId}` + (raw ? "?raw=1" : "");
+};
+
+async function post(url, body) {
+  const r = await fetch(url, { method: "POST", body });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.detail || ("HTTP " + r.status));
+  return j;
+}
+async function upload(f) {
+  fail(""); 
+  try { start(await post("/video/upload", (()=>{const d=new FormData(); d.append("file",f); return d})()), f.name); }
+  catch (e) { fail(e.message); }
+}
+async function camera(src) {
+  fail("");
+  try { start(await post("/video/camera?source=" + encodeURIComponent(src)), src); }
+  catch (e) { fail(e.message); }
+}
+const fail = m => $("err").innerHTML = m ? `<div class="err">⚠ ${m}</div>` : "";
+
+function start(j, name) {
+  jobId = j.job_id; lastSeq = 0; history = []; raw = false;
+  $("rawBtn").textContent = "Raw feed"; $("rawBtn").classList.remove("pri");
+  $("feed").innerHTML = '<div class="empty">Waiting for the first vehicle…</div>';
+  $("mix").innerHTML  = '<div class="empty">No vehicles identified yet.</div>';
+  for (const k in shown) delete shown[k];
+  $("picker").style.display = "none";
+  $("stagePanel").style.display = "";
+  setSource(name);                    // provisional — the first poll replaces it
+  $("siteChip").querySelector(".dot").className = "dot live";
+  $("fpsChip").style.display = "";
+  $("feedDot").className = "dot live";
+  $("video").src = "/video/stream/" + jobId;      // MJPEG — the browser renders as it arrives
+  if (timer) clearInterval(timer);
+  timer = setInterval(poll, 1000);
+  poll();
+}
+
+/* ── polling ───────────────────────────────────────────────────────── */
+async function poll() {
+  if (!jobId) return;
+  try {
+    const [s, e] = await Promise.all([
+      fetch("/video/summary/" + jobId).then(r => r.json()),
+      fetch(`/video/events/${jobId}?after=${lastSeq}`).then(r => r.json())
+    ]);
+    last = s;
+    renderSummary(s);
+    if (e.events?.length) { renderEvents(e.events); lastSeq = e.seq; }
+    if (s.done) {
+      clearInterval(timer); timer = null;
+      $("feedDot").className = "dot ok";
+      $("siteChip").querySelector(".dot").className = "dot ok";
+      $("sessChip").textContent = "finished";
+    }
+  } catch (_) { /* a dropped poll is not worth interrupting the demo for */ }
+}
+
+const clip = (t, n) => t.length > n ? t.slice(0, n) + "…" : t;
+function setSource(name) {
+  $("stageTitle").textContent = clip(name, 42);
+  $("siteName").textContent = clip(name, 26);
+}
+
+function renderSummary(s) {
+  if (s.source) setSource(s.source);          // "webcam 0", "forecourt-cam-01.mp4", the RTSP host
+  roll($("kTotal"), s.unique_vehicles);
+  $("fps").textContent = s.fps.toFixed(1);
+  $("sessChip").textContent = s.done ? "finished" : "live";
+  $("kRate").innerHTML =
+    `<b style="color:var(--text)">${Math.round(s.throughput_per_hour).toLocaleString()}</b> vehicles/hour observed · ` +
+    `${s.frames_processed.toLocaleString()} frames analysed` +
+    (s.frame_stride > 1 ? ` · every ${s.frame_stride}${s.frame_stride === 2 ? "nd" : "rd"} frame` : "");
+  $("stageMeta").textContent =
+    `${s.source} · ${s.fps.toFixed(1)} fps · ${s.elapsed_s.toFixed(0)}s elapsed`;
+  $("progBar").style.width = s.progress != null ? (s.progress * 100).toFixed(1) + "%" : "0%";
+
+  const ok = s.identified_total, wn = s.unknown_vehicles, es = s.not_confident, pd = s.still_deciding;
+  const tot = Math.max(ok + wn + es + pd, 1);
+  const set = (bar, n, pct, v) => {
+    $(bar).style.flexGrow = v; $(n).textContent = v;
+    $(pct).textContent = v ? (v / tot * 100).toFixed(0) + "%" : "";
+  };
+  set("sOk","nOk","pOk",ok); set("sWarn","nWarn","pWarn",wn);
+  set("sEsc","nEsc","pEsc",es); set("sPend","nPend","pPend",pd);
+
+  renderMix(s.identified, ok);
+  history.push({ t: s.elapsed_s, v: s.unique_vehicles });
+  if (history.length > 240) history.shift();
+  drawSpark();
+  valueModel(s);
+}
+
+function renderMix(counts, total) {
+  const rows = Object.entries(counts || {}).sort((a, b) => b[1] - a[1]);
+  if (!rows.length) return;
+  const max = rows[0][1];
+  $("mix").innerHTML = rows.map(([k, v]) => `
+    <div class="mrow" data-k="${k}">
+      <span class="nm">${PRETTY[k] || k}</span><b>${v}</b>
+      <span class="track"><i style="width:${(v / max * 100).toFixed(1)}%"></i></span>
+    </div>`).join("");
+  $("mixChip").textContent = `${rows.length} model${rows.length === 1 ? "" : "s"} · ${total} vehicles`;
+}
+
+function renderEvents(evs) {
+  const feed = $("feed");
+  if (feed.querySelector(".empty")) feed.innerHTML = "";
+  for (const e of evs) {
+    const div = document.createElement("div");
+    div.className = "ev " + e.decision;
+    const conf = e.decision === "abstain" ? "below thr" : (e.confidence * 100).toFixed(0) + "%";
+    div.innerHTML =
+      `<span class="tm">${e.wall}</span><span class="nm">${e.display}</span><span class="cf">${conf}</span>` +
+      `<span class="meta">vehicle #${e.track} · ${e.looks} look${e.looks === 1 ? "" : "s"} · ${e.state}</span>`;
+    feed.prepend(div);
+    const row = $("mix").querySelector(`.mrow[data-k="${e.label}"]`);
+    if (row && e.decision === "answer") { row.classList.remove("flash"); void row.offsetWidth; row.classList.add("flash"); }
+  }
+  while (feed.children.length > 60) feed.lastChild.remove();
+  $("feedCount").textContent = feed.children.length;
+}
+
+/* ── sparkline — cumulative vehicles over the session, real samples ── */
+function drawSpark() {
+  const c = $("spark"), dpr = devicePixelRatio || 1;
+  const w = c.clientWidth, h = 44;
+  if (!w) return;
+  c.width = w * dpr; c.height = h * dpr;
+  const x = c.getContext("2d"); x.scale(dpr, dpr); x.clearRect(0, 0, w, h);
+  if (history.length < 2) return;
+  const maxV = Math.max(...history.map(p => p.v), 1);
+  const maxT = history[history.length - 1].t || 1;
+  const px = p => (p.t / maxT) * w, py = p => h - 3 - (p.v / maxV) * (h - 8);
+  x.beginPath(); x.moveTo(0, h);
+  history.forEach(p => x.lineTo(px(p), py(p)));
+  x.lineTo(w, h); x.closePath();
+  const g = x.createLinearGradient(0, 0, 0, h);
+  g.addColorStop(0, "rgba(108,229,255,.34)"); g.addColorStop(1, "rgba(108,229,255,0)");
+  x.fillStyle = g; x.fill();
+  x.beginPath(); history.forEach((p, i) => i ? x.lineTo(px(p), py(p)) : x.moveTo(px(p), py(p)));
+  x.strokeStyle = "#6ce5ff"; x.lineWidth = 1.6; x.lineJoin = "round"; x.stroke();
+  const lp = history[history.length - 1];
+  x.beginPath(); x.arc(px(lp), py(lp), 2.6, 0, 7); x.fillStyle = "#6ce5ff"; x.fill();
+}
+addEventListener("resize", drawSpark);
+
+/* ── value model — arithmetic on visible assumptions, nothing invented ─ */
+function valueModel(s) {
+  const hrs = +$("vHours").value || 0, sec = +$("vSec").value || 0;
+  const perDay = s.throughput_per_hour * hrs;
+  const settled = s.identified_total + s.unknown_vehicles + s.not_confident;
+  const autoRate = settled ? (s.identified_total + s.unknown_vehicles) / settled : null;
+  $("oVeh").textContent   = Math.round(perDay).toLocaleString();
+  $("oAuto").textContent  = autoRate == null ? "—" : Math.round(perDay * autoRate).toLocaleString();
+  $("oStaff").textContent = autoRate == null ? "—" : Math.round(perDay * (1 - autoRate)).toLocaleString();
+  $("oTime").textContent  = autoRate == null ? "—"
+    : (perDay * autoRate * sec / 3600).toFixed(1) + " h/day";
+}
+["vHours", "vSec"].forEach(id => $(id).addEventListener("input", () => last.throughput_per_hour != null && valueModel(last)));
+
+/* ── presenter fullscreen ──────────────────────────────────────────── */
+const fs = () => {
+  const el = $("stagePanel").style.display === "none" ? document.documentElement : $("stagePanel");
+  document.fullscreenElement ? document.exitFullscreen() : el.requestFullscreen?.();
+};
+$("fsBtn").onclick = fs;
+addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT") return;
+  if (e.key === "f" || e.key === "F") fs();
+});
+</script>
+</body></html>

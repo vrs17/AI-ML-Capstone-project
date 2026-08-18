@@ -3,13 +3,13 @@
 Why tracking changes the problem
 --------------------------------
 A photo gives one look at a car. A video gives many. We attach a persistent track id to
-each car (ByteTrack), classify that track on several frames, and **average the calibrated
-probabilities** across those looks before applying the trust-layer threshold. Averaging
-cuts the variance of a single noisy frame, so a track decision is markedly more reliable
-than any one frame — and it is also cheaper, because once a track has settled we stop
+each car (ByteTrack), classify that track on several frames, and take a **vote over the
+looks that cleared the calibrated threshold**. That is strictly more evidence than any
+single frame — and it is cheaper too, because once a track has settled we stop
 classifying it.
 
-The business output is a count of *unique cars* (one per track), not per-frame hits.
+The business output is a count of *unique cars* (one per track), not per-frame hits, plus
+an ordered **event log** — the artefact an operator actually reads.
 """
 from __future__ import annotations
 
@@ -20,14 +20,19 @@ import cv2
 import numpy as np
 from PIL import Image
 
+import overlay as ov
 from config import settings, PRETTY
 from pipeline import recognizer
 
 log = logging.getLogger("video")
 
-# colours are BGR for OpenCV
-COLOR = {"answer": (150, 240, 105), "reject": (107, 200, 255),
-         "abstain": (255, 124, 154), "pending": (200, 200, 200)}
+# Operator-facing wording. The console reads these verbatim — one place to change them.
+DECISION_TEXT = {
+    "answer":  "identified",
+    "reject":  "not in catalogue",
+    "abstain": "sent to staff",
+    "pending": "analysing",
+}
 
 
 @dataclass
@@ -45,12 +50,14 @@ class Track:
     votes: int = 0                                         # total classifications
     label_votes: dict = field(default_factory=dict)        # label -> confident looks
     conf_sum: dict = field(default_factory=dict)           # label -> summed confidence
+    first_frame: int = 0
     last_seen: int = 0
     last_classified: int = -999
     decision: str = "pending"
     label: str | None = None
     confidence: float = 0.0
-    counted: bool = False
+    decided_frame: int | None = None                       # drives the lock-on animation
+    trail: list = field(default_factory=list)              # ground track, for the overlay
 
     @property
     def mean_probs(self) -> np.ndarray:
@@ -60,9 +67,12 @@ class Track:
 class VideoProcessor:
     """Runs the full pipeline over a video source and yields annotated JPEG frames."""
 
-    def __init__(self, source, frame_stride: int | None = None,
-                 classify_every: int = 5, max_votes: int = 7, max_width: int = 1280):
+    TRAIL_LEN = 26
+
+    def __init__(self, source, frame_stride: int | None = None, classify_every: int = 5,
+                 max_votes: int = 7, max_width: int = 1280, label: str = "camera"):
         self.source = source
+        self.label = label
         self.classify_every = classify_every      # frames between re-classifying a track
         self.max_votes = max_votes                # stop classifying a track after this many
         self.max_width = max_width
@@ -70,9 +80,12 @@ class VideoProcessor:
         # CPU cannot keep up frame-for-frame at 384px; skipping frames is the honest fix.
         self.frame_stride = frame_stride if frame_stride else (1 if gpu else 3)
         self.tracks: dict[int, Track] = {}
+        self.events: list[dict] = []              # ordered operator-facing log
         self.frame_idx = 0
         self.processed = 0
+        self.total_frames = 0
         self.t_start = time.time()
+        self.started_at = time.time()
         self.fps = 0.0
         self.done = False
         self._lock = threading.Lock()
@@ -89,18 +102,60 @@ class VideoProcessor:
                 unsure += 1
             else:
                 pending += 1
+        settled = sum(counts.values()) + unknown + unsure
+        elapsed = max(time.time() - self.started_at, 1e-6)
         return {
             "unique_vehicles": len(self.tracks),
             "identified": counts,
+            "identified_total": sum(counts.values()),
             "unknown_vehicles": unknown,
             "not_confident": unsure,
             "still_deciding": pending,
+            # share of settled vehicles the system handled without a human
+            "auto_handled": round((sum(counts.values()) + unknown) / settled, 4) if settled else None,
+            "throughput_per_hour": round(len(self.tracks) / elapsed * 3600, 1),
+            "elapsed_s": round(elapsed, 1),
             "frames_read": self.frame_idx,
             "frames_processed": self.processed,
+            "total_frames": self.total_frames or None,
+            "progress": (round(min(self.frame_idx / self.total_frames, 1.0), 4)
+                         if self.total_frames else None),
             "fps": round(self.fps, 1),
             "frame_stride": self.frame_stride,
+            "source": self.label,
             "done": self.done,
         }
+
+    def recent_events(self, after: int = 0, limit: int = 60) -> dict:
+        """Events with a monotonic sequence number, so the console can poll for the tail."""
+        tail = [e for e in self.events if e["seq"] > after][-limit:]
+        return {"events": tail, "seq": self.events[-1]["seq"] if self.events else 0}
+
+    def _emit(self, tid: int, t: Track):
+        self.events.append({
+            "seq": len(self.events) + 1,
+            "t": round(time.time() - self.started_at, 2),
+            "wall": time.strftime("%H:%M:%S"),
+            "track": tid,
+            "decision": t.decision,
+            "state": DECISION_TEXT.get(t.decision, t.decision),
+            "label": t.label,
+            "display": self._display(t),
+            "confidence": round(t.confidence, 4),
+            "looks": t.votes,
+        })
+        if len(self.events) > 800:                 # a long shift should not grow unbounded
+            del self.events[:200]
+
+    @staticmethod
+    def _display(t: Track) -> str:
+        if t.decision == "answer":
+            return PRETTY.get(t.label, t.label or "—")
+        if t.decision == "reject":
+            return "Vehicle outside catalogue"
+        if t.decision == "abstain":
+            return "Needs a human check"
+        return "Analysing…"
 
     # ---------- per-frame work ----------
     def _classify_tracks(self, frame_rgb, boxes: dict[int, tuple]):
@@ -109,9 +164,13 @@ class VideoProcessor:
         for tid, box in boxes.items():
             t = self.tracks.get(tid)
             if t is None:
-                s = settings
-                self.tracks[tid] = t = Track(prob_sum=np.zeros(len(s.classes), dtype=np.float64))
+                self.tracks[tid] = t = Track(
+                    prob_sum=np.zeros(len(settings.classes), dtype=np.float64),
+                    first_frame=self.frame_idx)
             t.last_seen = self.frame_idx
+            t.trail.append(((box[0] + box[2]) // 2, box[3]))       # ground point
+            if len(t.trail) > self.TRAIL_LEN:
+                del t.trail[0]
             if t.votes >= self.max_votes:
                 continue                                    # settled — stop spending compute
             if self.processed - t.last_classified < self.classify_every:
@@ -140,7 +199,7 @@ class VideoProcessor:
                 t.votes += 1
                 t.last_classified = self.processed
                 self._cast_vote(t, pv)
-                self._decide(t)
+                self._decide(tid, t)
 
     def _cast_vote(self, t: Track, probs: np.ndarray):
         """Judge ONE look with the calibrated threshold, then let it vote."""
@@ -153,51 +212,74 @@ class VideoProcessor:
         t.label_votes[label] = t.label_votes.get(label, 0) + 1
         t.conf_sum[label] = t.conf_sum.get(label, 0.0) + conf
 
-    def _decide(self, t: Track):
+    def _decide(self, tid: int, t: Track):
         """Track decision = majority of the looks that cleared the threshold."""
         s = settings
+        before = (t.decision, t.label)
         if not t.label_votes:
             t.decision = "abstain"
             i = int(t.mean_probs.argmax())
             t.label, t.confidence = s.classes[i], float(t.mean_probs[i])
-            return
-        label = max(t.label_votes, key=lambda k: t.label_votes[k])
-        t.label = label
-        t.confidence = t.conf_sum[label] / t.label_votes[label]
-        t.decision = "reject" if label == s.reject_class else "answer"
+        else:
+            label = max(t.label_votes, key=lambda k: t.label_votes[k])
+            t.label = label
+            t.confidence = t.conf_sum[label] / t.label_votes[label]
+            t.decision = "reject" if label == s.reject_class else "answer"
+        if (t.decision, t.label) != before:
+            t.decided_frame = self.frame_idx        # (re)play the lock-on animation
+            self._emit(tid, t)
 
-    def _draw(self, frame, boxes: dict[int, tuple]):
-        for tid, (x1, y1, x2, y2) in boxes.items():
+    # ---------- drawing ----------
+    def _draw(self, frame, boxes: dict[int, tuple], scale: float):
+        for tid, box in boxes.items():
             t = self.tracks.get(tid)
-            dec = t.decision if t else "pending"
-            col = COLOR.get(dec, COLOR["pending"])
-            cv2.rectangle(frame, (x1, y1), (x2, y2), col, 2)
-            if t and t.votes:
-                name = PRETTY.get(t.label, t.label) if dec != "abstain" else "Not sure"
-                if dec == "reject":
-                    name = "Unknown vehicle"
-                txt = f"#{tid} {name} {t.confidence:.0%} ({t.votes})"
-            else:
-                txt = f"#{tid} …"
-            (tw, th), _ = cv2.getTextSize(txt, cv2.FONT_HERSHEY_SIMPLEX, 0.55, 2)
-            cv2.rectangle(frame, (x1, max(0, y1 - th - 9)), (x1 + tw + 8, y1), col, -1)
-            cv2.putText(frame, txt, (x1 + 4, max(12, y1 - 5)),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.55, (12, 18, 30), 2)
+            if t is None:
+                continue
+            rgb = ov.PALETTE.get(t.decision, ov.PALETTE["pending"])
+            col = ov.bgr(rgb)
 
-        s = self.summary()
-        hud = (f"cars {s['unique_vehicles']}  |  " +
-               "  ".join(f"{k} {v}" for k, v in s["identified"].items()) +
-               (f"  |  unknown {s['unknown_vehicles']}" if s["unknown_vehicles"] else "") +
-               f"  |  {s['fps']:.1f} fps")
-        cv2.rectangle(frame, (0, 0), (frame.shape[1], 34), (16, 24, 44), -1)
-        cv2.putText(frame, hud, (12, 23), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (245, 248, 255), 1)
+            if t.decision == "pending":
+                # still gathering looks — sweep the box and breathe the brackets
+                phase = ((self.frame_idx - t.first_frame) % 26) / 26.0
+                ov.draw_scan(frame, box, col, phase)
+                ov.draw_brackets(frame, box, col, thickness=2,
+                                 grow=int(2 * abs(0.5 - phase) * 4))
+                patch = ov.chip(f"Analysing{'.' * (1 + (self.frame_idx // 6) % 3)}",
+                                f"track #{tid} · {t.votes} look{'' if t.votes == 1 else 's'}",
+                                rgb, scale)
+                alpha = 0.9
+            else:
+                k = ((self.frame_idx - t.decided_frame) / ov.LOCK_FRAMES
+                     if t.decided_frame is not None else 1.0)
+                e = ov._ease_out(k)
+                ov.draw_trail(frame, t.trail, col)
+                ov.flash(frame, box, col, 0.22 * max(0.0, 1.0 - k * 2.2))
+                ov.draw_brackets(frame, box, col, thickness=2,
+                                 grow=int(min(box[2] - box[0], box[3] - box[1]) * 0.16 * (1 - e)))
+                sub = (f"track #{tid} · {t.confidence:.0%} · {t.votes} looks"
+                       if t.decision != "abstain" else
+                       f"track #{tid} · below {settings.abstain_threshold:.0%} threshold"
+                       if settings.abstain_threshold else f"track #{tid}")
+                patch = ov.chip(self._display(t), sub, rgb, scale,
+                                conf=t.confidence if t.decision != "abstain" else None)
+                alpha = min(1.0, max(k, 0.0) * 2.0)
+
+            # keep the chip fully on screen: a car at the frame edge must still be readable
+            ch, cw = patch.shape[:2]
+            cx = min(max(box[0], 2), max(2, frame.shape[1] - cw - 2))
+            cy = box[1] - ch - int(8 * scale)
+            if cy < 2:                                     # no room above — sit inside the box
+                cy = box[1] + int(6 * scale)
+            ov.blit_rgba(frame, patch, cx, cy, alpha)
         return frame
 
     # ---------- main loop ----------
-    def frames(self):
+    def frames(self, annotate: bool = True):
         cap = cv2.VideoCapture(self.source)
         if not cap.isOpened():
             raise RuntimeError(f"cannot open video source: {self.source}")
+        self.total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT) or 0)
+        self.t_start = self.started_at = time.time()
         s = settings
         try:
             while True:
@@ -235,8 +317,9 @@ class VideoProcessor:
                 self.processed += 1
                 self.fps = self.processed / max(time.time() - self.t_start, 1e-6)
 
-                frame = self._draw(frame, boxes)
-                ok, buf = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 80])
+                if annotate:
+                    frame = self._draw(frame, boxes, scale=frame.shape[1] / 1280.0)
+                ok, buf = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 82])
                 if ok:
                     yield (b"--frame\r\nContent-Type: image/jpeg\r\n\r\n"
                            + buf.tobytes() + b"\r\n")

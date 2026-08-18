@@ -76,7 +76,10 @@ report and confusion matrix are in `notebooks/model_gate_v2.ipynb`.
 │   ├── model_gate_v2.ipynb          v2: ArcFace @384 (6-class, open-set)
 │   ├── trust_layer.ipynb            calibration + 99%-precision abstention
 │   └── export_onnx.ipynb            ONNX export + numerical verification
-├── service/                      FastAPI backend (Docker, GPU, web UI)
+├── service/                      FastAPI backend (Docker, GPU)
+│   ├── app.py  pipeline.py       photo + batch inference
+│   ├── video.py  overlay.py      ByteTrack + temporal voting + in-frame detection graphics
+│   └── static/                   operations console · snapshot inspector · shared theme
 ├── docs/index.html               showcase page · docs/demo.html in-browser demo
 └── defense_*.md / capstone_*.md / final_action_plan.md   defense-prep docs
 ```
@@ -112,6 +115,22 @@ Key data-quality guarantees:
 Images were collected from **public** listings for **academic/educational use only**. `robots.txt`
 was honored, license plates are platform-masked, and the raw/cropped images are **not
 redistributed** here. See `data/README.md` §5.
+
+## The product surface
+
+The service ships two screens, both served by the same FastAPI app:
+
+- **`/` — Operations console.** The live screen: annotated video, unique-vehicle count and
+  throughput, how each vehicle was handled (identified / outside catalogue / sent to staff),
+  fleet mix, and a rolling decision log. It speaks in operator events, not tensors.
+- **`/photo` — Snapshot inspector.** One image, with the detector's box, the verdict, the
+  calibrated per-class probabilities and stage timings — the "why" view.
+
+Real-time video adds **ByteTrack** (so it counts *unique vehicles*, not per-frame hits) and
+**temporal voting**: each track is classified on several frames, every look is judged with the
+calibrated threshold, and the track takes the majority of the looks that passed. Detection
+graphics are burned into the frame server-side, which is what keeps them pixel-locked to a moving
+car. Details in [`service/README.md`](service/README.md).
 
 ## Status & roadmap
 
