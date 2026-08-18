@@ -8,7 +8,8 @@ when it can hold high precision. Framed as a real product: fixed-camera analytic
 stations / car washes, scaling to 20–50+ models.
 
 ## Current stage
-**Data Gate (C3) — complete, now 6-class open-set.** Moving to the Model Gate (C4) retrain.
+**Model Gate (C4) — v2 notebook built.** 6-class open-set data ready; next action is to run
+`notebooks/model_gate_v2.ipynb` on the T4 and record the sealed-test result.
 
 ## Completed
 - Planning & scope: problem, two-stage architecture (YOLO detector → fine-tuned classifier), key model decisions (fine-tune ConvNeXt-Tiny; 99%-precision-via-abstention).
@@ -22,12 +23,13 @@ stations / car washes, scaling to 20–50+ models.
 - Reproducible `notebooks/data_gate.ipynb`, `notebooks/model_gate.ipynb`, `notebooks/trust_layer.ipynb`; `data/README.md` + issue log (now incl. Issue 5, open-set), all pushed.
 
 ## Current task
-Retrain the Model Gate on the 6-class dataset. Code already derives classes from the folders,
-so it becomes 6-class automatically — the work is the recipe upgrade, not plumbing.
+Run `notebooks/model_gate_v2.ipynb` on the 6-class dataset (T4). It compares a plain-softmax
+@384 baseline against a **sub-center ArcFace head @384**, picks the winner on validation, and
+evaluates once on the sealed test. The custom ArcFace/SnapMix tensor logic is unit-tested.
 
 ## Next
-- **Model Gate (C4), 6-class retrain** with the research-backed recipe: **sub-center ArcFace head + 384px fine-tune + FG-aware mixing (SnapMix)** to attack the Cobalt/Gentra/Nexia 3 look-alike confusion; class-weighted loss + macro-F1; MLflow; sealed-test eval + error analysis.
-- **Trust layer:** recalibrate (temperature scaling) + precision–coverage curve for the 99%-precision target, measured on the **five known models** (with `others` as the reject bucket). Add an embedding-distance OOD score as the production-facing backstop.
+- **Run Model Gate v2** and record the sealed-test result (acc / macro-F1 + accuracy on the 5 known classes). Optionally enable the SnapMix arm (`RUN_SNAPMIX=True`).
+- **Trust layer:** recalibrate (temperature scaling) + precision–coverage curve for the 99%-precision target, measured on the **five known models** (with `others` as the reject bucket). ⚠️ Update `trust_layer.ipynb` to include the ArcFace/SnapMix model defs so it can reload a non-plain winner. Add an embedding-distance OOD score as the production-facing backstop.
 - **Production track (post-capstone):** MobileNetV4-Conv-Medium student distilled from a heavier teacher, INT8 via ONNX→TensorRT/OpenVINO, prototype/kNN gallery to add models without full retrains.
 
 ## Known problems / blockers

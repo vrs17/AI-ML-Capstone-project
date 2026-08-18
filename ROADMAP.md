@@ -128,10 +128,15 @@ has its own written procedure (`docs/manual_review.md`) instead of a script.
 - **Why:** give the model an `others` option *and* close the Cobalt/Gentra/Nexia 3
   look-alike gap that the 2026 backbone research identified as the real accuracy lever
   (the gain is in the training recipe, not a bigger backbone).
-- **How (→ `notebooks/model_gate.ipynb`, extended):** the notebook already derives its
-  class list from the folders, so it becomes 6-class automatically; the new work is the
-  recipe — **sub-center ArcFace head + 384px fine-tune + FG-aware mixing (SnapMix)**.
-- **Status:** planned — the immediate next build.
+- **How (→ `notebooks/model_gate_v2.ipynb`):** a dedicated v2 notebook (v1 is kept as the
+  record of the first experiment). Same discipline as v1 — baselines → approaches → pick on
+  validation → sealed test once → reloadable artifacts — with the recipe upgrades: a
+  **sub-center ArcFace head (K=3)**, **384px** fine-tune, fine-grained-safe label-preserving
+  augmentation (RandAugment + Random Erasing, *no* vanilla MixUp/CutMix), and an **optional
+  SnapMix** arm (semantic-proportion labels, off by default). It compares a plain-softmax
+  @384 baseline against the ArcFace head and picks the winner on validation. Precision is
+  reported on the five known models, with `others` as the reject bucket.
+- **Status:** ✅ notebook built — ready to run on the 6-class dataset.
 
 ## Stage 6 · Trust Layer — calibration + abstention
 
@@ -167,7 +172,7 @@ has its own written procedure (`docs/manual_review.md`) instead of a script.
 | 2 · Data Gate (clean + split) | `notebooks/data_gate.ipynb` | ✅ |
 | 3 · Model Gate v1 (+ error analysis) | `notebooks/model_gate.ipynb` | ✅ |
 | 4 · Manual golden review (open-set) | `docs/manual_review.md`, `data/README.md` (Issue 5) | ✅ |
-| 5 · Model Gate v2 (6-class retrain) | `notebooks/model_gate.ipynb` (extended) | ⏳ next |
+| 5 · Model Gate v2 (6-class, ArcFace, 384px) | `notebooks/model_gate_v2.ipynb` | ✅ built · ready to run |
 | 6 · Trust Layer (calibration) | `notebooks/trust_layer.ipynb` | ✅ v1 · re-run for 6-class |
 | 7 · Production direction | `PROJECT_STATUS.md` | 🔭 documented |
 
@@ -195,8 +200,8 @@ human review above.
    `dataset_split.zip`.
 4. **Model Gate v1** — run `notebooks/model_gate.ipynb` → first model + error analysis.
 5. **Manual review** — follow `docs/manual_review.md` → 6-class golden `dataset_split.zip`.
-6. **Model Gate v2** — re-run `notebooks/model_gate.ipynb` on the 6-class data (ArcFace +
-   384px + SnapMix).
+6. **Model Gate v2** — run `notebooks/model_gate_v2.ipynb` on the 6-class data (ArcFace +
+   384px; optional SnapMix arm).
 7. **Trust Layer** — run `notebooks/trust_layer.ipynb` → calibrated, abstaining system.
 
 Data is documented in `data/README.md` (provenance, counts, and the issue log) but the
