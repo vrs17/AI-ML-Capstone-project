@@ -29,12 +29,12 @@ from PIL import Image, ImageDraw, ImageFont
 
 # ── palette (RGB) — matches the web console's CSS variables ──────────────────
 PALETTE = {
-    "answer":  (0x69, 0xF1, 0xB9),   # identified   — mint
-    "reject":  (0xFF, 0xC8, 0x6B),   # unknown car  — amber
-    "abstain": (0x9A, 0x7B, 0xFF),   # not confident— violet
-    "pending": (0x6C, 0xE5, 0xFF),   # scanning     — cyan
+    "answer":  (0x30, 0xD1, 0x58),   # identified    — green
+    "reject":  (0xFF, 0x9F, 0x0A),   # unknown car   — orange
+    "abstain": (0xBF, 0x5A, 0xF2),   # not confident — purple
+    "pending": (0x0A, 0x84, 0xFF),   # scanning      — blue
 }
-INK = (10, 16, 28)                   # chip background
+INK = (14, 14, 16)                   # chip background
 LOCK_FRAMES = 11                     # length of the lock-on animation
 
 

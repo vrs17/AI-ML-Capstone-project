@@ -41,6 +41,11 @@ service and present the console at `/` (press `F` for fullscreen).
   so new models can be added without full retrains.
 
 ## Known problems / blockers
+- **Domain gap (measured, not theoretical):** the model was trained on listing photos where the car
+  fills the frame. A fixed camera sees the same car much smaller, and below ~224 px of crop the
+  classifier is upscaling — confidence drops and the trust layer abstains. The service now reports
+  this per session as `signal.median_crop_px` and the console shows it. Mitigations in order of
+  value: camera placement/zoom, higher source resolution, then fine-tuning on camera-domain frames.
 - **`others` is heterogeneous and likely smaller** than the five known classes — watch its per-split counts and per-class recall; class-weighted loss mitigates.
 - **Leakage re-confirmation:** relabeling only moved images within their existing split, so leakage-safety is preserved by construction; the filename-based check should be re-run once on the uploaded 6-class set to reconfirm 0.
 - **Licensing for the product:** ConvNeXtV2 weights are CC-BY-NC — the commercial build must stay on Apache/MIT backbones (MobileNetV4, EfficientNetV2, DINOv2, EVA-02). Current ConvNeXt-Tiny (V1) is fine.

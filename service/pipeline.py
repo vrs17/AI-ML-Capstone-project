@@ -97,6 +97,7 @@ class CarRecognizer:
     def __init__(self):
         self.ready = False
         self._lock = threading.Lock()          # serialize GPU access
+        self._det_lock = threading.Lock()      # the YOLO model carries tracker state
         self.device = None
         self.detector = None
         self.classifier = None
@@ -173,8 +174,12 @@ class CarRecognizer:
         if self.detector is None:
             return img, {"found": None, "note": "detector disabled; using the whole image"}
         t0 = time.perf_counter()
-        r = self.detector.predict(np.array(img), classes=list(s.vehicle_classes),
-                                  conf=s.det_conf, imgsz=s.det_imgsz, verbose=False)[0]
+        # ultralytics treats a numpy array as BGR (the OpenCV convention); PIL gives RGB.
+        # Passing RGB straight through swapped the channels for the detector only.
+        bgr = np.array(img)[:, :, ::-1]
+        with self._det_lock:                  # ultralytics models are not thread-safe
+            r = self.detector.predict(bgr, classes=list(s.vehicle_classes),
+                                      conf=s.det_conf, imgsz=s.det_imgsz, verbose=False)[0]
         ms = (time.perf_counter() - t0) * 1000
         if r.boxes is None or len(r.boxes) == 0:
             return None, {"found": False, "ms": round(ms, 1)}

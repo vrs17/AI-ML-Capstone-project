@@ -13,7 +13,7 @@ an ordered **event log** — the artefact an operator actually reads.
 """
 from __future__ import annotations
 
-import time, threading, logging
+import os, time, threading, logging
 from dataclasses import dataclass, field
 
 import cv2
@@ -52,6 +52,7 @@ class Track:
     conf_sum: dict = field(default_factory=dict)           # label -> summed confidence
     first_frame: int = 0
     last_seen: int = 0
+    crop_px: int = 0                                       # short side of the last crop
     last_classified: int = -999
     decision: str = "pending"
     label: str | None = None
@@ -68,6 +69,7 @@ class VideoProcessor:
     """Runs the full pipeline over a video source and yields annotated JPEG frames."""
 
     TRAIL_LEN = 26
+    GOOD_CROP_PX = 438            # the classifier's Resize() target — below this we upscale
 
     def __init__(self, source, frame_stride: int | None = None, classify_every: int = 5,
                  max_votes: int = 7, max_width: int = 1280, label: str = "camera"):
@@ -79,6 +81,10 @@ class VideoProcessor:
         gpu = recognizer.device is not None and recognizer.device.type == "cuda"
         # CPU cannot keep up frame-for-frame at 384px; skipping frames is the honest fix.
         self.frame_stride = frame_stride if frame_stride else (1 if gpu else 3)
+        # A camera sees cars far smaller than a listing photo does: finer detector grid,
+        # lower area floor. Both are env-overridable.
+        self.det_imgsz = int(os.getenv("VIDEO_DET_IMGSZ", "960"))
+        self.area_floor = float(os.getenv("VIDEO_AREA_FLOOR", "0.010"))
         self.tracks: dict[int, Track] = {}
         self.events: list[dict] = []              # ordered operator-facing log
         self.frame_idx = 0
@@ -115,6 +121,7 @@ class VideoProcessor:
             "auto_handled": round((sum(counts.values()) + unknown) / settled, 4) if settled else None,
             "throughput_per_hour": round(len(self.tracks) / elapsed * 3600, 1),
             "elapsed_s": round(elapsed, 1),
+            "signal": self._signal(),
             "frames_read": self.frame_idx,
             "frames_processed": self.processed,
             "total_frames": self.total_frames or None,
@@ -125,6 +132,34 @@ class VideoProcessor:
             "source": self.label,
             "done": self.done,
         }
+
+    def _signal(self) -> dict:
+        """How much detail the classifier is actually getting.
+
+        The single most common reason a car recognised at 99% in a photo is only
+        "analysing" on camera is that it arrives far smaller. The model is fed
+        Resize(438) -> CenterCrop(384); a crop narrower than that is UPSCALED, so the
+        detail the fine-grained head needs (grille, lights, badge) was never captured.
+        Reporting it beats letting the operator guess.
+        """
+        px = sorted(t.crop_px for t in self.tracks.values() if t.crop_px)
+        if not px:
+            return {"median_crop_px": None, "good_crop_px": self.GOOD_CROP_PX,
+                    "quality": None, "advice": None}
+        med = px[len(px) // 2]
+        if med >= self.GOOD_CROP_PX:
+            q, advice = "good", "Full detail is reaching the classifier."
+        elif med >= 224:
+            q, advice = ("fair", "Slightly upscaled, so expect more abstentions than the "
+                                 "sealed-test figures. Zooming in or moving the camera closer "
+                                 "will recover them.")
+        else:
+            q, advice = ("poor", f"That is upscaled {self.GOOD_CROP_PX / med:.1f}x into the "
+                                 "network, so the grille and badge detail this model separates "
+                                 "the sedans by was never captured. Move the camera closer, zoom "
+                                 "in, or raise the source resolution.")
+        return {"median_crop_px": med, "good_crop_px": self.GOOD_CROP_PX,
+                "quality": q, "advice": advice}
 
     def recent_events(self, after: int = 0, limit: int = 60) -> dict:
         """Events with a monotonic sequence number, so the console can poll for the tail."""
@@ -143,6 +178,8 @@ class VideoProcessor:
             "display": self._display(t),
             "confidence": round(t.confidence, 4),
             "looks": t.votes,
+            "crop_px": t.crop_px,
+            "guess": PRETTY.get(t.label, t.label) if t.decision == "abstain" else None,
         })
         if len(self.events) > 800:                 # a long shift should not grow unbounded
             del self.events[:200]
@@ -154,7 +191,7 @@ class VideoProcessor:
         if t.decision == "reject":
             return "Vehicle outside catalogue"
         if t.decision == "abstain":
-            return "Needs a human check"
+            return "Needs a check"
         return "Analysing…"
 
     # ---------- per-frame work ----------
@@ -168,9 +205,6 @@ class VideoProcessor:
                     prob_sum=np.zeros(len(settings.classes), dtype=np.float64),
                     first_frame=self.frame_idx)
             t.last_seen = self.frame_idx
-            t.trail.append(((box[0] + box[2]) // 2, box[3]))       # ground point
-            if len(t.trail) > self.TRAIL_LEN:
-                del t.trail[0]
             if t.votes >= self.max_votes:
                 continue                                    # settled — stop spending compute
             if self.processed - t.last_classified < self.classify_every:
@@ -184,6 +218,9 @@ class VideoProcessor:
             crop = frame_rgb[y1:y2, x1:x2]
             if crop.size == 0:
                 continue
+            self.tracks[tid].crop_px = min(crop.shape[0], crop.shape[1])
+            if self.tracks[tid].crop_px < 48:
+                continue          # fewer pixels than the model's first conv stride can use
             crops.append((tid, Image.fromarray(crop)))
         if not crops:
             return
@@ -235,6 +272,9 @@ class VideoProcessor:
             t = self.tracks.get(tid)
             if t is None:
                 continue
+            t.trail.append(((box[0] + box[2]) // 2, box[3]))       # ground point, display coords
+            if len(t.trail) > self.TRAIL_LEN:
+                del t.trail[0]
             rgb = ov.PALETTE.get(t.decision, ov.PALETTE["pending"])
             col = ov.bgr(rgb)
 
@@ -256,10 +296,12 @@ class VideoProcessor:
                 ov.flash(frame, box, col, 0.22 * max(0.0, 1.0 - k * 2.2))
                 ov.draw_brackets(frame, box, col, thickness=2,
                                  grow=int(min(box[2] - box[0], box[3] - box[1]) * 0.16 * (1 - e)))
-                sub = (f"track #{tid} · {t.confidence:.0%} · {t.votes} looks"
-                       if t.decision != "abstain" else
-                       f"track #{tid} · below {settings.abstain_threshold:.0%} threshold"
-                       if settings.abstain_threshold else f"track #{tid}")
+                if t.decision == "abstain":
+                    thr = settings.abstain_threshold
+                    sub = (f"likely {PRETTY.get(t.label, t.label)} {t.confidence:.0%}"
+                           + (f" · below {thr:.0%}" if thr else ""))
+                else:
+                    sub = f"track #{tid} · {t.confidence:.0%} · {t.votes} looks"
                 patch = ov.chip(self._display(t), sub, rgb, scale,
                                 conf=t.confidence if t.decision != "abstain" else None)
                 alpha = min(1.0, max(k, 0.0) * 2.0)
@@ -290,22 +332,23 @@ class VideoProcessor:
                 if self.frame_idx % self.frame_stride:
                     continue
 
-                if frame.shape[1] > self.max_width:
-                    sc = self.max_width / frame.shape[1]
-                    frame = cv2.resize(frame, (self.max_width, int(frame.shape[0] * sc)))
-
+                # Detect and CROP at the source resolution. Downscaling first (as this
+                # used to) threw away a third of the linear resolution on 1080p before the
+                # crop was taken — and the classifier then upscaled that crop back to 384,
+                # inventing pixels. Only the frame we *display* gets shrunk.
+                H, W = frame.shape[:2]
                 boxes: dict[int, tuple] = {}
                 if recognizer.detector is not None:
-                    r = recognizer.detector.track(
-                        frame, persist=True, classes=list(s.vehicle_classes),
-                        conf=s.det_conf, imgsz=s.det_imgsz, tracker="bytetrack.yaml",
-                        verbose=False)[0]
+                    with recognizer._det_lock:
+                        r = recognizer.detector.track(
+                            frame, persist=True, classes=list(s.vehicle_classes),
+                            conf=s.det_conf, imgsz=self.det_imgsz, tracker="bytetrack.yaml",
+                            verbose=False)[0]
                     if r.boxes is not None and r.boxes.id is not None:
-                        H, W = frame.shape[:2]
                         for xyxy, tid in zip(r.boxes.xyxy.cpu().numpy(),
                                              r.boxes.id.cpu().numpy().astype(int)):
                             x1, y1, x2, y2 = xyxy
-                            if (x2 - x1) * (y2 - y1) / float(W * H) < s.det_area_floor:
+                            if (x2 - x1) * (y2 - y1) / float(W * H) < self.area_floor:
                                 continue                     # too small to identify reliably
                             pw, ph = (x2 - x1) * s.det_pad, (y2 - y1) * s.det_pad
                             boxes[int(tid)] = (max(0, int(x1 - pw)), max(0, int(y1 - ph)),
@@ -313,13 +356,20 @@ class VideoProcessor:
 
                 rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 with self._lock:
-                    self._classify_tracks(rgb, boxes)
+                    self._classify_tracks(rgb, boxes)        # full-resolution crops
                 self.processed += 1
                 self.fps = self.processed / max(time.time() - self.t_start, 1e-6)
 
+                # display copy — shrink here, and scale the boxes to match
+                if W > self.max_width:
+                    ds = self.max_width / W
+                    disp = cv2.resize(frame, (self.max_width, int(H * ds)))
+                    dboxes = {t: tuple(int(v * ds) for v in b) for t, b in boxes.items()}
+                else:
+                    disp, dboxes = frame, boxes
                 if annotate:
-                    frame = self._draw(frame, boxes, scale=frame.shape[1] / 1280.0)
-                ok, buf = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 82])
+                    disp = self._draw(disp, dboxes, scale=disp.shape[1] / 1280.0)
+                ok, buf = cv2.imencode(".jpg", disp, [cv2.IMWRITE_JPEG_QUALITY, 82])
                 if ok:
                     yield (b"--frame\r\nContent-Type: image/jpeg\r\n\r\n"
                            + buf.tobytes() + b"\r\n")

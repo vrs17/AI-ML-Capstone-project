@@ -57,7 +57,7 @@ inspector, or `/docs` for OpenAPI.
 | `POST` | `/video/upload` | start a tracking job from a video file |
 | `POST` | `/video/camera?source=0` | start from a webcam (`0`) or an RTSP/HTTP URL |
 | `GET` | `/video/stream/{id}` | annotated MJPEG stream (`?raw=1` for no overlay) |
-| `GET` | `/video/summary/{id}` | live tally, throughput, auto-handled share |
+| `GET` | `/video/summary/{id}` | live tally, throughput, auto-handled share, **signal quality** |
 | `GET` | `/video/events/{id}` | ordered decision log (`?after=<seq>` for the tail) |
 
 ```bash
@@ -109,8 +109,8 @@ hidden.
 ## 3c. The two screens
 
 **`/` — Operations console.** What a site operator (and a stakeholder) looks at. Live annotated
-feed, unique-vehicle count and throughput, how every vehicle was handled, fleet mix, and a
-rolling **decision log**. It reports *business* events ("14:32:07 · Chevrolet Cobalt · vehicle #14")
+feed, unique-vehicle count and throughput, how every vehicle was handled, fleet mix, a
+**signal-quality** readout, and a rolling **decision log**. It reports *business* events ("14:32:07 · Chevrolet Cobalt · vehicle #14")
 rather than tensors. `F` toggles presenter fullscreen.
 
 The **value model** panel is deliberately a calculator, not a projection: both inputs are on
@@ -136,6 +136,40 @@ patch every frame.
 
 `?raw=1` on the stream returns the un-annotated feed — useful for showing the before/after.
 
+## 3d. Why a photo recognised at 99% can still fail on camera
+
+This is the single most common surprise, and the console now measures it directly.
+
+The classifier is fed `Resize(438) → CenterCrop(384)`. A **listing photo** has the car filling
+the frame, so the crop is ~1000 px wide and gets *downsampled* into the network — sharp. A
+**camera** sees the same car far smaller; a crop narrower than 438 px is *upscaled*, inventing
+pixels that were never captured. The grille, lamp and badge detail that separates Cobalt from
+Gentra from Nexia 3 simply is not in the image, so confidence collapses and the trust layer —
+correctly — abstains rather than guessing.
+
+`GET /video/summary/{id}` reports this as `signal`:
+
+```json
+"signal": {"median_crop_px": 196, "good_crop_px": 438, "quality": "poor",
+           "advice": "That is upscaled 2.2x into the network, …"}
+```
+
+and the console shows it as a **Signal quality** panel. Rules of thumb: **≥438 px** good,
+**224–438 px** fair (expect more abstentions than the sealed-test figures), **<224 px** poor.
+The fix is physical — move the camera closer, zoom in, or raise the source resolution — not a
+threshold change; lowering the threshold would only convert abstentions into wrong answers.
+
+Two related defects were fixed at the same time:
+
+- The video path used to **downscale the frame to 1280 px wide before cropping**, throwing away a
+  third of the linear resolution on a 1080p source. Detection and cropping now run at the source
+  resolution; only the frame that is *displayed* is shrunk.
+- `detect_and_crop()` passed a **PIL RGB array to ultralytics, which expects BGR**, so the photo
+  path was detecting on channel-swapped input. Both paths now feed BGR.
+
+Video also uses a finer detector grid and a lower area floor than the photo path, since a camera
+sees cars far smaller: `VIDEO_DET_IMGSZ` (default 960) and `VIDEO_AREA_FLOOR` (default 0.010).
+
 ## 4. Tuning for your box
 
 | Env var | Default | Notes |
@@ -148,6 +182,8 @@ patch every frame.
 | `COMPILE` | `false` | `torch.compile`; faster steady-state, slow first call |
 | `DET_CONF` | `0.25` | detector confidence floor |
 | `MAX_UPLOAD_MB` | `12` | per-file upload cap |
+| `VIDEO_DET_IMGSZ` | `960` | detector grid for video — cameras see smaller cars than photos do |
+| `VIDEO_AREA_FLOOR` | `0.010` | smallest box worth tracking, as a fraction of frame area |
 
 GPU access is serialised by a lock, so concurrent HTTP requests are safe; throughput scales with
 batch size rather than worker count. Run **one** uvicorn worker per GPU — extra workers would each
@@ -164,3 +200,7 @@ load their own copy of the model.
   **whole image** (no crop), and `/health` reports `detector: false`.
 - The console and inspector share `static/theme.css`; the overlay palette in `overlay.py` and the
   CSS custom properties are kept in sync by hand — change both together.
+- The live panel takes its height from the video itself (capped at `--stage-h`, 66vh), so a 4:3 or
+  portrait feed is not letterboxed into a 16:9 box.
+- `ultralytics` keeps tracker state on the model object, and its models are not thread-safe, so
+  detector calls are serialised behind `recognizer._det_lock`.

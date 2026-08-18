@@ -3,268 +3,295 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Snapshot Inspector — Vehicle Intelligence</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b1322'/%3E%3Cpath d='M6 12h4M6 12v4M26 12h-4M26 12v4M6 20v-4M26 20v-4M6 20h4M26 20h-4' stroke='%236ce5ff' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='3.4' fill='%2369f1b9'/%3E%3C/svg%3E">
+<title>Vehicle Intelligence — Snapshot</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23141416'/%3E%3Cpath d='M7 12V8h4M25 12V8h-4M7 20v4h4M25 20v4h-4' stroke='%230a84ff' stroke-width='2.2' fill='none' stroke-linecap='round'/%3E%3Crect x='12' y='13' width='8' height='6' rx='1.6' fill='%2330d158'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="/static/theme.css">
 <style>
-  main{grid-template-columns:minmax(0,1fr) 400px}
-  .canvaswrap{position:relative;background:#03070f;display:grid;place-items:center;
-              min-height:300px;padding:10px}
-  .canvaswrap canvas{max-width:100%;max-height:62vh;width:auto;height:auto;display:block;
-              border-radius:8px}
-  .verdict{padding:16px;border-radius:var(--r-sm);border:1px solid var(--line);
-           background:rgba(255,255,255,.02);transition:.3s}
-  .verdict.answer {border-color:rgba(105,241,185,.42);background:rgba(105,241,185,.09)}
-  .verdict.reject {border-color:rgba(255,200,107,.42);background:rgba(255,200,107,.09)}
-  .verdict.abstain{border-color:rgba(154,123,255,.42);background:rgba(154,123,255,.09)}
-  .verdict.no_car {border-color:rgba(255,107,139,.38);background:rgba(255,107,139,.08)}
-  .vlab{font-size:10px;letter-spacing:.15em;text-transform:uppercase;font-weight:800;color:var(--muted)}
-  .vmain{font-size:26px;font-weight:800;letter-spacing:-.04em;margin:7px 0 5px}
-  .vsub{font-size:12.5px;color:var(--muted);line-height:1.6}
-  .bar{margin-bottom:9px}
-  .bl{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-bottom:5px}
-  .bl b{color:var(--text);font-variant-numeric:tabular-nums;font-family:var(--mono)}
-  .bt{height:6px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}
-  .bf{display:block;height:100%;border-radius:inherit;width:0;
-      background:linear-gradient(90deg,var(--sys),var(--esc));transition:width .6s cubic-bezier(.22,1,.36,1)}
-  .bar.top .bf{background:linear-gradient(90deg,var(--ok),var(--sys))}
-  .stage.idle{aspect-ratio:21/7;display:grid;place-items:center;border-bottom:1px solid var(--line)}
-  .idlemsg{text-align:center;z-index:1}
-  .idlemsg .t{font-size:12px;font-weight:800;letter-spacing:.28em;text-transform:uppercase;color:var(--dim)}
-  .idlemsg .s{font-size:12.5px;color:var(--dim);margin-top:8px}
-  .idlemsg .ring{width:44px;height:44px;margin:0 auto 14px;border-radius:50%;
-    border:2px solid rgba(108,229,255,.22);border-top-color:var(--sys);animation:spin 1.5s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .tmg{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .grid{display:grid;gap:16px;grid-template-columns:minmax(0,1fr) 388px}
+  @media(max-width:1150px){.grid{grid-template-columns:minmax(0,1fr)}}
+  .col{display:flex;flex-direction:column;gap:16px;min-width:0}
+  .canvaswrap{position:relative;background:#000;display:grid;place-items:center;padding:14px;
+    min-height:280px}
+  .canvaswrap canvas{max-width:100%;max-height:60vh;width:auto;height:auto;display:block;
+    border-radius:8px}
+  .phase{position:absolute;top:16px;left:16px;display:flex;align-items:center;gap:8px;
+    padding:6px 11px;border-radius:7px;background:rgba(20,20,22,.82);backdrop-filter:blur(12px);
+    border:1px solid var(--hair-2);font:600 11px/1 var(--mono);letter-spacing:.06em;
+    text-transform:uppercase;transition:.3s var(--spring)}
+  .phase i{width:6px;height:6px;border-radius:50%;background:var(--blue);
+    animation:blink 1.1s ease-in-out infinite}
+  .verdict{padding:18px;border-radius:var(--r-sm);border:1px solid var(--hair);
+    background:var(--surface-2);transition:.4s var(--spring)}
+  .verdict.answer{border-color:rgba(48,209,88,.36);background:rgba(48,209,88,.07)}
+  .verdict.reject{border-color:rgba(255,159,10,.36);background:rgba(255,159,10,.07)}
+  .verdict.abstain{border-color:rgba(191,90,242,.36);background:rgba(191,90,242,.07)}
+  .verdict.no_car{border-color:rgba(255,69,58,.32);background:rgba(255,69,58,.06)}
+  .vlab{font-size:11px;font-weight:600;color:var(--fg-3);letter-spacing:.02em}
+  .vmain{font-size:26px;font-weight:600;letter-spacing:-.035em;margin:6px 0 5px}
+  .vsub{font-size:12.5px;color:var(--fg-2);line-height:1.55}
+  .prow{margin-bottom:12px}
+  .bl{display:flex;justify-content:space-between;font-size:12px;color:var(--fg-2);margin-bottom:6px}
+  .bl b{color:var(--fg);font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600}
+  .bt{height:3px;border-radius:2px;background:var(--surface-2);overflow:hidden}
+  .bf{display:block;height:100%;width:0;background:var(--fg-3);
+      transition:width .8s var(--spring)}
+  .prow.top .bf{background:var(--green)}
+  .tmg{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="brandbox"><div class="mark">◈</div></div>
-  <header class="topbar">
-    <div class="wordmark">Snapshot Inspector<small>single-frame diagnosis</small></div>
-    <div style="flex:1"></div>
-    <span class="chip" id="devChip"><i class="dot" id="devDot"></i><span id="devTxt">connecting…</span></span>
-    <a class="btn sm" href="/">← Operations console</a>
-  </header>
-  <nav class="rail">
-    <a href="/" data-tip="Live operations">▦</a>
-    <button class="on" data-tip="Snapshot inspector">▣</button>
-    <a href="/docs" data-tip="API reference">⌘</a>
-  </nav>
 
-  <main>
-    <div class="stack">
-      <div class="panel">
-        <div class="phead"><h2>Photo</h2><div class="sp"></div>
-          <span class="chip">detect → crop → classify → trust layer</span></div>
-        <div class="stage idle">
-          <div class="idlemsg"><div class="ring"></div>
-            <div class="t">Awaiting signal</div>
-            <div class="s">Drop a photo below — detection, cropping and the verdict appear here</div></div>
-          <div class="fx"><div class="scan"></div><div class="vig"></div>
-            <span class="tick tl"></span><span class="tick tr"></span>
-            <span class="tick bl"></span><span class="tick br"></span></div>
-        </div>
-        <div class="pbody">
-          <div class="drop" id="drop"><b>▲ Drop a car photo, or click to browse</b>
-            JPEG · PNG — the same pipeline the live cameras run</div>
+<header class="bar">
+  <div class="brand">
+    <svg class="mark" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#1b1b1f"/>
+      <path d="M7 12V8h4M25 12V8h-4M7 20v4h4M25 20v4h-4" stroke="#0a84ff" stroke-width="2.2"
+            fill="none" stroke-linecap="round"/>
+      <rect x="12" y="13" width="8" height="6" rx="1.6" fill="#30d158"/></svg>
+    <div class="n">Vehicle Intelligence <span>· Snapshot</span></div>
+  </div>
+  <div style="flex:1"></div>
+  <nav class="seg"><a href="/">Live</a><a href="/photo" aria-current="page">Snapshot</a><a href="/docs">API</a></nav>
+  <div style="flex:1"></div>
+  <span class="tag"><i class="led" id="devLed"></i><span id="devTxt">connecting</span></span>
+</header>
+
+<div class="wrap">
+  <div class="grid">
+    <div class="col">
+      <section class="card" style="--i:0">
+        <div class="ch"><h2>Photograph</h2><div class="sp"></div>
+          <span class="tag">detect → crop → classify → trust layer</span></div>
+        <div class="cb">
+          <div class="drop" id="drop"><b>Choose a photo</b>JPEG · PNG — or drop it here.
+            The same pipeline the cameras run.</div>
           <input type="file" id="file" accept="image/*">
           <div id="err"></div>
         </div>
-      </div>
+      </section>
 
-      <div class="panel" id="stagePanel" style="display:none">
-        <div class="phead"><h2>Detection</h2><div class="sp"></div>
-          <span class="chip" id="boxChip">—</span></div>
-        <div class="canvaswrap"><canvas id="cv"></canvas></div>
-        <div class="stagebar">
-          <span class="legend"><span><i style="background:var(--sys)"></i>stage 1 — YOLO11s finds the car</span></span>
-          <div style="flex:1"></div><span id="tmeta"></span>
+      <section class="card" id="stagePanel" style="display:none;--i:1">
+        <div class="ch"><h2>Analysis</h2><div class="sp"></div><span class="tag" id="boxTag">—</span></div>
+        <div class="canvaswrap">
+          <canvas id="cv"></canvas>
+          <div class="phase" id="phase"><i></i><span id="phaseTxt">Acquiring</span></div>
         </div>
-      </div>
+        <div class="foot"><span id="tmeta"></span><div style="flex:1"></div>
+          <span class="dim">stage 1 localises · stage 2 identifies</span></div>
+      </section>
     </div>
 
-    <div class="stack">
-      <div class="panel" id="resPanel" style="display:none">
-        <div class="phead"><h2>Verdict</h2></div>
-        <div class="pbody">
+    <div class="col">
+      <section class="card" id="resPanel" style="display:none;--i:2">
+        <div class="ch"><h2>Verdict</h2></div>
+        <div class="cb">
           <div class="verdict" id="verdict">
-            <div class="vlab" id="vlab"></div>
-            <div class="vmain" id="vmain"></div>
+            <div class="vlab" id="vlab"></div><div class="vmain" id="vmain"></div>
             <div class="vsub" id="vsub"></div>
           </div>
           <div class="tmg" id="tmg"></div>
         </div>
-      </div>
-      <div class="panel" id="probPanel" style="display:none">
-        <div class="phead"><h2>Calibrated probabilities</h2><div class="sp"></div>
-          <span class="chip" id="thrChip">—</span></div>
-        <div class="pbody"><div id="bars"></div>
-          <div class="note" style="margin-top:6px">Temperature-scaled, so the number means what it
-            says: across the sealed test, photos scored at <b>90%</b> really were right about 90% of
-            the time.</div></div>
-      </div>
-      <div class="panel">
-        <div class="phead"><h2>What this page is</h2></div>
-        <div class="pbody"><div class="note">A diagnostic view of <b>one</b> frame — the same two
-          stages the live console runs per tracked vehicle, with the intermediate numbers exposed.
-          The console is what an operator watches; this is what you open when you want to know
-          <b>why</b>.<br><br>API: <code>POST /predict</code> · <code>POST /predict/batch</code> ·
-          <code>GET /health</code> · <a href="/docs">/docs</a></div></div>
-      </div>
+      </section>
+
+      <section class="card" id="probPanel" style="display:none;--i:3">
+        <div class="ch"><h2>Calibrated probabilities</h2><div class="sp"></div>
+          <span class="tag" id="thrTag">—</span></div>
+        <div class="cb"><div id="bars"></div>
+          <p class="note" style="margin:4px 0 0">Temperature-scaled, so the number means what it says:
+            across the sealed test, photos scored at <b>90%</b> really were right about 90% of the
+            time.</p></div>
+      </section>
+
+      <section class="card" style="--i:4">
+        <div class="ch"><h2>What this screen is for</h2></div>
+        <div class="cb"><p class="note" style="margin:0">A diagnostic view of <b>one</b> frame — the
+          same two stages the live console runs per tracked vehicle, with the intermediate numbers
+          exposed. The console is what an operator watches; this is what you open when you want to
+          know <b>why</b>.<br><br>
+          If a car is recognised confidently here but not on camera, the usual cause is size: this
+          crop is taken at full photo resolution, while a camera may see the same car only a
+          hundred pixels wide.<br><br>
+          <code>POST /predict</code> · <code>POST /predict/batch</code> · <a href="/docs">API</a></p>
+        </div>
+      </section>
     </div>
-  </main>
+  </div>
 </div>
 
 <script>
-const $ = id => document.getElementById(id);
-const LABELS = {answer:"Identified", reject:"Outside the catalogue",
-                abstain:"Sent to staff", no_car:"No vehicle found"};
-const COLOR  = {answer:"#69f1b9", reject:"#ffc86b", abstain:"#9a7bff",
-                no_car:"#ff6b8b", pending:"#6ce5ff"};
-let THR = null;
+const $=id=>document.getElementById(id);
+const LABELS={answer:"Identified",reject:"Outside the catalogue",
+              abstain:"Passed to staff",no_car:"No vehicle found"};
+const COLOR={answer:"#30d158",reject:"#ff9f0a",abstain:"#bf5af2",no_car:"#ff453a",scan:"#0a84ff"};
+const SCAN_MS=760;                       // hold the analysis sweep this long before locking on
 
-fetch("/health").then(r => r.json()).then(h => {
-  $("devDot").className = "dot" + (h.ready ? " ok" : "");
-  const gpu = h.gpu ? h.gpu.replace(/NVIDIA GeForce /, "") : (h.device || "cpu").toUpperCase();
-  $("devTxt").textContent = gpu + (h.fp16 ? " · fp16" : "");
-  THR = h.abstain_threshold;
-  if (THR) $("thrChip").textContent = `answer above ${(THR * 100).toFixed(1)}%`;
-}).catch(() => $("devTxt").textContent = "service unreachable");
+let ptr=null;
+addEventListener("pointermove",e=>{ptr=e},{passive:true});
+(function spot(){ if(ptr) for(const el of document.querySelectorAll(".card")){
+    const r=el.getBoundingClientRect();
+    el.style.setProperty("--mx",(ptr.clientX-r.left)+"px");
+    el.style.setProperty("--my",(ptr.clientY-r.top)+"px"); }
+  requestAnimationFrame(spot); })();
 
-const drop = $("drop");
-drop.onclick = () => $("file").click();
-drop.addEventListener("dragover", e => { e.preventDefault(); drop.classList.add("over"); });
-drop.addEventListener("dragleave", () => drop.classList.remove("over"));
-drop.addEventListener("drop", e => {
-  e.preventDefault(); drop.classList.remove("over");
-  const f = e.dataTransfer.files[0];
-  if (f && f.type.startsWith("image/")) send(f);
-});
-$("file").onchange = e => e.target.files[0] && send(e.target.files[0]);
+fetch("/health").then(r=>r.json()).then(h=>{
+  $("devLed").className="led"+(h.ready?" ok":"");
+  $("devTxt").textContent=(h.gpu?h.gpu.replace(/NVIDIA GeForce /,""):(h.device||"cpu").toUpperCase())
+    +(h.fp16?" · fp16":"");
+  if(h.abstain_threshold) $("thrTag").textContent=`answers above ${(h.abstain_threshold*100).toFixed(1)}%`;
+}).catch(()=>$("devTxt").textContent="unreachable");
 
-let img = null, anim = null;
+const drop=$("drop");
+drop.onclick=()=>$("file").click();
+drop.addEventListener("dragover",e=>{e.preventDefault();drop.classList.add("over")});
+drop.addEventListener("dragleave",()=>drop.classList.remove("over"));
+drop.addEventListener("drop",e=>{e.preventDefault();drop.classList.remove("over");
+  const f=e.dataTransfer.files[0]; if(f&&f.type.startsWith("image/")) send(f);});
+$("file").onchange=e=>e.target.files[0]&&send(e.target.files[0]);
 
-if (!CanvasRenderingContext2D.prototype.roundRect) {      // Firefox < 112, older Safari
-  CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
-    r = Math.min(r, w / 2, h / 2);
-    this.moveTo(x + r, y); this.arcTo(x + w, y, x + w, y + h, r);
-    this.arcTo(x + w, y + h, x, y + h, r); this.arcTo(x, y + h, x, y, r);
-    this.arcTo(x, y, x + w, y, r); this.closePath(); return this;
-  };
+if(!CanvasRenderingContext2D.prototype.roundRect){        // Firefox <112, older Safari
+  CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
+    r=Math.min(r,w/2,h/2); this.moveTo(x+r,y); this.arcTo(x+w,y,x+w,y+h,r);
+    this.arcTo(x+w,y+h,x,y+h,r); this.arcTo(x,y+h,x,y,r); this.arcTo(x,y,x+w,y,r);
+    this.closePath(); return this; };
 }
 
-async function send(file) {
-  $("err").innerHTML = "";
-  img = new Image();
-  img.onload = () => {
-    document.querySelector(".stage.idle").style.display = "none";
-    $("stagePanel").style.display = ""; animate(null);
-  };
-  img.src = URL.createObjectURL(file);
+let img=null, pred=null, anim=null, t0=0;
 
-  const fd = new FormData(); fd.append("file", file);
-  try {
-    const r = await fetch("/predict", { method: "POST", body: fd });
-    const j = await r.json();
-    if (!r.ok) throw new Error(j.detail || ("HTTP " + r.status));
-    render(j);
-  } catch (e) {
-    $("resPanel").style.display = $("probPanel").style.display = "none";
-    $("err").innerHTML = `<div class="err">⚠ ${e.message}</div>`;
+async function send(file){
+  $("err").innerHTML=""; pred=null;
+  $("resPanel").style.display=$("probPanel").style.display="none";
+  img=new Image();
+  img.onload=()=>{ $("stagePanel").style.display=""; t0=performance.now(); loop(); };
+  img.src=URL.createObjectURL(file);
+
+  const fd=new FormData(); fd.append("file",file);
+  try{
+    const r=await fetch("/predict",{method:"POST",body:fd});
+    const j=await r.json();
+    if(!r.ok) throw new Error(j.detail||("HTTP "+r.status));
+    pred=j; showResult(j);                 // the canvas picks it up on its next frame
+  }catch(e){
+    cancelAnimationFrame(anim);
+    $("stagePanel").style.display="none";
+    $("err").innerHTML=`<div class="err">${e.message}</div>`;
   }
 }
 
-/* Draw the photo and lock the bracket onto the box the detector actually returned.
-   The animation is honest: it only ever draws coordinates the server sent back. */
-function animate(pred) {
+/* ── the analysis render loop ────────────────────────────────────────────
+   Phase 1  a scan bar sweeps the frame; ahead of it the image is desaturated,
+            behind it it resolves into colour under a fine measurement grid.
+   Phase 2  the detector's real box locks on: surroundings dim, brackets snap
+            inward, the label card fades up.
+   Only coordinates the server returned are ever drawn.                     */
+function loop(){
   cancelAnimationFrame(anim);
-  const c = $("cv"), x = c.getContext("2d");
-  const W = Math.min(img.naturalWidth, 1280), s = W / img.naturalWidth;
-  c.width = W; c.height = Math.round(img.naturalHeight * s);
-  const box = pred?.detection?.box;
-  const col = COLOR[pred?.decision] || COLOR.pending;
-  const start = performance.now();
+  const c=$("cv"), x=c.getContext("2d");
+  const W=Math.min(img.naturalWidth,1400), s=W/img.naturalWidth;
+  c.width=W; c.height=Math.round(img.naturalHeight*s);
 
-  (function frame(now) {
-    const el = (now - start) / 1000;
-    x.drawImage(img, 0, 0, c.width, c.height);
-    if (!box && pred) return;                     // server answered "no car" — leave the photo clean
-    if (!box) {                                   // waiting on the server — sweep the frame
-      const p = (el % 1.6) / 1.6, y = p * c.height;
-      const g = x.createLinearGradient(0, y - c.height * .3, 0, y);
-      g.addColorStop(0, "rgba(108,229,255,0)"); g.addColorStop(1, "rgba(108,229,255,.28)");
-      x.fillStyle = g; x.fillRect(0, y - c.height * .3, c.width, c.height * .3);
-      x.strokeStyle = "#6ce5ff"; x.lineWidth = 1.5;
-      x.beginPath(); x.moveTo(0, y); x.lineTo(c.width, y); x.stroke();
-      anim = requestAnimationFrame(frame); return;
-    }
-    const [bx1, by1, bx2, by2] = box.map(v => v * s);
-    const k = Math.min(el / .55, 1), e = 1 - Math.pow(1 - k, 3);
-    const grow = Math.min(bx2 - bx1, by2 - by1) * .18 * (1 - e);
-    const X1 = bx1 - grow, Y1 = by1 - grow, X2 = bx2 + grow, Y2 = by2 + grow;
+  (function frame(now){
+    const el=now-t0;
+    const scanning = el < SCAN_MS || !pred;
+    x.clearRect(0,0,c.width,c.height);
 
-    x.fillStyle = "rgba(3,7,15,.5)";              // dim everything that is not the car
-    x.fillRect(0, 0, c.width, c.height);
-    x.save(); x.beginPath(); x.rect(bx1, by1, bx2 - bx1, by2 - by1); x.clip();
-    x.drawImage(img, 0, 0, c.width, c.height); x.restore();
-
-    if (k < 1) {                                  // brief colour wash at the instant of lock
-      x.globalAlpha = .22 * (1 - k); x.fillStyle = col;
-      x.fillRect(bx1, by1, bx2 - bx1, by2 - by1); x.globalAlpha = 1;
+    if(scanning){
+      const p=Math.min(el/SCAN_MS,1), y=p*c.height;
+      x.filter="grayscale(1) brightness(.4) contrast(1.15)";
+      x.drawImage(img,0,0,c.width,c.height);
+      x.filter="none";
+      x.save(); x.beginPath(); x.rect(0,0,c.width,y); x.clip();
+      x.drawImage(img,0,0,c.width,c.height);
+      // measurement grid over the resolved region
+      x.strokeStyle="rgba(10,132,255,.10)"; x.lineWidth=1;
+      const g=Math.round(c.width/16);
+      x.beginPath();
+      for(let gx=g;gx<c.width;gx+=g){ x.moveTo(gx+.5,0); x.lineTo(gx+.5,y); }
+      for(let gy=g;gy<y;gy+=g){ x.moveTo(0,gy+.5); x.lineTo(c.width,gy+.5); }
+      x.stroke(); x.restore();
+      // the bar itself: soft leading glow, hard edge
+      const grd=x.createLinearGradient(0,y-c.height*.16,0,y);
+      grd.addColorStop(0,"rgba(10,132,255,0)"); grd.addColorStop(1,"rgba(10,132,255,.3)");
+      x.fillStyle=grd; x.fillRect(0,y-c.height*.16,c.width,c.height*.16);
+      x.strokeStyle="#0a84ff"; x.lineWidth=2; x.shadowColor="#0a84ff"; x.shadowBlur=14;
+      x.beginPath(); x.moveTo(0,y); x.lineTo(c.width,y); x.stroke(); x.shadowBlur=0;
+      setPhase(pred?"Identifying":"Acquiring", COLOR.scan);
+      anim=requestAnimationFrame(frame); return;
     }
 
-    const L = Math.min(X2 - X1, Y2 - Y1) * .24;
-    x.strokeStyle = col; x.lineWidth = 2.5; x.lineCap = "round";
-    for (const [cx, cy, dx, dy] of [[X1,Y1,1,1],[X2,Y1,-1,1],[X1,Y2,1,-1],[X2,Y2,-1,-1]]) {
-      x.beginPath(); x.moveTo(cx + dx * L, cy); x.lineTo(cx, cy); x.lineTo(cx, cy + dy * L); x.stroke();
+    // ── phase 2 ──
+    x.drawImage(img,0,0,c.width,c.height);
+    const box=pred.detection?.box, col=COLOR[pred.decision]||COLOR.scan;
+    setPhase(LABELS[pred.decision]||pred.decision, col);
+    if(!box) return;                                     // "no car" — leave the photo clean
+
+    const [b1,c1,b2,c2]=box.map(v=>v*s);
+    const k=Math.min((el-SCAN_MS)/560,1), e=1-Math.pow(1-k,3);
+    const grow=Math.min(b2-b1,c2-c1)*.2*(1-e);
+    const X1=b1-grow, Y1=c1-grow, X2=b2+grow, Y2=c2+grow;
+
+    x.fillStyle="rgba(0,0,0,.62)"; x.fillRect(0,0,c.width,c.height);
+    x.save(); x.beginPath(); x.rect(b1,c1,b2-b1,c2-c1); x.clip();
+    x.drawImage(img,0,0,c.width,c.height); x.restore();
+    if(k<1){ x.globalAlpha=.28*(1-k); x.fillStyle=col;
+             x.fillRect(b1,c1,b2-b1,c2-c1); x.globalAlpha=1; }
+
+    const L=Math.min(X2-X1,Y2-Y1)*.22;
+    x.strokeStyle=col; x.lineWidth=2.5; x.lineCap="round";
+    for(const [px,py,dx,dy] of [[X1,Y1,1,1],[X2,Y1,-1,1],[X1,Y2,1,-1],[X2,Y2,-1,-1]]){
+      x.beginPath(); x.moveTo(px+dx*L,py); x.lineTo(px,py); x.lineTo(px,py+dy*L); x.stroke();
     }
-    if (k >= 1 && pred.display) {                 // label card, matching the in-video chip
-      const pad = 9, fh = 17;
-      x.font = "700 17px Inter, Segoe UI, sans-serif";
-      const tw = x.measureText(pred.display).width;
-      const cw = Math.max(tw + pad * 2 + 6, 150), chh = fh + pad * 2 + 8;
-      let cyv = Y1 - chh - 8; if (cyv < 4) cyv = Y1 + 6;
-      x.fillStyle = "rgba(10,16,28,.92)";
-      x.beginPath(); x.roundRect(X1, cyv, cw, chh, 8); x.fill();
-      x.strokeStyle = col; x.lineWidth = 1; x.stroke();
-      x.fillStyle = col; x.beginPath(); x.roundRect(X1, cyv + 4, 4, chh - 8, 2); x.fill();
-      x.fillStyle = "#f6f9ff"; x.fillText(pred.display, X1 + pad + 6, cyv + pad + fh - 3);
-      if (pred.confidence != null) {
-        x.fillStyle = "rgba(255,255,255,.18)";
-        x.fillRect(X1 + pad + 6, cyv + chh - pad - 1, cw - pad * 2 - 6, 3);
-        x.fillStyle = col;
-        x.fillRect(X1 + pad + 6, cyv + chh - pad - 1, (cw - pad * 2 - 6) * pred.confidence, 3);
+
+    if(k>=1 && pred.display){
+      const pad=10, fh=17;
+      x.font='600 17px -apple-system,"Segoe UI",Inter,sans-serif';
+      const cw=Math.max(x.measureText(pred.display).width+pad*2+8,158), chh=fh+pad*2+9;
+      let cy=Y1-chh-9; if(cy<4) cy=Y1+7;
+      const cx=Math.min(Math.max(X1,4),c.width-cw-4);
+      x.fillStyle="rgba(14,14,16,.94)";
+      x.beginPath(); x.roundRect(cx,cy,cw,chh,9); x.fill();
+      x.strokeStyle=col; x.lineWidth=1; x.stroke();
+      x.fillStyle=col; x.beginPath(); x.roundRect(cx,cy+5,3,chh-10,2); x.fill();
+      x.fillStyle="#f5f5f7"; x.fillText(pred.display,cx+pad+8,cy+pad+fh-3);
+      if(pred.confidence!=null){
+        const bw=cw-pad*2-8, by=cy+chh-pad-1;
+        x.fillStyle="rgba(255,255,255,.16)"; x.fillRect(cx+pad+8,by,bw,3);
+        x.fillStyle=col; x.fillRect(cx+pad+8,by,bw*pred.confidence,3);
       }
     }
-    if (k < 1) anim = requestAnimationFrame(frame);
-  })(start);
+    if(k<1) anim=requestAnimationFrame(frame);
+  })(performance.now());
 }
 
-function render(j) {
-  animate(j);
-  $("resPanel").style.display = ""; $("probPanel").style.display = "";
-  $("verdict").className = "verdict " + j.decision;
-  $("vlab").textContent  = LABELS[j.decision] || j.decision;
-  $("vmain").textContent = j.display || (j.decision === "no_car" ? "No vehicle in this photo"
-                                       : j.decision === "abstain" ? "Not confident enough" : "—");
-  $("vsub").textContent  = j.reason || "";
+function setPhase(text,col){
+  $("phaseTxt").textContent=text;
+  const p=$("phase"); p.style.borderColor=col+"66"; p.style.color=col;
+  p.querySelector("i").style.background=col;
+  p.querySelector("i").style.animation = text==="Acquiring"||text==="Identifying"
+    ? "blink 1.1s ease-in-out infinite" : "none";
+}
 
-  const rows = Object.entries(j.probabilities || {}).sort((a, b) => b[1] - a[1]);
-  $("bars").innerHTML = rows.map(([k, v], i) => `<div class="bar ${i ? "" : "top"}">
-      <div class="bl"><span>${k}</span><b>${(v * 100).toFixed(1)}%</b></div>
-      <div class="bt"><i class="bf" data-w="${(v * 100).toFixed(2)}"></i></div></div>`).join("");
-  requestAnimationFrame(() =>
-    $("bars").querySelectorAll(".bf").forEach(b => b.style.width = b.dataset.w + "%"));
-  $("probPanel").style.display = rows.length ? "" : "none";
+function showResult(j){
+  $("resPanel").style.display=""; 
+  $("verdict").className="verdict "+j.decision;
+  $("vlab").textContent=LABELS[j.decision]||j.decision;
+  $("vmain").textContent=j.display||(j.decision==="no_car"?"No vehicle in this photo"
+                                   :j.decision==="abstain"?"Not confident enough":"—");
+  $("vsub").textContent=j.reason||"";
 
-  const t = j.timing_ms || {}, d = j.detection || {};
-  $("tmg").innerHTML = [["total", t.total], ["detect", t.detect], ["classify", t.classify]]
-    .filter(([, v]) => v != null).map(([k, v]) => `<span class="chip">${k} <b>${v} ms</b></span>`).join("");
-  $("tmeta").textContent = t.total != null ? `${t.total} ms end to end` : "";
-  $("boxChip").textContent = d.score != null ? `car detected · ${(d.score * 100).toFixed(0)}%`
-                           : d.found === false ? "no car found" : "whole frame";
+  const rows=Object.entries(j.probabilities||{}).sort((a,b)=>b[1]-a[1]);
+  if(rows.length){
+    $("probPanel").style.display="";
+    $("bars").innerHTML=rows.map(([k,v],i)=>`<div class="prow ${i?"":"top"}">
+      <div class="bl"><span>${k}</span><b>${(v*100).toFixed(1)}%</b></div>
+      <div class="bt"><i class="bf" data-w="${(v*100).toFixed(2)}"></i></div></div>`).join("");
+    requestAnimationFrame(()=>$("bars").querySelectorAll(".bf")
+      .forEach(b=>b.style.width=b.dataset.w+"%"));
+  }
+  const t=j.timing_ms||{}, d=j.detection||{};
+  $("tmg").innerHTML=[["total",t.total],["detect",t.detect],["classify",t.classify]]
+    .filter(([,v])=>v!=null).map(([k,v])=>`<span class="tag">${k} <b>${v} ms</b></span>`).join("");
+  $("tmeta").textContent=t.total!=null?`${t.total} ms end to end`:"";
+  $("boxTag").textContent = d.score!=null ? `vehicle located · ${(d.score*100).toFixed(0)}%`
+                          : d.found===false ? "no vehicle found" : "whole frame";
 }
 </script>
 </body></html>
