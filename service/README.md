@@ -118,6 +118,12 @@ screen and editable, and the outputs are arithmetic over those inputs and the th
 observed in the current session. The **measured reliability** panel quotes the sealed-test numbers
 and labels them as such.
 
+Both screens accept a **drop anywhere on the window** — video on the console, images on the
+inspector — with a full-window target rather than a small dashed box. That matters for more than
+convenience: without a document-level handler, a miss makes the browser navigate to the dropped
+file, which silently kills a running video session. A wrong file type is named and refused instead
+of being uploaded, and the inspector also accepts a **pasted** image from the clipboard.
+
 **`/photo` — Snapshot inspector.** The diagnostic view of a single frame: the detector's box
 animated onto the photo, the verdict, the calibrated per-class probabilities, and stage timings.
 Open this when you want to know *why*.
@@ -229,6 +235,11 @@ load their own copy of the model.
   instead of silently serving a partly-random model.
 - If `ultralytics` or the YOLO weights are unavailable the service still starts and classifies the
   **whole image** (no crop), and `/health` reports `detector: false`.
+- `static/upload.js` holds the shared drop handling. It counts dragenter/dragleave rather than
+  treating them as on/off (they fire per child element, so a naive version flickers), calls
+  `preventDefault()` on `dragover` (without it `drop` never fires), and ignores drags that carry
+  no files. It is loaded **without `defer`** — a deferred script runs after the inline script at
+  the end of `<body>`, which is where `installDrop()` is called.
 - The console and inspector share `static/theme.css`; the overlay palette in `overlay.py` and the
   CSS custom properties are kept in sync by hand — change both together.
 - The live panel takes its height from the video itself (capped at `--stage-h`, 66vh), so a 4:3 or

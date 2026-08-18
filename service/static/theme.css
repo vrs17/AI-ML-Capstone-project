@@ -236,6 +236,24 @@ input[type=file]{display:none}
 .drop:hover,.drop.over{border-color:var(--blue);background:rgba(10,132,255,.07);color:var(--fg-2)}
 .drop b{display:block;color:var(--fg);font-size:13.5px;font-weight:600;margin-bottom:4px}
 
+/* ── window-wide drop overlay ─────────────────────────────────────────── */
+.dz{position:fixed;inset:0;z-index:300;display:none;place-items:center;pointer-events:none;
+  background:rgba(4,4,5,.8);backdrop-filter:blur(7px) saturate(140%)}
+.dz.on{display:grid;animation:dzin .22s var(--spring)}
+@keyframes dzin{from{opacity:0}}
+.dz-in{text-align:center;padding:40px 60px;border-radius:22px;background:rgba(20,20,22,.94);
+  border:2px dashed var(--blue);box-shadow:0 30px 90px rgba(0,0,0,.6);
+  animation:dzpop .32s var(--spring)}
+@keyframes dzpop{from{transform:scale(.94) translateY(10px)}}
+.dz-ico{width:46px;height:46px;color:var(--blue);margin-bottom:16px;
+  animation:dzfloat 1.5s ease-in-out infinite}
+@keyframes dzfloat{50%{transform:translateY(-6px)}}
+.dz-t{font-size:19px;font-weight:600;letter-spacing:-.02em}
+.dz-s{font-size:12.5px;color:var(--fg-2);margin-top:7px}
+.dz.bad .dz-in{border-color:var(--red)}
+.dz.bad .dz-ico{color:var(--red);animation:none}
+.dz.bad .dz-t{color:var(--red)}
+
 .err{border-radius:var(--r-sm);padding:11px 14px;font-size:12.5px;margin-top:12px;
   background:rgba(255,69,58,.1);border:1px solid rgba(255,69,58,.32);color:#ffb3ad}
 .spark{width:100%;height:38px;display:block;margin-top:14px}

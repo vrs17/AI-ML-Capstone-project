@@ -6,6 +6,7 @@
 <title>Vehicle Intelligence — Operations</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23141416'/%3E%3Cpath d='M7 12V8h4M25 12V8h-4M7 20v4h4M25 20v4h-4' stroke='%230a84ff' stroke-width='2.2' fill='none' stroke-linecap='round'/%3E%3Crect x='12' y='13' width='8' height='6' rx='1.6' fill='%2330d158'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="/static/theme.css">
+<script src="/static/upload.js"></script>
 <style>
   .grid{display:grid;gap:16px;grid-template-columns:minmax(0,1fr) 372px;margin-top:16px}
   @media(max-width:1200px){.grid{grid-template-columns:minmax(0,1fr)}}
@@ -76,7 +77,7 @@
           <div>
             <h3 class="sec">Recorded footage</h3>
             <p class="note" style="margin:2px 0 10px">Forecourt, entry lane or wash bay.</p>
-            <div class="drop" id="drop"><b>Choose a video</b>MP4 · MOV · AVI — or drop it here</div>
+            <div class="drop" id="drop"><b>Choose a video</b>MP4 · MOV · AVI — or drop one anywhere on this page</div>
             <input type="file" id="file" accept="video/*">
           </div>
           <div>
@@ -262,13 +263,21 @@ function drawWave(){
 drawWave();
 
 /* ── sources ────────────────────────────────────────────────────────── */
-const drop=$("drop");
-drop.onclick=()=>$("file").click();
-drop.addEventListener("dragover",e=>{e.preventDefault();drop.classList.add("over")});
-drop.addEventListener("dragleave",()=>drop.classList.remove("over"));
-drop.addEventListener("drop",e=>{e.preventDefault();drop.classList.remove("over");
-  if(e.dataTransfer.files[0]) upload(e.dataTransfer.files[0]);});
+$("drop").onclick=()=>$("file").click();
 $("file").onchange=e=>e.target.files[0]&&upload(e.target.files[0]);
+
+// Drop a video anywhere on the window — including over a running stream, which
+// simply starts a new job on the new source.
+installDrop({
+  accept: /^video\//,
+  extensions: /\.(mp4|mov|avi|mkv|webm|m4v|mpe?g|wmv)$/i,
+  title: "Drop to analyse",
+  hint: "MP4 · MOV · AVI · MKV — forecourt, entry lane or wash bay",
+  onFile: (f, n) => {
+    upload(f);
+    if (n > 1) fail(`${n} files dropped — analysing ${f.name}.`);
+  },
+});
 $("camBtn").onclick=()=>camera($("cam").value.trim()||"0");
 $("cam").addEventListener("keydown",e=>e.key==="Enter"&&$("camBtn").click());
 $("newBtn").onclick=()=>{ if(timer)clearInterval(timer); jobId=null; $("video").src="";

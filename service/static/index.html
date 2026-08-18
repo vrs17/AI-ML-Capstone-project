@@ -6,6 +6,7 @@
 <title>Vehicle Intelligence — Snapshot</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23141416'/%3E%3Cpath d='M7 12V8h4M25 12V8h-4M7 20v4h4M25 20v4h-4' stroke='%230a84ff' stroke-width='2.2' fill='none' stroke-linecap='round'/%3E%3Crect x='12' y='13' width='8' height='6' rx='1.6' fill='%2330d158'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="/static/theme.css">
+<script src="/static/upload.js"></script>
 <style>
   .grid{display:grid;gap:16px;grid-template-columns:minmax(0,1fr) 388px}
   @media(max-width:1150px){.grid{grid-template-columns:minmax(0,1fr)}}
@@ -62,8 +63,8 @@
         <div class="ch"><h2>Photograph</h2><div class="sp"></div>
           <span class="tag">detect → crop → classify → trust layer</span></div>
         <div class="cb">
-          <div class="drop" id="drop"><b>Choose a photo</b>JPEG · PNG — or drop it here.
-            The same pipeline the cameras run.</div>
+          <div class="drop" id="drop"><b>Choose a photo</b>JPEG · PNG — drop one anywhere on this
+            page, or paste from the clipboard. The same pipeline the cameras run.</div>
           <input type="file" id="file" accept="image/*">
           <div id="err"></div>
         </div>
@@ -139,13 +140,25 @@ fetch("/health").then(r=>r.json()).then(h=>{
   if(h.abstain_threshold) $("thrTag").textContent=`answers above ${(h.abstain_threshold*100).toFixed(1)}%`;
 }).catch(()=>$("devTxt").textContent="unreachable");
 
-const drop=$("drop");
-drop.onclick=()=>$("file").click();
-drop.addEventListener("dragover",e=>{e.preventDefault();drop.classList.add("over")});
-drop.addEventListener("dragleave",()=>drop.classList.remove("over"));
-drop.addEventListener("drop",e=>{e.preventDefault();drop.classList.remove("over");
-  const f=e.dataTransfer.files[0]; if(f&&f.type.startsWith("image/")) send(f);});
+$("drop").onclick=()=>$("file").click();
 $("file").onchange=e=>e.target.files[0]&&send(e.target.files[0]);
+
+installDrop({
+  accept: /^image\//,
+  extensions: /\.(jpe?g|png|webp|bmp|gif|tiff?)$/i,
+  title: "Drop to identify",
+  hint: "JPEG · PNG · WebP — one photo at a time",
+  onFile: f => send(f),
+});
+
+// Paste a screenshot straight in — the quickest path from someone's phone or a
+// camera review screen to a verdict.
+addEventListener("paste", e => {
+  const item = Array.from(e.clipboardData?.items || [])
+                    .find(i => i.type.startsWith("image/"));
+  const f = item?.getAsFile();
+  if (f) send(f);
+});
 
 if(!CanvasRenderingContext2D.prototype.roundRect){        // Firefox <112, older Safari
   CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
