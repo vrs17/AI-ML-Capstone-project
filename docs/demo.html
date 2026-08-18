@@ -205,26 +205,32 @@ ort.env.wasm.numThreads = 1;   // GitHub Pages is not cross-origin isolated -> n
 ort.env.wasm.simd = true;
 ort.env.wasm.wasmPaths = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.27.0/dist/";
 
-async function createSession(buffer){
-  const providers = [];
-  if (navigator.gpu) providers.push("webgpu");     // much faster when available
-  providers.push("wasm");
+async function createSession(buffer, name){
+  // INT8 graphs use ConvInteger / MatMulInteger / DynamicQuantizeLinear, which the WebGPU EP
+  // has no kernels for — every such node falls back to CPU with a GPU<->CPU copy each way,
+  // making WebGPU SLOWER than plain WASM. So: quantized -> wasm, float -> try webgpu first.
+  const quantized = /int8|quant|uint8/i.test(name || "");
+  const providers = (!quantized && navigator.gpu) ? ["webgpu", "wasm"] : ["wasm"];
+  let ep;
   try {
     session = await ort.InferenceSession.create(buffer, {
       executionProviders: providers, graphOptimizationLevel: "all"
     });
+    ep = providers[0] === "webgpu" ? "WebGPU" : "WASM";
   } catch (e) {
     session = await ort.InferenceSession.create(buffer, { executionProviders: ["wasm"] });
+    ep = "WASM (WebGPU unavailable)";
   }
-  const ep = navigator.gpu ? "WebGPU (or WASM fallback)" : "WASM";
-  say($("modelStatus"), `✅ Model loaded and ready — running on <b>${ep}</b>. Now choose a photo below.`, "ok");
+  say($("modelStatus"),
+    `✅ Model loaded and ready — running on <b>${ep}</b>${quantized ? " (INT8 model)" : ""}. ` +
+    `Now choose a photo below.`, "ok");
   $("stage").dataset.ready = "1";
 }
 
 async function loadFromFile(file){
   say($("modelStatus"), `Reading <b>${file.name}</b> (${(file.size/1e6).toFixed(1)} MB)…`, "info");
   try {
-    await createSession(new Uint8Array(await file.arrayBuffer()));
+    await createSession(new Uint8Array(await file.arrayBuffer()), file.name);
   } catch (e) {
     say($("modelStatus"), `❌ Could not load that file.<br><code>${e.message}</code>`, "err");
   }
@@ -249,7 +255,7 @@ async function loadFromUrl(url){
     const buf = new Uint8Array(got); let off = 0;
     for (const c of chunks){ buf.set(c, off); off += c.length; }
     $("dlFill").style.width = "100%";
-    await createSession(buf);
+    await createSession(buf, url);
   } catch (e) {
     $("dlTrack").style.display = "none";
     say($("modelStatus"),
