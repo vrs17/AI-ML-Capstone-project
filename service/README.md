@@ -154,10 +154,40 @@ correctly — abstains rather than guessing.
            "advice": "That is upscaled 2.2x into the network, …"}
 ```
 
-and the console shows it as a **Signal quality** panel. Rules of thumb: **≥438 px** good,
-**224–438 px** fair (expect more abstentions than the sealed-test figures), **<224 px** poor.
-The fix is physical — move the camera closer, zoom in, or raise the source resolution — not a
-threshold change; lowering the threshold would only convert abstentions into wrong answers.
+and the console shows it as a **Signal quality** panel. It reports the **closest** look at each
+car, not the average, because that is the look the decision is made on — and it names which of two
+different problems you have: `limit: "camera"` (even a car filling the frame is too small — the
+feed's resolution is the ceiling) or `limit: "placement"` (the camera can resolve enough, cars just
+never come close enough).
+
+### "So can we just work at 163 px?"
+
+Partly, and the size of "partly" is measurable rather than arguable. Three levers, cheapest first:
+
+1. **Judge the closest look (already done, costs nothing).** A car crossing a forecourt is sampled
+   many times and grows as it approaches. Those looks are not equal evidence, so a look below
+   `MIN_VOTE_PX` (default 200) does not vote at all, and the rest are weighted by crop size — the
+   close look decides the track. Far looks still draw a box and still get counted; they just do not
+   get to name the car. A track that never comes close abstains as **"Too far to identify"**, which
+   is a different statement from "Needs a check".
+2. **Move or zoom the camera, or raise the feed's resolution.** At 1080p, 438 px is a car filling
+   ~23% of frame width; 163 px is ~8.5%. That is a placement number, not a model number.
+3. **Retrain at low resolution.** Genuinely helps — fine-tune with aggressive downscale
+   augmentation so the model learns the coarse cues (silhouette, proportion, lamp-cluster shape)
+   that survive. But it costs accuracy on the near-identical sedans, and there is a floor below
+   which Cobalt, Gentra and Nexia 3 are not distinguishable by anything.
+
+**Measure your own floor before choosing.** `scripts/resolution_sweep.py` shrinks the sealed test
+set to each candidate size, pushes it through the unchanged production pipeline, and reports
+accuracy, macro-F1, precision and coverage at each:
+
+```bash
+python scripts/resolution_sweep.py --artifacts service/artifacts --data data/dataset/test
+```
+
+It ends by printing the smallest capture size that still holds 99% and 95% precision — your
+operating envelope, from your data. Note that lowering `abstain_threshold` is *not* on this list:
+it would convert abstentions into wrong answers and forfeit the precision the product is sold on.
 
 Two related defects were fixed at the same time:
 
@@ -184,6 +214,7 @@ sees cars far smaller: `VIDEO_DET_IMGSZ` (default 960) and `VIDEO_AREA_FLOOR` (d
 | `MAX_UPLOAD_MB` | `12` | per-file upload cap |
 | `VIDEO_DET_IMGSZ` | `960` | detector grid for video — cameras see smaller cars than photos do |
 | `VIDEO_AREA_FLOOR` | `0.010` | smallest box worth tracking, as a fraction of frame area |
+| `MIN_VOTE_PX` | `200` | smallest crop allowed to *name* a car; smaller ones are still tracked and counted |
 
 GPU access is serialised by a lock, so concurrent HTTP requests are safe; throughput scales with
 batch size rather than worker count. Run **one** uvicorn worker per GPU — extra workers would each

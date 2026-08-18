@@ -356,17 +356,23 @@ function renderSummary(s){
   drawSpark(); valueModel(s);
 }
 
-/* the panel that answers "why isn't it recognising anything?" */
+/* The panel that answers "why isn't it recognising anything?". It reports the closest
+   look at each car, not the average — that is the look the decision is actually made on. */
 function renderSignal(sig){
   if(!sig || sig.median_crop_px==null){
-    $("sigTag").textContent="measuring…";
-    $("sigTxt").innerHTML="Waiting for the first vehicles to measure how much detail the classifier is receiving.";
+    $("sigTag").textContent = sig?.source ? `source ${sig.source}` : "measuring…";
+    $("sigTxt").innerHTML="Waiting for the first vehicles to measure how much detail reaches the classifier.";
     $("sig").className="sig"; return;
   }
   $("sig").className="sig "+sig.quality;
-  $("sigTag").textContent=`${sig.median_crop_px}px median · ${sig.good_crop_px}px ideal`;
-  $("sigTxt").innerHTML=`<b>Cars arrive ${sig.median_crop_px}px across</b> (the classifier wants
-    ${sig.good_crop_px}px). ${sig.advice}`;
+  $("sigTag").textContent = [sig.source, `${sig.median_crop_px}px median`,
+                             `${sig.best_crop_px}px best`].filter(Boolean).join(" · ");
+  const LIMIT={camera:"The camera is the limit.", distance:"Placement is fine.",
+               placement:"Placement is the limit."};
+  $("sigTxt").innerHTML =
+    `<b>Closest look at a car: ${sig.best_crop_px}px</b> — median ${sig.median_crop_px}px, against
+     ${sig.good_crop_px}px for full detail and a ${sig.min_vote_px}px floor to name one at all.
+     ${LIMIT[sig.limit]||""} ${sig.advice}`;
 }
 
 function renderMix(counts,total){

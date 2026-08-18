@@ -69,7 +69,8 @@ report and confusion matrix are in `notebooks/model_gate_v2.ipynb`.
 │   └── manual_review.md             the human golden-review procedure
 ├── scripts/
 │   ├── avtoelon_scraper.py          polite, robots-compliant image scraper
-│   └── deduplicate.py               hash dedup + cross-folder quarantine
+│   ├── deduplicate.py               hash dedup + cross-folder quarantine
+│   └── resolution_sweep.py          accuracy vs. capture size — the operating envelope
 ├── notebooks/
 │   ├── data_gate.ipynb              clean + leakage-safe split (YOLO + CLIP)
 │   ├── model_gate.ipynb             v1: baselines + ConvNeXt/ResNet (5-class)

@@ -48,16 +48,20 @@ class Track:
     """
     prob_sum: np.ndarray                                   # kept for display only
     votes: int = 0                                         # total classifications
-    label_votes: dict = field(default_factory=dict)        # label -> confident looks
-    conf_sum: dict = field(default_factory=dict)           # label -> summed confidence
+    label_votes: dict = field(default_factory=dict)        # label -> summed vote weight
+    conf_sum: dict = field(default_factory=dict)           # label -> weighted confidence
     first_frame: int = 0
     last_seen: int = 0
     crop_px: int = 0                                       # short side of the last crop
+    best_px: int = 0                                       # largest crop ever classified
+    seen_px: int = 0                                       # largest crop ever *offered*
+    weight: float = 0.0                                    # summed vote quality
     last_classified: int = -999
     decision: str = "pending"
     label: str | None = None
     confidence: float = 0.0
     decided_frame: int | None = None                       # drives the lock-on animation
+    too_far: bool = False                                  # abstained for distance, not doubt
     trail: list = field(default_factory=list)              # ground track, for the overlay
 
     @property
@@ -85,6 +89,9 @@ class VideoProcessor:
         # lower area floor. Both are env-overridable.
         self.det_imgsz = int(os.getenv("VIDEO_DET_IMGSZ", "960"))
         self.area_floor = float(os.getenv("VIDEO_AREA_FLOOR", "0.010"))
+        # smallest crop allowed to *name* a car (it may still be tracked and counted)
+        self.min_vote_px = int(os.getenv("MIN_VOTE_PX", "200"))
+        self.src_w = self.src_h = 0
         self.tracks: dict[int, Track] = {}
         self.events: list[dict] = []              # ordered operator-facing log
         self.frame_idx = 0
@@ -142,24 +149,43 @@ class VideoProcessor:
         detail the fine-grained head needs (grille, lights, badge) was never captured.
         Reporting it beats letting the operator guess.
         """
-        px = sorted(t.crop_px for t in self.tracks.values() if t.crop_px)
+        px = sorted(t.best_px for t in self.tracks.values() if t.best_px)
+        base = {"good_crop_px": self.GOOD_CROP_PX, "min_vote_px": self.min_vote_px,
+                "source": f"{self.src_w}x{self.src_h}" if self.src_w else None,
+                # the biggest crop this camera could ever produce: a car filling the frame
+                "ceiling_px": min(self.src_w, self.src_h) if self.src_w else None}
         if not px:
-            return {"median_crop_px": None, "good_crop_px": self.GOOD_CROP_PX,
-                    "quality": None, "advice": None}
+            return {**base, "median_crop_px": None, "best_crop_px": None,
+                    "quality": None, "advice": None, "limit": None}
         med = px[len(px) // 2]
+        best = px[-1]
+        # Distinguish the two causes. If even the closest car this session was small, the
+        # camera itself is the ceiling; if some cars were fine, it is a placement problem.
+        limit = ("camera" if best < self.GOOD_CROP_PX and
+                 (base["ceiling_px"] or 0) < self.GOOD_CROP_PX * 2 else
+                 "distance" if best >= self.GOOD_CROP_PX else "placement")
         if med >= self.GOOD_CROP_PX:
             q, advice = "good", "Full detail is reaching the classifier."
-        elif med >= 224:
-            q, advice = ("fair", "Slightly upscaled, so expect more abstentions than the "
-                                 "sealed-test figures. Zooming in or moving the camera closer "
-                                 "will recover them.")
+        elif med >= self.min_vote_px:
+            q, advice = ("fair", f"Upscaled {self.GOOD_CROP_PX / med:.1f}x, so expect more "
+                                 "abstentions than the sealed-test figures. Cars are judged on "
+                                 "their closest look, so this mostly costs the ones that never "
+                                 "approach.")
+        elif limit == "camera":
+            q, advice = ("poor", f"This source is only {base['source']}, so even a car filling "
+                                 f"the frame gives {base['ceiling_px']}px. No placement change "
+                                 "fixes that — it needs a higher-resolution feed.")
+        elif best >= self.min_vote_px:
+            q, advice = ("fair", f"Most cars are small, but the closest looks reach {best}px — "
+                                 "those are the ones being judged. Cars that never approach are "
+                                 "abstained rather than guessed.")
         else:
-            q, advice = ("poor", f"That is upscaled {self.GOOD_CROP_PX / med:.1f}x into the "
-                                 "network, so the grille and badge detail this model separates "
-                                 "the sedans by was never captured. Move the camera closer, zoom "
+            q, advice = ("poor", f"Nothing this session got past {self.min_vote_px}px, the floor "
+                                 "for naming a car. Upscaling cannot recover grille or badge "
+                                 "detail the sensor never sampled: move the camera closer, zoom "
                                  "in, or raise the source resolution.")
-        return {"median_crop_px": med, "good_crop_px": self.GOOD_CROP_PX,
-                "quality": q, "advice": advice}
+        return {**base, "median_crop_px": med, "best_crop_px": best,
+                "quality": q, "advice": advice, "limit": limit}
 
     def recent_events(self, after: int = 0, limit: int = 60) -> dict:
         """Events with a monotonic sequence number, so the console can poll for the tail."""
@@ -178,7 +204,8 @@ class VideoProcessor:
             "display": self._display(t),
             "confidence": round(t.confidence, 4),
             "looks": t.votes,
-            "crop_px": t.crop_px,
+            "crop_px": t.best_px or t.crop_px,
+            "too_far": t.too_far,
             "guess": PRETTY.get(t.label, t.label) if t.decision == "abstain" else None,
         })
         if len(self.events) > 800:                 # a long shift should not grow unbounded
@@ -191,7 +218,7 @@ class VideoProcessor:
         if t.decision == "reject":
             return "Vehicle outside catalogue"
         if t.decision == "abstain":
-            return "Needs a check"
+            return "Too far to identify" if t.too_far else "Needs a check"
         return "Analysing…"
 
     # ---------- per-frame work ----------
@@ -205,9 +232,15 @@ class VideoProcessor:
                     prob_sum=np.zeros(len(settings.classes), dtype=np.float64),
                     first_frame=self.frame_idx)
             t.last_seen = self.frame_idx
-            if t.votes >= self.max_votes:
+            px = min(box[3] - box[1], box[2] - box[0])
+            t.seen_px = max(t.seen_px, px)
+            # Normally we stop once a track has settled. But if the car has come
+            # markedly closer than any look we have judged, that new look is better
+            # evidence than everything before it — spend one more classification.
+            closer = px > t.best_px * 1.35 and px >= self.min_vote_px
+            if t.votes >= self.max_votes and not (closer and t.votes < self.max_votes * 2):
                 continue                                    # settled — stop spending compute
-            if self.processed - t.last_classified < self.classify_every:
+            if self.processed - t.last_classified < self.classify_every and not closer:
                 continue
             due.append((tid, box))
 
@@ -219,6 +252,7 @@ class VideoProcessor:
             if crop.size == 0:
                 continue
             self.tracks[tid].crop_px = min(crop.shape[0], crop.shape[1])
+            self.tracks[tid].best_px = max(self.tracks[tid].best_px, self.tracks[tid].crop_px)
             if self.tracks[tid].crop_px < 48:
                 continue          # fewer pixels than the model's first conv stride can use
             crops.append((tid, Image.fromarray(crop)))
@@ -239,15 +273,30 @@ class VideoProcessor:
                 self._decide(tid, t)
 
     def _cast_vote(self, t: Track, probs: np.ndarray):
-        """Judge ONE look with the calibrated threshold, then let it vote."""
+        """Judge ONE look with the calibrated threshold, then let it vote — by size.
+
+        A car crossing a forecourt is sampled many times, and the crop grows as it
+        approaches. Those looks are not equal evidence: a 150px crop is upscaled 3x into
+        the network, so its confidence is asserted about detail the sensor never captured
+        — and a fine-grained model can be confidently wrong on it. Two guards:
+
+          * a look below MIN_VOTE_PX does not vote at all, and
+          * the rest are weighted by crop size, so the close look decides the track.
+
+        The far looks still show a box on screen; they just do not get to name the car.
+        """
         s = settings
+        if t.crop_px < self.min_vote_px:
+            return                                          # too little signal to assert anything
         i = int(probs.argmax())
         label, conf = s.classes[i], float(probs[i])
         thr = s.abstain_threshold
         if thr is not None and conf < thr:
             return                                          # this look is not confident enough
-        t.label_votes[label] = t.label_votes.get(label, 0) + 1
-        t.conf_sum[label] = t.conf_sum.get(label, 0.0) + conf
+        w = min(1.0, t.crop_px / self.GOOD_CROP_PX)         # full weight only at full detail
+        t.weight += w
+        t.label_votes[label] = t.label_votes.get(label, 0.0) + w
+        t.conf_sum[label] = t.conf_sum.get(label, 0.0) + conf * w
 
     def _decide(self, tid: int, t: Track):
         """Track decision = majority of the looks that cleared the threshold."""
@@ -257,7 +306,9 @@ class VideoProcessor:
             t.decision = "abstain"
             i = int(t.mean_probs.argmax())
             t.label, t.confidence = s.classes[i], float(t.mean_probs[i])
+            t.too_far = t.seen_px < self.min_vote_px        # never came close enough to judge
         else:
+            t.too_far = False                               # a close look arrived after all
             label = max(t.label_votes, key=lambda k: t.label_votes[k])
             t.label = label
             t.confidence = t.conf_sum[label] / t.label_votes[label]
@@ -296,7 +347,9 @@ class VideoProcessor:
                 ov.flash(frame, box, col, 0.22 * max(0.0, 1.0 - k * 2.2))
                 ov.draw_brackets(frame, box, col, thickness=2,
                                  grow=int(min(box[2] - box[0], box[3] - box[1]) * 0.16 * (1 - e)))
-                if t.decision == "abstain":
+                if t.decision == "abstain" and t.too_far:
+                    sub = f"only {t.seen_px}px · needs {self.min_vote_px}px to name"
+                elif t.decision == "abstain":
                     thr = settings.abstain_threshold
                     sub = (f"likely {PRETTY.get(t.label, t.label)} {t.confidence:.0%}"
                            + (f" · below {thr:.0%}" if thr else ""))
@@ -321,6 +374,8 @@ class VideoProcessor:
         if not cap.isOpened():
             raise RuntimeError(f"cannot open video source: {self.source}")
         self.total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT) or 0)
+        self.src_w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) or 0)
+        self.src_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) or 0)
         self.t_start = self.started_at = time.time()
         s = settings
         try:

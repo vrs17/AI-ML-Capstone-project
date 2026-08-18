@@ -46,6 +46,10 @@ service and present the console at `/` (press `F` for fullscreen).
   classifier is upscaling — confidence drops and the trust layer abstains. The service now reports
   this per session as `signal.median_crop_px` and the console shows it. Mitigations in order of
   value: camera placement/zoom, higher source resolution, then fine-tuning on camera-domain frames.
+  Video already mitigates it for free by judging each car on its **closest** look and refusing to
+  name one below `MIN_VOTE_PX` (200), so distance produces an honest "too far" rather than a guess.
+  `scripts/resolution_sweep.py` measures the actual floor on the sealed test set — run it before
+  deciding whether a low-resolution retrain is worth it.
 - **`others` is heterogeneous and likely smaller** than the five known classes — watch its per-split counts and per-class recall; class-weighted loss mitigates.
 - **Leakage re-confirmation:** relabeling only moved images within their existing split, so leakage-safety is preserved by construction; the filename-based check should be re-run once on the uploaded 6-class set to reconfirm 0.
 - **Licensing for the product:** ConvNeXtV2 weights are CC-BY-NC — the commercial build must stay on Apache/MIT backbones (MobileNetV4, EfficientNetV2, DINOv2, EVA-02). Current ConvNeXt-Tiny (V1) is fine.
