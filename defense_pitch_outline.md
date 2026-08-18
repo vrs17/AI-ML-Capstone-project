@@ -46,9 +46,9 @@ point at**. Numbers are from the sealed test — see `capstone_evidence_matrix.m
 - We never promised 99% accuracy — we promised **99% precision via abstention**.
 - **Temperature scaling** makes the confidences honest; a threshold chosen on validation lets the
   system **answer only when confident** and **abstain / route to a human** otherwise.
-- Precision is measured on the **five known models**; `others` is a reject bucket, the final
-  safety net. *(Fill the operating point — coverage at 99% precision — after running
-  `trust_layer.ipynb`.)*
+- **Result: 99.0% precision at 83.5% coverage** on the sealed test — the promise, delivered.
+  It rejects 8.7% as unknown cars and abstains on 7.8%. Without abstention it would be 96.1%
+  precise at 91.3% coverage: we trade ~8 points of coverage to buy ~3 points of precision.
 
 ## 6. Honesty + next steps (30s) — *land: we know the limits*
 - **Weakest class is `others`** (F1 0.789) — heterogeneous by nature; the expected open-set

@@ -79,8 +79,11 @@ routes to a human. That's the trust layer (`trust_layer.ipynb`): temperature sca
 chosen on validation. Precision = "when it says 'Cobalt', how often is it right."
 
 **Q: What's the cost of that precision?**
-Coverage — we don't answer every image. The **precision–coverage curve** shows the trade-off;
-the operating point is *[fill after running the trust layer]*.
+**Coverage — we answer 83.5% of photos instead of all of them.** At threshold 0.857 the sealed
+test gives **99.0% precision** on known-model answers, with 8.7% rejected as unknown cars and
+7.8% abstained. Without abstention it would answer 91.3% at only 96.1% precision — so we trade
+about 8 points of coverage for 3 points of precision. In this product a wrong model name
+corrupts the analytics, while a skipped photo just isn't counted.
 
 ## Open-set
 

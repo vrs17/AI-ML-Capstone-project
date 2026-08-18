@@ -42,11 +42,11 @@ Legend: 📓 notebook · 🐍 script · 📄 doc.
 
 | Dimension | What we did | Evidence | Result |
 |---|---|---|---|
-| Calibration | Temperature scaling (Guo et al.) | 📓 `trust_layer.ipynb` (Cell 4) | ECE reported before/after |
-| Selective prediction | ≥99% precision threshold on the **five known models** | 📓 `trust_layer.ipynb` (Cells 5–6) | *fill operating point after running* |
-| Risk–coverage | Precision–coverage curve on sealed test | 📓 `trust_layer.ipynb` (Cell 6) | *fill after running* |
-| Reliability | Reliability diagrams before/after | 📓 `trust_layer.ipynb` (Cell 7) | *fill after running* |
-| Error grid | Most confident precision-breaking mistakes | 📓 `trust_layer.ipynb` (Cell 8) | *fill after running* |
+| Calibration | Temperature scaling (Guo et al.) | 📓 `trust_layer.ipynb` (Cell 4) | **T = 2.894** fitted on validation |
+| Selective prediction | ≥99% precision threshold on the **five known models** | 📓 `trust_layer.ipynb` (Cells 5–6) | **99.0% precision @ 83.5% coverage** (thr 0.857) |
+| Risk–coverage | Precision–coverage curve on sealed test | 📓 `trust_layer.ipynb` (Cell 6) | Operating point sits on the 99% line |
+| Reliability | Reliability diagrams before/after | 📓 `trust_layer.ipynb` (Cell 7) | Produced before vs after calibration |
+| Error grid | Most confident precision-breaking mistakes | 📓 `trust_layer.ipynb` (Cell 8) | Grid of confident wrong known-class calls |
 
 ## Engineering / Delivery (C2/C5)
 

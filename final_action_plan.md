@@ -6,11 +6,9 @@ What's left between now and the defense. Ordered by priority. Check items off as
 
 ## 🔴 Must-do before defense
 
-- [ ] **Run the Trust Layer** (`notebooks/trust_layer.ipynb`) on the T4.
-      Record: fitted temperature `T`, the ≥99%-precision threshold, and the **operating point**
-      (coverage at 99% known-class precision, reject %, abstain %).
-      → Then fill the "*fill after running*" cells in `capstone_evidence_matrix.md`,
-      `defense_pitch_outline.md` §5, and `defense_question_bank.md` (precision-cost answer).
+- [x] **Run the Trust Layer** ✅ Done. T = 2.894, threshold = 0.857 →
+      **99.0% precision at 83.5% coverage** on the sealed test (8.7% rejected as `others`,
+      7.8% abstained). All defense docs updated with the operating point.
 
 - [x] **Write the top-level `README.md`** (owed for C2). ✅ Done — problem, two-stage
       architecture (with diagram), headline results, reproduce steps, repo layout, ethics.
@@ -49,7 +47,7 @@ What's left between now and the defense. Ordered by priority. Check items off as
 | Data Gate (scrape → dedup → clean → leakage-safe split → manual golden review) | ✅ done |
 | Model Gate v1 (5-class ConvNeXt, 0.923) | ✅ done |
 | Model Gate v2 (6-class ArcFace @384, **0.950 / 0.936**, 0.971 on 5 known) | ✅ done |
-| Trust Layer (calibration + abstention) | 🟡 notebook ready — **run + record** |
+| Trust Layer (calibration + abstention) | ✅ 99.0% precision @ 83.5% coverage |
 | Top-level README | ✅ done |
 | Presentation + rehearsal | 🔴 to do |
 

@@ -24,7 +24,7 @@ flowchart TD
     C["Stage 2 · Data Gate — automated cleaning + split<br/>notebooks/data_gate.ipynb"] --> D
     D["Stage 3 · Model Gate v1 — first model + error analysis<br/>notebooks/model_gate.ipynb"] --> E
     E["Stage 4 · Manual golden review + open-set pivot (HUMAN)<br/>docs/manual_review.md · data/README.md (Issue 5)"] --> F
-    F["Stage 5 · Model Gate v2 — 6-class retrain (NEXT)<br/>notebooks/model_gate.ipynb"] --> G
+    F["Stage 5 · Model Gate v2 — 6-class ArcFace @384<br/>notebooks/model_gate_v2.ipynb"] --> G
     G["Stage 6 · Trust Layer — calibration + abstention<br/>notebooks/trust_layer.ipynb"] --> H
     H["Stage 7 · Production direction (post-capstone)<br/>documented in PROJECT_STATUS.md"]
 
@@ -121,7 +121,7 @@ has its own written procedure (`docs/manual_review.md`) instead of a script.
 - **Output:** the final **6-class** dataset (`cobalt, damas, gentra, nexia3, others,
   spark`) in the identical `train/val/test` layout.
 
-## Stage 5 · Model Gate v2 — 6-class retrain  ⟵ NEXT
+## Stage 5 · Model Gate v2 — 6-class retrain
 
 - **What:** retrain on the 6-class golden dataset, with a recipe aimed at the hardest
   confusion.
@@ -157,7 +157,11 @@ has its own written procedure (`docs/manual_review.md`) instead of a script.
 - **Open-set framing:** we "answer" only when the model predicts one of the **five known
   models** and is confident enough; predicting `others` (reject) or falling below the threshold
   (abstain) both route to a human. Precision is measured on the answers that matter.
-- **Status:** ✅ notebook updated for the ArcFace v2 model — ready to run.
+- **Result:** temperature **T = 2.894** fitted on validation (ArcFace's `s·cos` logits are
+  over-peaked, so T > 1 is expected). At the validation-chosen threshold **0.857**, the sealed test
+  gives **99.0% precision on the five known models at 83.5% coverage** — rejecting 8.7% as unknown
+  and abstaining on 7.8%. Without abstention it would be 96.1% precise at 91.3% coverage.
+- **Status:** ✅ complete — the 99%-precision promise is met and measured.
 
 ## Stage 7 · Production direction (post-capstone)
 
@@ -182,7 +186,7 @@ has its own written procedure (`docs/manual_review.md`) instead of a script.
 | 3 · Model Gate v1 (+ error analysis) | `notebooks/model_gate.ipynb` | ✅ |
 | 4 · Manual golden review (open-set) | `docs/manual_review.md`, `data/README.md` (Issue 5) | ✅ |
 | 5 · Model Gate v2 (6-class, ArcFace, 384px) | `notebooks/model_gate_v2.ipynb` | ✅ trained — 0.950 / 0.936 |
-| 6 · Trust Layer (calibration) | `notebooks/trust_layer.ipynb` | ✅ updated for ArcFace · ready to run |
+| 6 · Trust Layer (calibration) | `notebooks/trust_layer.ipynb` | ✅ 99.0% precision @ 83.5% coverage |
 | 7 · Production direction | `PROJECT_STATUS.md` | 🔭 documented |
 
 ## Known code↔step gaps (full honesty for the defense)

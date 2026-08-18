@@ -8,6 +8,9 @@ designed to scale to 20–50+ models.
 
 > **Sealed-test result (6-class):** **0.950 accuracy · 0.936 macro-F1**, and **0.971 accuracy on
 > the five known models**. Test ≈ validation (0.950 vs 0.949) — no overfitting.
+>
+> **With the trust layer:** **99.0% precision on the five known models at 83.5% coverage** —
+> it rejects 8.7% of photos as unknown cars and abstains on 7.8% rather than guess.
 
 ---
 
@@ -38,7 +41,8 @@ flowchart LR
   sedans; 384px exposes the sub-pixel cues (grille, lights, badge).
 - **Trust layer.** Temperature scaling makes the confidences honest; a validation-chosen
   threshold lets the system **answer only when confident on a known model**, and otherwise
-  **abstain** — targeting **99% precision on the five known models** (see `notebooks/trust_layer.ipynb`).
+  **abstain**. Measured on the sealed test: **99.0% precision at 83.5% coverage**
+  (T = 2.894, threshold 0.857) — see `notebooks/trust_layer.ipynb`.
 
 ## Results
 
@@ -108,7 +112,7 @@ redistributed** here. See `data/README.md` §5.
 
 ## Status & roadmap
 
-Data Gate and Model Gate are complete; the Trust Layer notebook is ready to run. The production
+All four gates are complete — data, model, trust layer, and delivery. The production
 direction (edge deployment via MobileNetV4 + INT8, embedding-distance OOD, a prototype gallery to
 scale to 20–50+ models) is outlined in `ROADMAP.md` (Stage 7). Current status lives in
 `PROJECT_STATUS.md`.
