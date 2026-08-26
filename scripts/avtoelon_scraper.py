@@ -232,23 +232,26 @@ MANIFEST_COLS = ["model", "listing_id", "listing_url", "image_url", "local_path"
 SEEN_HASHES: dict[str, str] = {}
 
 
-def load_done_listings() -> set:
-    """Resume state: which (model, listing) pairs are done, and every byte-hash already on disk.
+def load_done_listings() -> tuple[set, dict]:
+    """Resume state: which (model, listing) pairs are done, every byte-hash already on disk,
+    and how many images each model already stored (so --target-images counts resumed work).
 
     The hash index is rebuilt here rather than kept only in memory, so a resumed run does
     not re-download bytes an earlier run already stored. Rows written before this column
     existed simply have no hash and are skipped.
     """
     if not MANIFEST.exists():
-        return set()
-    done = set()
+        return set(), {}
+    done, img_counts = set(), {}
     with MANIFEST.open(encoding="utf-8") as f:
         for r in csv.DictReader(f):
             done.add((r["model"], r["listing_id"]))
+            if r.get("local_path"):
+                img_counts[r["model"]] = img_counts.get(r["model"], 0) + 1
             h, path = r.get("sha256"), r.get("local_path")
             if h and path and h not in SEEN_HASHES:
                 SEEN_HASHES[h] = path
-    return done
+    return done, img_counts
 
 
 def append_manifest(rows):
@@ -568,8 +571,16 @@ async def discover_models(context, rp, args):
 async def run(args):
     if not MODELS and not args.discover:
         sys.exit("Fill the MODELS dict at the top with your native model-filter URLs first.")
+    models = MODELS
+    if args.only:
+        want = [m.strip() for m in args.only.split(",") if m.strip()]
+        unknown = [m for m in want if m not in MODELS]
+        if unknown:
+            sys.exit(f"--only names not in MODELS: {unknown} "
+                     f"(known: {', '.join(MODELS)})")
+        models = {m: MODELS[m] for m in want}
     rp = load_robots()
-    done = load_done_listings()
+    done, img_counts = load_done_listings()
     audit = [] if args.audit else None
     if audit is not None:
         print(f"[audit] dry run — inspecting up to {args.audit} listings per model, "
@@ -602,7 +613,14 @@ async def run(args):
 
         sem = asyncio.Semaphore(args.concurrency)
 
-        for model, search_url in MODELS.items():
+        for model, search_url in models.items():
+            # --target-images: enough is enough. Checked BEFORE walking listing pages so a
+            # resumed run doesn't re-crawl pagination for a model that is already done.
+            stored = {"n": img_counts.get(model, 0), "announced": False}
+            if args.target_images and audit is None and stored["n"] >= args.target_images:
+                print(f"[{model}] target met ({stored['n']}/{args.target_images}) — skipping\n")
+                continue
+
             nav = await context.new_page()
             listings = await collect_listing_urls(
                 nav, model, search_url, args.max_pages, args.delay, rp
@@ -617,15 +635,34 @@ async def run(args):
 
             async def bounded(u):
                 async with sem:
-                    return await scrape_one_listing(context, model, u, args.delay, rp, audit)
+                    # Re-checked here (not only per model) so the run stops launching new
+                    # listings the moment the target is reached; overshoot is bounded by the
+                    # few listings already in flight.
+                    if (args.target_images and audit is None
+                            and stored["n"] >= args.target_images):
+                        if not stored["announced"]:
+                            stored["announced"] = True
+                            print(f"[{model}] target reached "
+                                  f"({stored['n']}/{args.target_images}) — "
+                                  f"skipping remaining listings")
+                        return []
+                    r = await scrape_one_listing(context, model, u, args.delay, rp, audit)
+                    # Manifest is appended per LISTING, not per model: an overnight crash
+                    # then costs at most the listings in flight, and resume loses nothing.
+                    # (append_manifest is synchronous with no await inside, so concurrent
+                    # listing tasks cannot interleave rows.)
+                    if r:
+                        append_manifest(r)
+                    stored["n"] += sum(1 for row in r if row.get("local_path"))
+                    return r
 
             results = await asyncio.gather(*(bounded(u) for u in todo))
             rows = [r for batch in results for r in batch]
-            if rows:
-                append_manifest(rows)
-            stored = sum(1 for r in rows if r.get("local_path"))
+            saved_n = sum(1 for r in rows if r.get("local_path"))
             dups = sum(1 for r in rows if r.get("duplicate_of"))
-            print(f"[{model}] saved {stored} images"
+            progress = (f" ({stored['n']}/{args.target_images} toward target)"
+                        if args.target_images else "")
+            print(f"[{model}] saved {saved_n} images{progress}"
                   + (f", skipped {dups} byte-identical duplicates" if dups else "") + "\n")
 
         await browser.close()
@@ -672,6 +709,13 @@ def main():
                     help="rank the site's model catalogue by listing count and print the top "
                          "N as a ready-to-paste MODELS dict. Use this to choose the class "
                          "list from evidence instead of guessing.")
+    ap.add_argument("--target-images", type=int, default=0, metavar="N",
+                    help="stop each model once N images are stored on disk (resume-aware: "
+                         "images already in the manifest count). 0 = no cap, stop at "
+                         "--max-pages as before")
+    ap.add_argument("--only", default=None, metavar="M1,M2",
+                    help="restrict this run to a comma-separated subset of MODELS keys "
+                         "(e.g. for testing, or re-running one model)")
     ap.add_argument("--audit", type=int, default=0, metavar="N",
                     help="dry run: inspect N listings per model, print what WOULD be kept vs "
                          "dropped and why, download nothing. Use this to verify the scraper "
