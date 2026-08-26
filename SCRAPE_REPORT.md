@@ -105,10 +105,23 @@ exterior shot of a Cobalt LTZ (badge legible).
 
 ## Phase 3 — collection
 
-**Launched ~02:2x** — 31 models, `--target-images 2000 --max-pages 30 --concurrency 3`,
+**Launched ~02:13** — 31 models, `--target-images 2000 --max-pages 30 --concurrency 3`,
 politeness settings untouched (2s listing hold, 0.4s image spacing). Running headless in
 the background with a log watchdog (crashes, backoffs, per-model results). Disk before
 run: 253 GB free.
+
+**02:28 — proactive slowdown.** After ~330 listings (~1,840 images in ~15 min), timeouts
+began clustering: 3 listings failed even after their 60s backoff retry, including a QUIC
+protocol error — the same pattern that preceded the evening's 95-minute block. Per the
+mission rule ("if the site starts timing out, back off and slow down further") the run was
+stopped gracefully (per-listing manifest writes mean nothing was lost: 1,822 gentra +
+21 cobalt images banked), given a cooldown, and resumed at half pressure
+(`--concurrency 2 --delay 2`). ETA roughly doubles; surviving the night beats speed.
+
+The first model also demonstrated the purity guard working on the site's pooled listings:
+80 lacetti-titled cars were SKIPped out of the gentra crawl (the site serves one combined
+gentra/lacetti pool; the title guard keeps the class clean), and photo-less listings now
+correctly yield 0 images instead of a recommendation thumbnail.
 
 ## Phase 2 — code changes for the run
 
