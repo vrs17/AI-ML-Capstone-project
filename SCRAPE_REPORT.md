@@ -59,7 +59,22 @@ browser-independent; the audit above validates it end-to-end in this exact confi
 
 ## Phase 1 — model selection
 
-_(pending)_
+**Interrupted by site unreachability — event log:**
+
+- ~00:08 — first `--discover 60` run launched; the tool-runner backgrounded it at its
+  10-minute timeout and the job stalled (near-zero CPU, browser gone, no CSV). Killed at 00:24.
+- ~00:25 — relaunched unbuffered with logging. `robots.txt` read timed out (urllib is
+  bot-blocked; expected), then `https://avtoelon.uz/avto/` itself returned
+  `ERR_CONNECTION_TIMED_OUT` twice (45s timeout + 60s polite backoff + retry).
+- Diagnosis: kun.uz (also UZ-hosted) loads fine from this machine; avtoelon.uz specifically
+  refuses connections — consistent with a temporary IP-level throttle after the evening's
+  audits plus the stalled run's idle browser sessions.
+- Response per the mission's rules: **all scraping stopped.** A gentle probe (one homepage
+  load) runs every 10 minutes; collection resumes only when the site answers again. No
+  partial data was lost — no images had been downloaded yet (`data/raw/` holds only the two
+  audit/discovery CSVs).
+
+_(model selection itself: pending site recovery)_
 
 ## Phase 2 — code changes for the run
 
