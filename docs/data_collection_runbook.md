@@ -126,3 +126,49 @@ IF LISTINGS FOUND BUT 0 IMAGES:
 - You **may** fix an obviously-wrong selector *only if the user asks you to after seeing the
   report*; otherwise just report. Do not commit or push anything unless the user asks.
 - If anything is ambiguous, stop and report rather than guessing.
+
+
+---
+
+## Verify before you collect
+
+The scraper had a real bug: it saved photos from *other* listings shown on the page
+(recommendation cards, promoted blocks). See Issue 6 in [`../data/README.md`](../data/README.md).
+It is fixed, but the fix is verified against DOM fixtures, not the live site — so check it on
+the real thing before a long run:
+
+```bash
+python scripts/avtoelon_scraper.py --audit 5 --show
+```
+
+Downloads nothing. For 5 listings per model it prints how many photos it *would* keep, how many
+foreign ones it dropped, and which signal identified the gallery, then writes
+`data/raw/audit_report.csv`.
+
+**How to check the result:** open two or three of the `listing_url` values in a browser and count
+the photos in the gallery. If `kept` matches, the scoping is right. If it does not, the audit row
+plus the URL is exactly what is needed to fix it.
+
+## Choosing which models to collect
+
+Do not guess the class list. Rank the site's own catalogue by listing volume:
+
+```bash
+python scripts/avtoelon_scraper.py --discover 50
+```
+
+It prints a ready-to-paste `MODELS` dict and a matching `MODEL_KEYWORDS` dict, and writes the
+full ranking to `data/raw/discovered_models.csv`. Every URL in it is one the site actually
+served, and the ordering is evidence rather than recollection.
+
+`MODEL_KEYWORDS` is not optional at 30-50 classes: it is what stops a promoted listing for a
+different car being saved under this model's label. Add Cyrillic spellings where a model is
+commonly written that way (`нексия`, `кобальт`, `дамас`).
+
+## Duplicate handling
+
+Downloads are hashed (SHA-256 of the bytes). A photo whose bytes were already stored is **not
+written again** — the manifest records it with `duplicate_of` pointing at the copy that was kept.
+Nothing is silently dropped, and the same image cannot end up on both sides of the train/test
+split. The index is rebuilt from the manifest on resume, so a restarted run does not re-download
+bytes it already has.

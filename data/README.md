@@ -137,6 +137,30 @@ Model Gate's class-count cell at train time; `others` is the newest and most het
 
 ---
 
+### Issue 6 — Scraper saved images from *other* listings on the same page
+
+- **Symptom:** a listing folder contained photos that do not belong to that listing —
+  recommendation-card thumbnails and promoted blocks that sit in the middle of a listing page.
+- **Cause:** the scraper kept every `<img>` on the page except those *inside* an anchor to
+  another listing (`closest('a[href]')` containing `/a/show/`). That catches
+  `<a href="/a/show/…"><img></a>` and misses the two commonest card layouts — the image as a
+  **sibling** of the title link, and promoted blocks wrapped in **no anchor at all**.
+- **Why it matters twice over:** those photos are mislabelled (another car under this model's
+  label), and the *same* recommendation photo recurs across many listings — so one image could
+  land on both sides of the leakage-safe split, quietly inflating test scores.
+- **Fix:** extraction no longer blacklists by CSS. Photos are grouped by their CDN directory
+  (`…/webp/xx/<listing-dir>/<n>-full.webp`), which one listing's photos share and other
+  listings' never do; the listing's own group is identified from its lightbox `<a>` links,
+  then `og:image`, then the largest group. Reproduced against DOM fixtures before the fix
+  (a 3-photo listing saved 5 images, 2 foreign) and after (exactly 3, all full-resolution).
+- **Also added:** a per-listing model-identity check (the page's title/`<h1>` must name the
+  expected model, else the listing is skipped) and **byte-identical dedup during download**,
+  so the same photo is never stored twice — the duplicate is recorded in the manifest with
+  `duplicate_of` pointing at the copy that was kept, rather than silently dropped.
+- **Status:** ✅ Fixed in `scripts/avtoelon_scraper.py`. **The existing dataset predates this
+  fix** — some of what the manual golden review caught as "wrong model" (Issue 3/5) was almost
+  certainly this. Re-run with `--audit` before the next collection.
+
 ## 4. Known limitations
 
 - **Labels now human-verified (golden), but from a single annotator:** the seller-declared labels were hand-verified in the manual relabel pass (Issue 5), so residual mislabels are now minimal — but verification was done by one person, not a panel, so rare subjective calls on the look-alike sedans may remain.

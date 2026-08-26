@@ -29,6 +29,8 @@ First run headful (--show) so you can watch/verify; later add nothing to keep it
 import argparse
 import asyncio
 import csv
+import hashlib
+import time
 import random
 import re
 import sys
@@ -94,6 +96,85 @@ def photo_base(u: str) -> str:
     """Size-independent key so each distinct photo is saved once, not once per size."""
     return _SIZE_SUFFIX_RE.sub("", u)
 
+
+def photo_group(u: str) -> str:
+    """The CDN directory holding one listing's photos.
+
+    Photos are served as  .../webp/<xx>/<listing-dir>/<n>-full.webp , so every photo of a
+    given listing shares the parent directory and photos of OTHER listings never do. Taking
+    the parent path is format-agnostic — it needs no knowledge of how the id is generated.
+    """
+    return u.rsplit("/", 1)[0]
+
+
+def select_gallery(candidates):
+    """Keep only the photos that belong to THIS listing.
+
+    Why this is not a CSS-selector problem
+    --------------------------------------
+    The previous version kept every <img> on the page except those inside an anchor to
+    another listing (`closest('a[href]')` containing /a/show/). That catches a card whose
+    markup is <a href="/a/show/…"><img></a>, and misses the two commonest layouts:
+
+        <div><img><a href="/a/show/…">title</a></div>     image is a SIBLING of the link
+        <div class="promo"><img></div>                    promoted block, no anchor at all
+
+    Both slipped through, so a listing's folder collected other cars' thumbnails — which is
+    label noise in training data, and worse, the same recommendation photo recurs across
+    many listings, so it can land on both sides of the train/test split.
+
+    Grouping by CDN directory is strictly stronger than any blacklist and does not depend on
+    the site's class names, which can change without notice. The listing's own group is
+    identified in priority order:
+
+      1. lightbox <a href="…-full.webp"> links — unambiguously the main gallery;
+      2. the og:image meta tag — the listing's primary photo;
+      3. failing both, the group with the most distinct photos (a gallery has many, a
+         recommendation card contributes one thumbnail).
+
+    `candidates` is [{"url": str, "src": "lightbox"|"og"|"img"}].
+    Returns (kept_urls, report_dict).
+    """
+    groups, order = {}, []
+    for c in candidates:
+        g = photo_group(c["url"])
+        if g not in groups:
+            groups[g] = {"urls": {}, "srcs": set()}
+            order.append(g)
+        # normalise to the full-resolution variant BEFORE storing: the same photo arrives
+        # both as a sized <img> thumbnail and as a -full lightbox href, and storing raw
+        # would let whichever came last win — silently saving a 408x306 thumb.
+        groups[g]["urls"][photo_base(c["url"])] = to_full(c["url"])
+        groups[g]["srcs"].add(c["src"])
+
+    if not groups:
+        return [], {"reason": "no photos found", "groups": 0}
+
+    strong = [g for g in order if "lightbox" in groups[g]["srcs"]]
+    reason = "lightbox links"
+    if not strong:
+        strong = [g for g in order if "og" in groups[g]["srcs"]]
+        reason = "og:image"
+    if not strong:
+        strong = [max(order, key=lambda g: len(groups[g]["urls"]))]
+        reason = "largest photo group"
+
+    kept = [u for g in strong for u in groups[g]["urls"].values()]
+    dropped = sum(len(groups[g]["urls"]) for g in order if g not in strong)
+    return kept, {"reason": reason, "groups": len(groups), "kept": len(kept),
+                  "dropped_foreign": dropped,
+                  "dropped_groups": [g for g in order if g not in strong]}
+
+# Words that must appear in a listing's title or <h1> for it to count as this model.
+# Keep them lowercase and permissive enough for Cyrillic/Latin spelling variants.
+MODEL_KEYWORDS = {
+    "cobalt": ("cobalt", "кобальт"),
+    "nexia3": ("nexia", "нексия"),
+    "spark":  ("spark", "спарк"),
+    "gentra": ("gentra", "джентра", "гентра"),
+    "damas":  ("damas", "дамас"),
+}
+
 OUT_DIR = Path("data/raw")
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -129,14 +210,31 @@ def listing_id_from(url: str) -> str:
 # 3. Manifest — resume support + Data-Gate audit trail.
 # ─────────────────────────────────────────────────────────────────────────────
 MANIFEST = OUT_DIR / "manifest.csv"
-MANIFEST_COLS = ["model", "listing_id", "listing_url", "image_url", "local_path"]
+MANIFEST_COLS = ["model", "listing_id", "listing_url", "image_url", "local_path",
+                 "sha256", "duplicate_of"]
+
+# sha256(bytes) -> the path we first stored those exact bytes at. Shared for the whole run
+# and rebuilt from the manifest on resume, so a photo is never written to disk twice.
+SEEN_HASHES: dict[str, str] = {}
 
 
 def load_done_listings() -> set:
+    """Resume state: which (model, listing) pairs are done, and every byte-hash already on disk.
+
+    The hash index is rebuilt here rather than kept only in memory, so a resumed run does
+    not re-download bytes an earlier run already stored. Rows written before this column
+    existed simply have no hash and are skipped.
+    """
     if not MANIFEST.exists():
         return set()
+    done = set()
     with MANIFEST.open() as f:
-        return {(r["model"], r["listing_id"]) for r in csv.DictReader(f)}
+        for r in csv.DictReader(f):
+            done.add((r["model"], r["listing_id"]))
+            h, path = r.get("sha256"), r.get("local_path")
+            if h and path and h not in SEEN_HASHES:
+                SEEN_HASHES[h] = path
+    return done
 
 
 def append_manifest(rows):
@@ -202,7 +300,7 @@ async def collect_listing_urls(page, model, search_url, max_pages, delay, rp):
     return found
 
 
-async def scrape_one_listing(context, model, url, delay, rp):
+async def scrape_one_listing(context, model, url, delay, rp, audit=None):
     """Open a listing, extract image URLs + save them. Returns manifest rows."""
     if not allowed(rp, url):
         return []
@@ -224,58 +322,115 @@ async def scrape_one_listing(context, model, url, delay, rp):
         # recommendation thumbnails — other cars' photos that repeat across pages and would
         # otherwise pollute this listing (and duplicate/contaminate the dataset). The main
         # gallery photos are wrapped in <a href="...-full.webp"> lightbox links, not /a/show/.
+        # Gather every photo-CDN URL on the page, TAGGED by where it came from. The tag is
+        # what lets select_gallery tell this listing's gallery from recommendation cards
+        # and promoted blocks — see its docstring for why a CSS blacklist cannot.
         srcs = await page.eval_on_selector_all(
             GALLERY_IMG_SELECTOR,
-            "els => els"
-            ".filter(e => { const a = e.closest('a[href]');"
-            " return !(a && (a.getAttribute('href') || '').includes('/a/show/')); })"
-            ".flatMap(e => [e.src, e.currentSrc, e.getAttribute('data-src')])",
+            "els => els.flatMap(e => [e.src, e.currentSrc,"
+            " e.getAttribute('data-src'), e.getAttribute('data-original')])",
         )
-        # <a> gallery lightbox links resolve to the -full.webp photos; recommendation cards
-        # link to /a/show/... (dropped here, and they aren't image URLs anyway).
         hrefs = await page.eval_on_selector_all(
             "a[href]",
             "els => els"
             ".filter(e => !(e.getAttribute('href') || '').includes('/a/show/'))"
             ".map(e => e.href)",
         )
-        urls, seen = [], set()
-        for s in (srcs + hrefs):
-            if not s:
-                continue
-            m = IMG_URL_RE.search(s)
+        og = await page.eval_on_selector_all(
+            "meta[property='og:image'], meta[name='og:image']",
+            "els => els.map(e => e.content)",
+        )
+
+        def _clean(raw):
+            if not raw:
+                return None
+            m = IMG_URL_RE.search(raw)
             if not m:
-                continue
+                return None
             u = m.group(0)
             if not PHOTO_HOST_RE.search(u) or IMG_SKIP_RE.search(u):
-                continue
-            u = to_full(u)                 # 120x90 thumb -> full-resolution photo
-            base = photo_base(u)
-            if base in seen:
-                continue
-            seen.add(base)
-            urls.append(u)
+                return None
+            return u
+
+        candidates = []
+        for raw, tag in ([(x, "img") for x in srcs]
+                         + [(x, "lightbox") for x in hrefs]
+                         + [(x, "og") for x in og]):
+            u = _clean(raw)
+            if u:
+                candidates.append({"url": u, "src": tag})
+
+        urls, report = select_gallery(candidates)
+
+        # Cross-model contamination guard. A model-filtered search can still surface a
+        # promoted listing for a different car, and at 30-50 classes that is no longer a
+        # rounding error — one mislabelled listing is a dozen mislabelled photos. Confirm
+        # the page itself says what we think it is before saving anything under this label.
+        if MODEL_KEYWORDS.get(model):
+            title = ((await page.title()) or "").lower()
+            head = ""
+            try:
+                h1 = await page.query_selector("h1")
+                head = ((await h1.inner_text()) if h1 else "").lower()
+            except Exception:
+                pass
+            hay = f"{title} {head}"
+            if not any(k in hay for k in MODEL_KEYWORDS[model]):
+                print(f"[{model}] SKIP {lid}: page says {(head or title)[:60]!r}, "
+                      f"expected one of {MODEL_KEYWORDS[model]}")
+                return []
+
+        if audit is not None:
+            audit.append({"model": model, "listing_id": lid, "listing_url": url,
+                          "found": len(candidates), **report})
+            print(f"[{model}] {lid}: {report['kept']} kept via {report['reason']}, "
+                  f"{report['dropped_foreign']} foreign dropped "
+                  f"({report['groups']} photo groups on page)")
+            return []
 
         dest = OUT_DIR / model
         dest.mkdir(parents=True, exist_ok=True)
+        dup = 0
         for i, u in enumerate(urls):
             ext = (re.search(r"\.(jpe?g|png|webp)", u, re.I) or [".jpg"])[0].lower()
             out = dest / f"{lid}_{i}{ext if ext.startswith('.') else '.jpg'}"
             if out.exists():
                 rows.append(dict(model=model, listing_id=lid, listing_url=url,
-                                 image_url=u, local_path=str(out)))
+                                 image_url=u, local_path=str(out),
+                                 sha256="", duplicate_of=""))
                 continue
             try:
                 # download THROUGH the browser session so Cloudflare clearance applies
                 resp = await context.request.get(u, timeout=45000)
                 if resp.ok:
-                    out.write_bytes(await resp.body())
-                    rows.append(dict(model=model, listing_id=lid, listing_url=url,
-                                     image_url=u, local_path=str(out)))
+                    data = await resp.body()
+                    digest = hashlib.sha256(data).hexdigest()
+                    # Byte-identical dedup. The same photo genuinely recurs — a seller
+                    # relisting the same car, or one photo reused across listings — and
+                    # storing it twice both wastes space and, far worse, lets one image
+                    # land on BOTH sides of the train/test split. The duplicate is still
+                    # recorded in the manifest, pointing at the copy we kept, so nothing
+                    # is silently dropped and the Data Gate can audit it.
+                    # (No await between the lookup and the insert, so concurrent listing
+                    # tasks cannot interleave and both write the same bytes.)
+                    prior = SEEN_HASHES.get(digest)
+                    if prior:
+                        rows.append(dict(model=model, listing_id=lid, listing_url=url,
+                                         image_url=u, local_path="", sha256=digest,
+                                         duplicate_of=prior))
+                        dup += 1
+                    else:
+                        out.write_bytes(data)
+                        SEEN_HASHES[digest] = str(out)
+                        rows.append(dict(model=model, listing_id=lid, listing_url=url,
+                                         image_url=u, local_path=str(out), sha256=digest,
+                                         duplicate_of=""))
             except Exception as e:
                 print(f"[{model}] img fail {u}: {e}")
             await asyncio.sleep(IMG_DOWNLOAD_DELAY)   # politeness: pace image downloads
-        print(f"[{model}] listing {lid}: {len(rows)} images")
+        kept_n = sum(1 for r in rows if r.get("local_path"))
+        print(f"[{model}] listing {lid}: {kept_n} images"
+              + (f" (+{dup} byte-identical duplicates skipped)" if dup else ""))
     except Exception as e:
         print(f"[{model}] listing {url} failed: {e}")
     finally:
@@ -283,12 +438,119 @@ async def scrape_one_listing(context, model, url, delay, rp):
     return rows
 
 
+# Model catalogue paths look like /avto/<brand>/<model>/ — the same shape as the MODELS
+# entries above, which are known-good.
+CATALOG_HREF_RE = re.compile(r"^/avto/([a-z0-9\-]+)/([a-z0-9\-]+)/?$", re.I)
+# "1 234 объявлений" / "1 234 e'lon" / "1,234 listings" — grab the number next to the noun.
+COUNT_RE = re.compile(r"([\d\s\u00a0,\.]{1,12})\s*(?:объявлен|e['\u02bc]?lon|listing|natija)", re.I)
+
+
+async def discover_models(context, rp, args):
+    """Rank the site's own model catalogue by listing volume and print a MODELS dict.
+
+    Written because the honest answer to "give me the 30-50 most common Uzbek models" is
+    that popularity is a property of the site's inventory, not of anyone's recollection.
+    This reads the catalogue, counts listings per model, and emits config you can paste —
+    so the class list is evidence, and every URL in it is one the site actually served.
+    """
+    root = urljoin(BASE, "/avto/")
+    if not allowed(rp, root):
+        print(f"[robots] disallowed: {root}")
+        return
+    page = await context.new_page()
+    await goto_polite(page, root)
+    await asyncio.sleep(args.delay)
+    hrefs = await page.eval_on_selector_all("a[href]", "els => els.map(e => e.href)")
+    await page.close()
+
+    seen, models = set(), []
+    for h in hrefs:
+        m = CATALOG_HREF_RE.match(urlparse(h).path)
+        if not m:
+            continue
+        brand, model = m.group(1).lower(), m.group(2).lower()
+        key = f"{brand}/{model}"
+        if key in seen:
+            continue
+        seen.add(key)
+        models.append((brand, model, urljoin(BASE, f"/avto/{brand}/{model}/")))
+    print(f"[discover] {len(models)} model pages linked from {root}")
+    if not models:
+        print("[discover] none found — the catalogue markup may have changed; open "
+              f"{root} and check that model links look like /avto/<brand>/<model>/")
+        return
+
+    sem = asyncio.Semaphore(args.concurrency)
+
+    async def count(brand, model, url):
+        async with sem:
+            if not allowed(rp, url):
+                return None
+            pg = await context.new_page()
+            try:
+                await goto_polite(pg, url)
+                await asyncio.sleep(args.delay)
+                body = await pg.inner_text("body")
+                m = COUNT_RE.search(body)
+                if m:
+                    n = int(re.sub(r"[^\d]", "", m.group(1)) or 0)
+                else:   # fall back to counting cards on page 1 — a floor, not a total
+                    links = await pg.eval_on_selector_all(
+                        "a[href]", "els => els.map(e => e.getAttribute('href') || '')")
+                    n = len({LISTING_HREF_RE.search(h).group(1)
+                             for h in links if LISTING_HREF_RE.search(h)})
+                title = ((await pg.title()) or "").split("|")[0].strip()
+                return (brand, model, url, n, title)
+            except Exception as e:
+                print(f"[discover] {brand}/{model}: {str(e)[:70]}")
+                return None
+            finally:
+                await pg.close()
+
+    got = [r for r in await asyncio.gather(*(count(*m) for m in models)) if r]
+    got.sort(key=lambda r: -r[3])
+    top = got[:args.discover]
+
+    print(f"\n# ── top {len(top)} models by listing count "
+          f"(discovered {time.strftime('%Y-%m-%d')}) ──")
+    print("MODELS = {")
+    for brand, model, url, n, _ in top:
+        label = f"{brand}_{model}".replace("-", "_")
+        print(f'    "{label}":{" " * max(1, 22 - len(label))}"{url}",'
+              f'   # {n:,} listings')
+    print("}\n")
+    print("MODEL_KEYWORDS = {")
+    for brand, model, _u, _n, _t in top:
+        label = f"{brand}_{model}".replace("-", "_")
+        kw = model.replace("-", " ")
+        print(f'    "{label}":{" " * max(1, 22 - len(label))}("{kw}",),')
+    print("}")
+    print("\n# Paste both dicts over the ones at the top of this file. Add Cyrillic spellings")
+    print("# to MODEL_KEYWORDS where a model is commonly written that way (e.g. \u043d\u0435\u043a\u0441\u0438\u044f for nexia) —")
+    print("# the keywords are what stop a promoted listing for another car being saved")
+    print("# under this label.")
+
+    out = OUT_DIR / "discovered_models.csv"
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    with out.open("w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["rank", "brand", "model", "url", "listings", "page_title"])
+        for i, (brand, model, url, n, title) in enumerate(got, 1):
+            w.writerow([i, brand, model, url, n, title])
+    print(f"\n[discover] full ranking of {len(got)} models -> {out}")
+
+
 async def run(args):
-    if not MODELS:
+    if not MODELS and not args.discover:
         sys.exit("Fill the MODELS dict at the top with your native model-filter URLs first.")
     rp = load_robots()
     done = load_done_listings()
-    print(f"[resume] {len(done)} (model,listing) pairs already collected")
+    audit = [] if args.audit else None
+    if audit is not None:
+        print(f"[audit] dry run — inspecting up to {args.audit} listings per model, "
+              f"downloading nothing\n")
+    else:
+        print(f"[resume] {len(done)} (model,listing) pairs already collected")
 
     async with async_playwright() as pw:
         # --channel drives an installed branded browser (e.g. "chrome" or "msedge") instead
@@ -308,6 +570,11 @@ async def run(args):
         )
         if args.insecure:
             print("[warn] --insecure: TLS certificate verification is DISABLED for this run")
+        if args.discover:
+            await discover_models(context, rp, args)
+            await browser.close()
+            return
+
         sem = asyncio.Semaphore(args.concurrency)
 
         for model, search_url in MODELS.items():
@@ -318,20 +585,45 @@ async def run(args):
             await nav.close()
 
             todo = [u for u in listings if (model, listing_id_from(u)) not in done]
+            if audit is not None:
+                todo = listings[:args.audit]      # audit re-inspects, ignoring resume state
             print(f"[{model}] {len(todo)} new listings to scrape "
                   f"({len(listings) - len(todo)} already done)")
 
             async def bounded(u):
                 async with sem:
-                    return await scrape_one_listing(context, model, u, args.delay, rp)
+                    return await scrape_one_listing(context, model, u, args.delay, rp, audit)
 
             results = await asyncio.gather(*(bounded(u) for u in todo))
             rows = [r for batch in results for r in batch]
             if rows:
                 append_manifest(rows)
-            print(f"[{model}] saved {len(rows)} images\n")
+            stored = sum(1 for r in rows if r.get("local_path"))
+            dups = sum(1 for r in rows if r.get("duplicate_of"))
+            print(f"[{model}] saved {stored} images"
+                  + (f", skipped {dups} byte-identical duplicates" if dups else "") + "\n")
 
         await browser.close()
+
+    if audit is not None:
+        tot = sum(a["kept"] for a in audit)
+        drop = sum(a["dropped_foreign"] for a in audit)
+        rpt = OUT_DIR / "audit_report.csv"
+        OUT_DIR.mkdir(parents=True, exist_ok=True)
+        with rpt.open("w", newline="") as f:
+            cols = ["model", "listing_id", "listing_url", "found", "kept",
+                    "dropped_foreign", "groups", "reason"]
+            w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
+            w.writeheader()
+            w.writerows(audit)
+        print(f"\n[audit] {len(audit)} listings · {tot} photos would be kept · "
+              f"{drop} foreign photos dropped")
+        print(f"[audit] wrote {rpt}")
+        print("\nOpen a couple of those listing_urls in a browser and count the photos in "
+              "the gallery.\nIf 'kept' matches the gallery count, the scoping is correct on "
+              "the live site.\nIf it does not, send me the audit_report.csv row and the "
+              "listing URL.")
+        return
     print("Done. Review data/raw/manifest.csv and the per-model folders.")
 
 
@@ -351,6 +643,14 @@ def main():
     ap.add_argument("--channel", default=None,
                     help="use an installed browser channel (e.g. 'chrome', 'msedge') instead "
                          "of Playwright's bundled Chromium")
+    ap.add_argument("--discover", type=int, default=0, metavar="N",
+                    help="rank the site's model catalogue by listing count and print the top "
+                         "N as a ready-to-paste MODELS dict. Use this to choose the class "
+                         "list from evidence instead of guessing.")
+    ap.add_argument("--audit", type=int, default=0, metavar="N",
+                    help="dry run: inspect N listings per model, print what WOULD be kept vs "
+                         "dropped and why, download nothing. Use this to verify the scraper "
+                         "against the live site before a real collection run.")
     ap.add_argument("--insecure", action="store_true",
                     help="opt in to ignore_https_errors — ONLY for networks that intercept TLS; "
                          "disables certificate verification for this run")
