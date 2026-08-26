@@ -74,7 +74,41 @@ browser-independent; the audit above validates it end-to-end in this exact confi
   partial data was lost — no images had been downloaded yet (`data/raw/` holds only the two
   audit/discovery CSVs).
 
-_(model selection itself: pending site recovery)_
+**Site recovered ~02:06** (probe loop; block lasted ~95 min). Discovery then ran clean at
+gentler settings (concurrency 2, delay 1.5s): all 59 catalogue models ranked with real
+counts — and Cobalt's 2,964 matches the "Найдено 2 965" I had read off the live page by
+eye, validating the fixed counter.
+
+**Class list: 31 models** (`data/raw/models_config.py`), selected by
+`scripts/curate_models.py` with every decision recorded in `data/raw/curated_models.csv`:
+
+- **Alias merge (live-verified):** the site serves one listing pool per model *family* —
+  `/avto/chevrolet/gentra/` and `/avto/chevrolet/lacetti/` return the identical 4,452
+  listings (same first-page IDs, same order); matiz == matiz-best likewise. Aliases and
+  Daewoo/Chevrolet badge twins are merged so one visual class is one label: 6 catalogue
+  entries dropped this way.
+- **Volume floor 100 listings:** 22 models dropped (Sportage 99 down to VAZ-2101 54) —
+  below ~100 live listings even a partial sample is too thin to be a usable class. The
+  2,000-image target is reachable for roughly the top 14 classes (400+ listings); classes
+  15–31 will land below target and the report will state the real per-model counts.
+- **Keyword guard fixed for digit models:** single-token slugs (nexia3) never appear in
+  real titles ("Chevrolet Nexia 3") — spelled-out Latin + Cyrillic forms generated for
+  every class (нексия 3, кобальт, ларгус/largus for Lada R90, song plus, к5…).
+
+## Phase 2 addendum — stopping logic live-tested
+
+`--only chevrolet_cobalt --target-images 12 --max-pages 1`: stopped at 15/12 (in-flight
+overshoot only, 26 listings skipped), 21 files on disk with listing-id filenames, hashed
+manifest rows with `-full.webp` URLs; re-run reported "target met (21/12) — skipping"
+without crawling pagination. A downloaded photo was opened and verified: full-resolution
+exterior shot of a Cobalt LTZ (badge legible).
+
+## Phase 3 — collection
+
+**Launched ~02:2x** — 31 models, `--target-images 2000 --max-pages 30 --concurrency 3`,
+politeness settings untouched (2s listing hold, 0.4s image spacing). Running headless in
+the background with a log watchdog (crashes, backoffs, per-model results). Disk before
+run: 253 GB free.
 
 ## Phase 2 — code changes for the run
 
