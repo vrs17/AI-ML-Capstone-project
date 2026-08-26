@@ -190,6 +190,17 @@ MODEL_KEYWORDS = {
 }
 
 OUT_DIR = Path("data/raw")
+
+# Optional override: `curate_models.py --write-config` emits data/raw/models_config.py with
+# the evidence-ranked class list. When present it replaces the five-model default above, so
+# a discovery -> curation -> collection chain needs no hand-edit of this file in between.
+try:
+    sys.path.insert(0, str(OUT_DIR.resolve()))
+    from models_config import MODEL_KEYWORDS as _CURATED_KW, MODELS as _CURATED_MODELS
+    MODELS, MODEL_KEYWORDS = dict(_CURATED_MODELS), dict(_CURATED_KW)
+    print(f"[config] using data/raw/models_config.py ({len(MODELS)} models)")
+except ImportError:
+    pass
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/120.0 Safari/537.36"
