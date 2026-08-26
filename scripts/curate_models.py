@@ -36,6 +36,14 @@ OUT = Path("data/raw/curated_models.csv")
 CYRILLIC = {
     "cobalt": ["кобальт"], "gentra": ["джентра", "гентра"], "spark": ["спарк"],
     "damas": ["дамас"], "matiz": ["матиз"], "nexia": ["нексия"],
+    # digit-suffixed single-token slugs: the slug alone ("nexia3") never appears in real
+    # titles ("Chevrolet Nexia 3"), so spell out the spaced Latin + Cyrillic forms.
+    "nexia2": ["nexia 2", "нексия 2", "нексия"],
+    "nexia3": ["nexia 3", "нексия 3", "нексия"],
+    "malibu2": ["malibu 2", "malibu", "малибу"],
+    "vesta": ["веста"], "lada-r90": ["largus", "ларгус", "r90"],
+    "song-plus-dm-i-champion": ["song plus", "song", "сонг"],
+    "song-plus-ev-champion": ["song plus", "song", "сонг"],
     "lacetti": ["лачетти", "ласетти"], "labo": ["лабо"], "captiva": ["каптива"],
     "malibu": ["малибу"], "onix": ["оникс"], "epica": ["эпика"],
     "equinox": ["эквинокс"], "monza": ["монза"], "orlando": ["орландо"],
@@ -59,6 +67,12 @@ BRAND_TWINS = [
     ({"chevrolet", "daewoo"}, "lacetti"),
     ({"chevrolet", "daewoo"}, "matiz-best"),
 ]
+
+# Catalogue slugs the SITE aliases to one listing pool — verified live 2026-08-27 by
+# comparing result counts and first-page listing IDs: /avto/chevrolet/gentra/ and
+# /avto/chevrolet/lacetti/ return the identical 4,452 listings in identical order, and the
+# matiz / matiz-best pools match the same way. Collecting an alias would duplicate a class.
+SLUG_ALIASES = {"lacetti": "gentra", "matiz-best": "matiz"}
 
 
 def keywords_for(model: str) -> tuple:
@@ -109,6 +123,10 @@ def main() -> None:
         why = ""
         if n < args.min_listings:
             why = f"below volume floor ({n} < {args.min_listings})"
+        elif model in SLUG_ALIASES and any(k["model"].lower() == SLUG_ALIASES[model]
+                                           for k in kept):
+            why = (f"same listing pool as {SLUG_ALIASES[model]} "
+                   f"(site aliases the family; verified by identical count + first-page IDs)")
         else:
             twin_key = next((t for bs, t in BRAND_TWINS if model == t and brand in bs), None)
             if twin_key:
