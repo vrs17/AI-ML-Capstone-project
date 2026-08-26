@@ -148,7 +148,8 @@ def select_gallery(candidates):
         groups[g]["srcs"].add(c["src"])
 
     if not groups:
-        return [], {"reason": "no photos found", "groups": 0}
+        return [], {"reason": "no photos found", "groups": 0, "kept": 0,
+                    "dropped_foreign": 0, "dropped_groups": []}
 
     strong = [g for g in order if "lightbox" in groups[g]["srcs"]]
     reason = "lightbox links"
@@ -156,8 +157,21 @@ def select_gallery(candidates):
         strong = [g for g in order if "og" in groups[g]["srcs"]]
         reason = "og:image"
     if not strong:
-        strong = [max(order, key=lambda g: len(groups[g]["urls"]))]
-        reason = "largest photo group"
+        # Live-site finding (audit 2026-08-26): a listing posted with NO photos still shows
+        # kcdn thumbnails — the "similar listings" sidebar — as several 1-photo groups. The
+        # old unconditional fallback then kept a DIFFERENT car's thumbnail. A real gallery
+        # concentrates many photos in one CDN directory; recommendation cards contribute one
+        # each. So only trust the fallback when one group clearly dominates — otherwise keep
+        # nothing: a skipped odd listing is cheap, a mislabelled photo poisons the dataset.
+        biggest = max(order, key=lambda g: len(groups[g]["urls"]))
+        if len(groups[biggest]["urls"]) >= 3:
+            strong = [biggest]
+            reason = "largest photo group"
+        else:
+            return [], {"reason": "no reliable gallery signal", "groups": len(groups),
+                        "kept": 0,
+                        "dropped_foreign": sum(len(groups[g]["urls"]) for g in order),
+                        "dropped_groups": list(order)}
 
     kept = [u for g in strong for u in groups[g]["urls"].values()]
     dropped = sum(len(groups[g]["urls"]) for g in order if g not in strong)
@@ -228,7 +242,7 @@ def load_done_listings() -> set:
     if not MANIFEST.exists():
         return set()
     done = set()
-    with MANIFEST.open() as f:
+    with MANIFEST.open(encoding="utf-8") as f:
         for r in csv.DictReader(f):
             done.add((r["model"], r["listing_id"]))
             h, path = r.get("sha256"), r.get("local_path")
@@ -240,7 +254,9 @@ def load_done_listings() -> set:
 def append_manifest(rows):
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     new = not MANIFEST.exists()
-    with MANIFEST.open("a", newline="") as f:
+    # utf-8 explicitly: Windows defaults to cp1252, which cannot encode Cyrillic and
+    # crashes the write (seen live when discovered_models.csv hit a Russian page title).
+    with MANIFEST.open("a", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=MANIFEST_COLS)
         if new:
             w.writeheader()
@@ -348,7 +364,12 @@ async def scrape_one_listing(context, model, url, delay, rp, audit=None):
             if not m:
                 return None
             u = m.group(0)
-            if not PHOTO_HOST_RE.search(u) or IMG_SKIP_RE.search(u):
+            # The HOST itself must be the photo CDN — not merely mentioned anywhere in the
+            # string. Live-site finding (audit 2026-08-26): the VK/OK share buttons embed the
+            # listing's photo #1 as a percent-encoded parameter (https://vk.com/share.php?
+            # ...image=...kcdn.online...1-full.webp), which a substring test passes; each
+            # then formed a bogus 1-photo "lightbox" group and inflated every listing by +2.
+            if not PHOTO_HOST_RE.search(urlparse(u).netloc) or IMG_SKIP_RE.search(u):
                 return None
             return u
 
@@ -441,8 +462,12 @@ async def scrape_one_listing(context, model, url, delay, rp, audit=None):
 # Model catalogue paths look like /avto/<brand>/<model>/ — the same shape as the MODELS
 # entries above, which are known-good.
 CATALOG_HREF_RE = re.compile(r"^/avto/([a-z0-9\-]+)/([a-z0-9\-]+)/?$", re.I)
-# "1 234 объявлений" / "1 234 e'lon" / "1,234 listings" — grab the number next to the noun.
-COUNT_RE = re.compile(r"([\d\s\u00a0,\.]{1,12})\s*(?:объявлен|e['\u02bc]?lon|listing|natija)", re.I)
+# "Найдено 2 965 объявлений" / "1 234 e'lon" — the number next to the noun, and it MUST
+# start with a digit: the nav menu says "Мои объявления" long before the result count,
+# and a digit-optional pattern matched that first (capturing only whitespace -> 0
+# listings for every model, while the "successful" match also suppressed the card-count
+# fallback). Found against the live site, 2026-08-26.
+COUNT_RE = re.compile(r"(\d[\d\s\u00a0,\.]{0,11})\s*(?:объявлен|e['\u02bc]?lon|listing|natija)", re.I)
 
 
 async def discover_models(context, rp, args):
@@ -532,7 +557,7 @@ async def discover_models(context, rp, args):
 
     out = OUT_DIR / "discovered_models.csv"
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    with out.open("w", newline="") as f:
+    with out.open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["rank", "brand", "model", "url", "listings", "page_title"])
         for i, (brand, model, url, n, title) in enumerate(got, 1):
@@ -610,7 +635,7 @@ async def run(args):
         drop = sum(a["dropped_foreign"] for a in audit)
         rpt = OUT_DIR / "audit_report.csv"
         OUT_DIR.mkdir(parents=True, exist_ok=True)
-        with rpt.open("w", newline="") as f:
+        with rpt.open("w", newline="", encoding="utf-8") as f:
             cols = ["model", "listing_id", "listing_url", "found", "kept",
                     "dropped_foreign", "groups", "reason"]
             w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
