@@ -12,8 +12,9 @@ profitable trust layers on identical foundations (Autoteka, Aster Check, PakWhee
 carVertical — which covers 28 countries but not Uzbekistan). The recommended venture,
 **Tekshir**, sells mobile inspections (299k сум) and instant history reports (49k сум) to
 buyers, subscriptions to dealers, and a valuation/verification API to the 23 banks whose
-regulator now risk-weights auto loans by collateral accuracy. Base case: **$1.45M revenue in
-year 3, 72% gross margin, break-even ~month 23, $400k seed**.
+regulator now risk-weights auto loans by collateral accuracy. Base case (formula-driven
+workbook, recalculated): **$1.45M revenue in year 3 at ~68% gross margin, monthly break-even
+~month 24, cumulative cash-positive ~month 36, $400k seed** against a ~$240k trough.
 
 ## Where the capstone model fits
 
