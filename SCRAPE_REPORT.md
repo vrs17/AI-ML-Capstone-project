@@ -138,6 +138,31 @@ correctly yield 0 images instead of a recommendation thumbnail.
 
 _(pending)_
 
+### Overnight timeline (the honest version)
+
+| When | Event |
+|---|---|
+| ~23:4x–00:0x | Phase 0: bugs found on live site, fixed, re-audited — 4/4 match |
+| ~00:20 | **Block 1** begins (~95 min): site refuses all connections |
+| ~02:06 | Recovery; discovery ranks all 59 models with real counts |
+| ~02:1x | 31-class list curated (alias pools verified live); stop-logic live-tested |
+| 02:13 | **Collection launched** (conc 3) — 1,843 images in 15 min |
+| 02:28 | Timeout cluster → proactive stop. **Block 2** (~2.5 h) |
+| 04:57 | Auto-resume at conc 2 / delay 2 — gentra completes at 2,004 ✓ |
+| ~05:25 | Second timeout pair → stop per trigger. **Block 3** begins; cobalt at 1,348 |
+| 05:36→ | Auto-resume chain probing every 10 min; on recovery continues at conc 1 / delay 3 |
+
+Banked so far (all resumable, per-listing manifest): **gentra 2,004 (target met) ·
+cobalt 1,348 · total ≈ 3,352 images**, zero data loss across three interruptions.
+
+**Assessment:** the site applies an escalating night-time IP throttle triggered by
+sustained crawl volume (blocks: ~95 min → ~150 min → ongoing), independent of our
+politeness settings' per-request gentleness. The run therefore continues into the day at
+minimum footprint (one page at a time, 3s delays), auto-resuming after each block. At
+~600 listings/hour the remaining 29 models need roughly 10 further crawl-hours — real
+completion will land during the day, not by morning. Every stop/resume is automatic;
+partial data stays intact and honest per-model counts will be reported when the run ends.
+
 ## Phase 4 — verification
 
 _(pending)_
