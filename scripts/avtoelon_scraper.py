@@ -617,6 +617,20 @@ async def run(args):
         )
         if args.insecure:
             print("[warn] --insecure: TLS certificate verification is DISABLED for this run")
+        if args.lite:
+            # Metered-connection mode (phone hotspot). The photos we KEEP are fetched
+            # separately through context.request.get, so the browser never needs to render
+            # the page's own thumbnails, ads, fonts or videos — and those are the bulk of
+            # the bytes. Gallery detection reads DOM attributes (a[href], img src/data-src,
+            # og:image), which are present whether or not the bytes were downloaded.
+            await context.route(
+                "**/*",
+                lambda route: route.abort()
+                if route.request.resource_type in ("image", "media", "font")
+                else route.continue_(),
+            )
+            print("[lite] blocking in-page images/media/fonts to save mobile data "
+                  "(saved photos are unaffected)")
         if args.discover:
             await discover_models(context, rp, args)
             await browser.close()
@@ -731,6 +745,10 @@ def main():
                     help="dry run: inspect N listings per model, print what WOULD be kept vs "
                          "dropped and why, download nothing. Use this to verify the scraper "
                          "against the live site before a real collection run.")
+    ap.add_argument("--lite", action="store_true",
+                    help="metered-connection mode: don't let the browser download the page's "
+                         "own images/fonts/video. Cuts data use sharply on a phone hotspot; "
+                         "the photos actually saved are fetched separately and unaffected.")
     ap.add_argument("--insecure", action="store_true",
                     help="opt in to ignore_https_errors — ONLY for networks that intercept TLS; "
                          "disables certificate verification for this run")
