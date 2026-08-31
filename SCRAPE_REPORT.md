@@ -163,6 +163,71 @@ minimum footprint (one page at a time, 3s delays), auto-resuming after each bloc
 completion will land during the day, not by morning. Every stop/resume is automatic;
 partial data stays intact and honest per-model counts will be reported when the run ends.
 
-## Phase 4 — verification
+## Scope change (2026-08-31)
 
-_(pending)_
+Five classes — cobalt, spark, damas, gentra, nexia3 — were already covered elsewhere, so
+they were excluded from further collection. The exclusion **cascades to the same car under
+other labels**, which matters more than the flag itself: excluding `gentra` alone would have
+un-suppressed `chevrolet_lacetti` (the site serves it from gentra's identical listing pool)
+and `daewoo_damas` (chevrolet_damas's badge twin), re-collecting the very images being
+skipped. 31 → 26 classes. `daewoo_nexia` is deliberately retained: Nexia 1 is a visually
+distinct car from Nexia 3, confirmed on the contact sheets.
+
+Per-class target lowered 2000 → **800** to favour breadth over depth given the throttle.
+
+## Collection progress
+
+| Class | Images | Status |
+|---|---|---|
+| chevrolet_gentra | 2,004 | pre-existing |
+| chevrolet_cobalt | 2,007 | pre-existing |
+| chevrolet_damas | 681 | pre-existing |
+| chevrolet_matiz | 807 | complete |
+| chevrolet_nexia2 | 809 | complete |
+| daewoo_nexia | 806 | complete |
+| chevrolet_tracker_2 | 805 | complete |
+| chevrolet_labo | 807 | complete |
+| chevrolet_captiva | 324 | partial |
+
+**9,050 images · 9,372 manifest rows · 5 of 26 in-scope classes complete.**
+
+## The throttle, characterized
+
+Six blocks observed. The mechanism is a **per-IP volume budget of roughly 400–600 listings**,
+after which the site refuses all connections for 1.5–2.5 hours. Politeness settings do not
+prevent it — concurrency 3 reached ~330 listings, concurrency 2 reached ~500–600. Switching
+networks (phone hotspot) **resets the counter but not its size**: that IP blocked after 507
+listings.
+
+Working practice: stop at the first cluster of hard failures rather than crawling into the
+block (verified by a bounded no-progress check — listing count *and* file count frozen for
+60s+, since a lone backoff is usually just a dead listing). Every stop is resumable; across
+six blocks and two process kills, nothing has been lost.
+
+## Phase 4 — verification (partial, offline checks done during blocks)
+
+**Label purity — good.** Contact sheets (`scripts/contact_sheets.py`, seeded sample of 20
+per class → `reports/contact_sheets/`) show each folder containing the right car: labo is
+consistently Labo micro-trucks, daewoo_nexia consistently the classic Nexia sedan. No
+wrong-model contamination found.
+
+**Composition — 78.7% vehicle-visible, but that is an upper bound.**
+`scripts/audit_composition.py` (read-only) over 540 sampled images:
+
+| Class | vehicle-visible | | Class | vehicle-visible |
+|---|---|---|---|---|
+| matiz | 83.3% | | labo | 78.3% |
+| daewoo_nexia | 83.3% | | captiva | 76.7% |
+| cobalt | 81.7% | | gentra | 76.7% |
+| nexia2 | 80.0% | | damas | 68.3% |
+| tracker_2 | 80.0% | | | |
+
+Validated against hand-labelled photos, the detector correctly rejects dashboards, seats and
+instrument clusters (0% car area) but **wrongly keeps engine bays (64–98%) and door cards
+(90%)** — they fill the frame with bodywork. Raising the area threshold makes this worse, not
+better, since an engine bay outscores a genuine side shot. True whole-car yield is therefore
+about **60–65%**, i.e. ~500–520 usable images per 800-image class. Separating detail shots
+needs shape reasoning or a purpose-trained classifier, not a detector-area rule.
+
+_(Remaining Phase 4 items — cross-model dedup over the full set, final per-model counts —
+run once collection completes.)_

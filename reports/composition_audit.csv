@@ -1,4 +1,10 @@
 class,total_files,sampled,usable_exterior,usable_pct,no_vehicle,vehicle_too_small,unreadable,projected_usable_in_class
-chevrolet_cobalt,2007,120,97,80.8,21,2,0,1622
-chevrolet_damas,681,120,93,77.5,19,8,0,528
-chevrolet_gentra,2004,120,87,72.5,29,4,0,1453
+chevrolet_captiva,324,60,46,76.7,13,1,0,248
+chevrolet_cobalt,2007,60,49,81.7,10,1,0,1639
+chevrolet_damas,681,60,41,68.3,12,7,0,465
+chevrolet_gentra,2004,60,46,76.7,9,5,0,1536
+chevrolet_labo,807,60,47,78.3,13,0,0,632
+chevrolet_matiz,807,60,50,83.3,8,2,0,672
+chevrolet_nexia2,809,60,48,80.0,10,2,0,647
+chevrolet_tracker_2,805,60,48,80.0,11,1,0,644
+daewoo_nexia,806,60,50,83.3,10,0,0,672
