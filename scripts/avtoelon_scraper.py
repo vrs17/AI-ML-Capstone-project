@@ -637,6 +637,7 @@ async def run(args):
             return
 
         sem = asyncio.Semaphore(args.concurrency)
+        empty_streak = {"n": 0}
 
         for model, search_url in models.items():
             # --target-images: enough is enough. Checked BEFORE walking listing pages so a
@@ -651,6 +652,22 @@ async def run(args):
                 nav, model, search_url, args.max_pages, args.delay, rp
             )
             await nav.close()
+
+            # Network-outage guard. A DNS/connectivity failure makes EVERY page load fail,
+            # and without this the run marches through every remaining model collecting
+            # nothing — wasting the pass and hammering a network that is already down.
+            # Three models in a row that yield no listings at all means the problem is the
+            # connection, not the models, so stop and let the caller resume later.
+            if not listings:
+                empty_streak["n"] += 1
+                if empty_streak["n"] >= 3:
+                    print("")
+                    print(f"[abort] {empty_streak['n']} models in a row returned no listings — "
+                          "the connection looks down. Stopping so the run can resume "
+                          "cleanly later (nothing collected is lost).")
+                    break
+            else:
+                empty_streak["n"] = 0
 
             todo = [u for u in listings if (model, listing_id_from(u)) not in done]
             if audit is not None:
