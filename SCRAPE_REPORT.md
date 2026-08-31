@@ -175,34 +175,94 @@ distinct car from Nexia 3, confirmed on the contact sheets.
 
 Per-class target lowered 2000 → **800** to favour breadth over depth given the throttle.
 
-## Collection progress
+## Collection progress (2026-08-31, 22:50)
 
 | Class | Images | Status |
 |---|---|---|
-| chevrolet_gentra | 2,004 | pre-existing |
-| chevrolet_cobalt | 2,007 | pre-existing |
+| vaz_vesta | 821 | at target |
+| chevrolet_epica | 816 | at target |
+| vaz_2106 | 812 | at target |
+| vaz_2107 | 811 | at target |
+| kia_k_5 | 811 | at target |
+| chevrolet_tracker | 811 | at target |
+| chevrolet_malibu | 810 | at target |
+| chevrolet_nexia2 | 809 | at target |
+| chevrolet_captiva | 808 | at target |
+| chevrolet_onix | 807 | at target |
+| chevrolet_matiz | 807 | at target |
+| chevrolet_labo | 807 | at target |
+| daewoo_tico | 806 | at target |
+| daewoo_nexia | 806 | at target |
+| chevrolet_malibu2 | 806 | at target |
+| chevrolet_tracker_2 | 805 | at target |
+| chevrolet_equinox | 803 | at target |
+| chevrolet_monza | 719 | complete (inventory ceiling) |
+| kia_sonet | 691 | complete (inventory ceiling) |
+| byd_chazor | 617 | complete (inventory ceiling) |
+| kia_sorento | 446 | partial |
+| vaz_lada_r90 | 0 | **not started** |
+| kia_sportage | 0 | **not started** |
+| chery_tiggo_7_pro | 0 | **not started** |
+| chery_arrizo_6_pro | 0 | **not started** |
+| byd_song_plus_dm_i_champion | 0 | **not started** |
+| chevrolet_gentra | 2004 | pre-existing |
+| chevrolet_cobalt | 2007 | pre-existing |
 | chevrolet_damas | 681 | pre-existing |
-| chevrolet_matiz | 807 | complete |
-| chevrolet_nexia2 | 809 | complete |
-| daewoo_nexia | 806 | complete |
-| chevrolet_tracker_2 | 805 | complete |
-| chevrolet_labo | 807 | complete |
-| chevrolet_captiva | 324 | partial |
 
-**9,050 images · 9,372 manifest rows · 5 of 26 in-scope classes complete.**
+**Total: 20,921 images**
 
-## The throttle, characterized
+**21 of 26 in-scope classes collected; 5 not started.** Every filename carries its
+listing_id, and `data/raw/manifest.csv` records every stored image with its SHA-256.
 
-Six blocks observed. The mechanism is a **per-IP volume budget of roughly 400–600 listings**,
-after which the site refuses all connections for 1.5–2.5 hours. Politeness settings do not
-prevent it — concurrency 3 reached ~330 listings, concurrency 2 reached ~500–600. Switching
-networks (phone hotspot) **resets the counter but not its size**: that IP blocked after 507
-listings.
+Classes below 800 are **inventory-limited, not shortfalls**: the site simply has no more
+listings for them (monza 156 listings, sonet 161, chazor 118). Re-running them adds zero
+images, which was verified directly — a second pass over monza and sonet saved 0.
 
-Working practice: stop at the first cluster of hard failures rather than crawling into the
-block (verified by a bounded no-progress check — listing count *and* file count frozen for
-60s+, since a lone backoff is usually just a dead listing). Every stop is resumable; across
-six blocks and two process kills, nothing has been lost.
+### Remaining work
+kia_sorento (446, partial) plus chery_tiggo_7_pro, chery_arrizo_6_pro,
+byd_song_plus_dm_i_champion, vaz_lada_r90, kia_sportage — all 99-112 listings, so expect
+roughly 500-650 images each. One clean session should finish them.
+
+### Class-list changes during the run
+- 5 classes excluded as already collected (cobalt, spark, damas, gentra, nexia3), which
+  **cascaded** to 3 more that are the same cars under other labels (chevrolet_lacetti and
+  daewoo_lacetti share gentra's listing pool; daewoo_damas is chevrolet_damas rebadged).
+- vaz_2121 dropped by request; kia_sportage added in its place. Checked the alternatives
+  rather than assuming: Toyota has 159 listings across 44 models, Kia 857 across ~40, BYD
+  692 across ~50 — spread so thin that only kia_sportage (101) cleared the 100 floor, and
+  the Kia/BYD models already in the list were the most common ones available.
+- Target lowered 2000 -> 800 to favour breadth over depth.
+
+## Phase 3 — reliability findings
+
+**Site throttle:** a per-IP budget of roughly 400-600 listings, then 1.5-2.5 hours of
+refused connections. Politeness settings do not prevent it (concurrency 3 reached ~330
+listings, concurrency 2 reached ~500-600). Switching networks resets the counter but not
+its size. Nine blocks were absorbed this way.
+
+**Local network faults are a different failure and need a different response.** Three
+distinct signatures appeared, and confusing them wastes hours:
+
+| Signature | Cause | Correct response |
+|---|---|---|
+| `ERR_CONNECTION_TIMED_OUT`, gradual | site throttle | stop, cool down 1.5-2.5h |
+| `ERR_NAME_NOT_RESOLVED`, all at once | DNS / connection down | stop, wait for the network |
+| `ERR_NETWORK_IO_SUSPENDED` / `CHANGED` | machine slept or Wi-Fi switched | restart once connected |
+
+A curl test is useless for diagnosis here: avtoelon.uz blocks plain HTTP clients as bot
+protection, so curl fails permanently regardless of our status. Only the browser probe is
+diagnostic — that distinction cost real time before it was pinned down.
+
+**Guard added after two DNS outages** each burned a full pass: the run now aborts when 3
+consecutive models return no listings, since that means the connection is down rather than
+the models being empty. It fired correctly on its first outing, stopping after 3 classes
+instead of churning through 8.
+
+**Stop-at-onset discipline:** a bounded no-progress check (listing count *and* file count
+frozen for 60s+) distinguishes a real block from an isolated dead listing. Stopping early
+consistently preserved more data than crawling into a block. Across nine blocks, two
+process kills, a two-hour machine sleep and several network flips, **nothing collected was
+ever lost** — the per-listing manifest writes made every interruption resumable.
 
 ## Phase 4 — verification (partial, offline checks done during blocks)
 
