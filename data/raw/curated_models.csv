@@ -29,32 +29,32 @@ rank,brand,model,url,listings,page_title,decision
 28,vaz,vesta,https://avtoelon.uz/avto/vaz/vesta/,160,Купить Lada Vesta: Лада Веста цены в Узбекистане — Avtoelon.uz,keep
 29,chevrolet,monza,https://avtoelon.uz/avto/chevrolet/monza/,156,Chevrolet Monza цена: купить Шевроле Монца в Узбекистане - Avtoelon.uz,keep
 30,chevrolet,epica,https://avtoelon.uz/avto/chevrolet/epica/,148,Купить Шевроле Эпика: цены на Chevrolet Epica в Узбекистане — Avtoelon.uz,keep
-31,vaz,2121,https://avtoelon.uz/avto/vaz/2121/,127,Нива (ВАЗ) 2121 цена: Купить автомобиль Niva 2121 в Узбекистане — Avtoelon.uz,keep
+31,vaz,2121,https://avtoelon.uz/avto/vaz/2121/,127,Нива (ВАЗ) 2121 цена: Купить автомобиль Niva 2121 в Узбекистане — Avtoelon.uz,drop: excluded by request (already collected)
 32,byd,chazor,https://avtoelon.uz/avto/byd/chazor/,118,BYD Chazor купить в Узбекистане - Avtoelon.uz,keep
 33,kia,sorento,https://avtoelon.uz/avto/kia/sorento/,116,Авто Kia Sorento: купить Киа Соренто бу и новые в Узбекистане - Avtoelon.uz,keep
 34,chery,tiggo-7-pro,https://avtoelon.uz/avto/chery/tiggo-7-pro/,112,Chery Tiggo 7 Pro цена: купить Чери Tiggo 7 Pro в Узбекистане - Avtoelon.uz,keep
 35,chery,arrizo-6-pro,https://avtoelon.uz/avto/chery/arrizo-6-pro/,104,Chery Arrizo 6 Pro цена: купить Чери Arrizo 6 Pro в Узбекистане - Avtoelon.uz,keep
 36,byd,song-plus-dm-i-champion,https://avtoelon.uz/avto/byd/song-plus-dm-i-champion/,102,BYD Song Plus DM-i Champion цена: купить БИД Song Plus DM-i Champion в Узбекистане - Avtoelon.uz,keep
 37,vaz,lada-r90,https://avtoelon.uz/avto/vaz/lada-r90/,100,Цена на автомобиль Lada Largus в Узбекистане — Avtoelon.uz,keep
-38,kia,sportage,https://avtoelon.uz/avto/kia/sportage/,99,Машины Kia Sportage: цена Киа Спортейдж в Узбекистане - Avtoelon.uz,drop: below volume floor (99 < 100)
-39,chevrolet,orlando,https://avtoelon.uz/avto/chevrolet/orlando/,94,Chevrolet Orlando цена: купить автомобиль Шевроле Орландо в Узбекистане — Avtoelon.uz,drop: below volume floor (94 < 100)
-40,kia,carnival,https://avtoelon.uz/avto/kia/carnival/,76,Kia Carnival цена: купить машину Киа Карнивал в Узбекистане - Avtoelon.uz,drop: below volume floor (76 < 100)
-41,hyundai,santa-fe,https://avtoelon.uz/avto/hyundai/santa-fe/,73,Купить автомобиль Hyundai Santa Fe в Узбекистане на Avtoelon.uz,drop: below volume floor (73 < 100)
-42,changan,star-truck,https://avtoelon.uz/avto/changan/star-truck/,72,Changan Star Truck цена: Чанган Стар Трэк в Узбекистане - Avtoelon.uz,drop: below volume floor (72 < 100)
-43,hyundai,sonata,https://avtoelon.uz/avto/hyundai/sonata/,70,Hyundai Sonata цена: купить Хендай Соната в Узбекистане - Avtoelon.uz,drop: below volume floor (70 < 100)
-44,vaz,lada-kalina,https://avtoelon.uz/avto/vaz/lada-kalina/,70,Купить Lada Kalina: цены на машины Лада Калина в Узбекистане — Avtoelon.uz,drop: below volume floor (70 < 100)
-45,hyundai,tucson,https://avtoelon.uz/avto/hyundai/tucson/,67,Hyundai Tucson цена: купить автомобиль Хендай Туссан в Узбекистане - Avtoelon.uz,drop: below volume floor (67 < 100)
-46,leapmotor,c16,https://avtoelon.uz/avto/leapmotor/c16/,66,Leapmotor C16 цена: купить Leapmotor C16 в Узбекистане - Avtoelon.uz,drop: below volume floor (66 < 100)
-47,gaz,3110,https://avtoelon.uz/avto/gaz/3110/,66,Купить машину ГАЗ 3110 (Волга) в Узбекистане - Avtoelon.uz,drop: below volume floor (66 < 100)
-48,vaz,xray,https://avtoelon.uz/avto/vaz/xray/,65,Купить Лада xray: Цена на Lada XRAY в Узбекистане — Avtoelon.uz,drop: below volume floor (65 < 100)
-49,byd,song-plus-ev-champion,https://avtoelon.uz/avto/byd/song-plus-ev-champion/,63,BYD Song Plus EV Champion цена: купить БИД Song Plus EV Champion в Узбекистане - Avtoelon.uz,drop: below volume floor (63 < 100)
-50,li,l9,https://avtoelon.uz/avto/li/l9/,63,LI L9 цена: купить LiXiang L9 в Узбекистане - Avtoelon.uz,drop: below volume floor (63 < 100)
-51,vaz,2115,https://avtoelon.uz/avto/vaz/2115/,63,ВАЗ 2115 цены: Купить Lada Samara 2115 в Узбекистане — Avtoelon.uz,drop: below volume floor (63 < 100)
-52,dong-feng,ep-008,https://avtoelon.uz/avto/dong-feng/ep-008/,61,Dong Feng EP 008 цена: купить Донг Фенг EP 008 в Узбекистане - Avtoelon.uz,drop: below volume floor (61 < 100)
-53,gac,aion-i60,https://avtoelon.uz/avto/gac/aion-i60/,60,GAC Aion i60 цена: купить Джи Эй Си Aion I60 в Узбекистане - Avtoelon.uz,drop: below volume floor (60 < 100)
-54,kia,seltos,https://avtoelon.uz/avto/kia/seltos/,59,Kia Seltos цена: купить Киа Селтос в Узбекистане - Avtoelon.uz,drop: below volume floor (59 < 100)
-55,haval,jolion,https://avtoelon.uz/avto/haval/jolion/,58,Haval Jolion цена: купить Хавал Jolion в Узбекистане - Avtoelon.uz,drop: below volume floor (58 < 100)
-56,chevrolet,traverse,https://avtoelon.uz/avto/chevrolet/traverse/,56,Chevrolet Traverse цена: купить Шевроле Траверс в Узбекистане - Avtoelon.uz,drop: below volume floor (56 < 100)
-57,vaz,lada-priora,https://avtoelon.uz/avto/vaz/lada-priora/,56,Автомобиль Лада Приора купить: машина Lada Priora цена в Узбекистане — Avtoelon.uz,drop: below volume floor (56 < 100)
-58,moskvich,412,https://avtoelon.uz/avto/moskvich/412/,55,Москвич 412 цена: купить автомобиль Moskvich 412 в Узбекистане - Avtoelon.uz,drop: below volume floor (55 < 100)
-59,vaz,2101,https://avtoelon.uz/avto/vaz/2101/,54,ВАЗ 2101 цена: Жигули 01 в Узбекистане - Avtoelon.uz,drop: below volume floor (54 < 100)
+38,kia,sportage,https://avtoelon.uz/avto/kia/sportage/,99,Машины Kia Sportage: цена Киа Спортейдж в Узбекистане - Avtoelon.uz,keep
+39,chevrolet,orlando,https://avtoelon.uz/avto/chevrolet/orlando/,94,Chevrolet Orlando цена: купить автомобиль Шевроле Орландо в Узбекистане — Avtoelon.uz,drop: below volume floor (94 < 99)
+40,kia,carnival,https://avtoelon.uz/avto/kia/carnival/,76,Kia Carnival цена: купить машину Киа Карнивал в Узбекистане - Avtoelon.uz,drop: below volume floor (76 < 99)
+41,hyundai,santa-fe,https://avtoelon.uz/avto/hyundai/santa-fe/,73,Купить автомобиль Hyundai Santa Fe в Узбекистане на Avtoelon.uz,drop: below volume floor (73 < 99)
+42,changan,star-truck,https://avtoelon.uz/avto/changan/star-truck/,72,Changan Star Truck цена: Чанган Стар Трэк в Узбекистане - Avtoelon.uz,drop: below volume floor (72 < 99)
+43,hyundai,sonata,https://avtoelon.uz/avto/hyundai/sonata/,70,Hyundai Sonata цена: купить Хендай Соната в Узбекистане - Avtoelon.uz,drop: below volume floor (70 < 99)
+44,vaz,lada-kalina,https://avtoelon.uz/avto/vaz/lada-kalina/,70,Купить Lada Kalina: цены на машины Лада Калина в Узбекистане — Avtoelon.uz,drop: below volume floor (70 < 99)
+45,hyundai,tucson,https://avtoelon.uz/avto/hyundai/tucson/,67,Hyundai Tucson цена: купить автомобиль Хендай Туссан в Узбекистане - Avtoelon.uz,drop: below volume floor (67 < 99)
+46,leapmotor,c16,https://avtoelon.uz/avto/leapmotor/c16/,66,Leapmotor C16 цена: купить Leapmotor C16 в Узбекистане - Avtoelon.uz,drop: below volume floor (66 < 99)
+47,gaz,3110,https://avtoelon.uz/avto/gaz/3110/,66,Купить машину ГАЗ 3110 (Волга) в Узбекистане - Avtoelon.uz,drop: below volume floor (66 < 99)
+48,vaz,xray,https://avtoelon.uz/avto/vaz/xray/,65,Купить Лада xray: Цена на Lada XRAY в Узбекистане — Avtoelon.uz,drop: below volume floor (65 < 99)
+49,byd,song-plus-ev-champion,https://avtoelon.uz/avto/byd/song-plus-ev-champion/,63,BYD Song Plus EV Champion цена: купить БИД Song Plus EV Champion в Узбекистане - Avtoelon.uz,drop: below volume floor (63 < 99)
+50,li,l9,https://avtoelon.uz/avto/li/l9/,63,LI L9 цена: купить LiXiang L9 в Узбекистане - Avtoelon.uz,drop: below volume floor (63 < 99)
+51,vaz,2115,https://avtoelon.uz/avto/vaz/2115/,63,ВАЗ 2115 цены: Купить Lada Samara 2115 в Узбекистане — Avtoelon.uz,drop: below volume floor (63 < 99)
+52,dong-feng,ep-008,https://avtoelon.uz/avto/dong-feng/ep-008/,61,Dong Feng EP 008 цена: купить Донг Фенг EP 008 в Узбекистане - Avtoelon.uz,drop: below volume floor (61 < 99)
+53,gac,aion-i60,https://avtoelon.uz/avto/gac/aion-i60/,60,GAC Aion i60 цена: купить Джи Эй Си Aion I60 в Узбекистане - Avtoelon.uz,drop: below volume floor (60 < 99)
+54,kia,seltos,https://avtoelon.uz/avto/kia/seltos/,59,Kia Seltos цена: купить Киа Селтос в Узбекистане - Avtoelon.uz,drop: below volume floor (59 < 99)
+55,haval,jolion,https://avtoelon.uz/avto/haval/jolion/,58,Haval Jolion цена: купить Хавал Jolion в Узбекистане - Avtoelon.uz,drop: below volume floor (58 < 99)
+56,chevrolet,traverse,https://avtoelon.uz/avto/chevrolet/traverse/,56,Chevrolet Traverse цена: купить Шевроле Траверс в Узбекистане - Avtoelon.uz,drop: below volume floor (56 < 99)
+57,vaz,lada-priora,https://avtoelon.uz/avto/vaz/lada-priora/,56,Автомобиль Лада Приора купить: машина Lada Priora цена в Узбекистане — Avtoelon.uz,drop: below volume floor (56 < 99)
+58,moskvich,412,https://avtoelon.uz/avto/moskvich/412/,55,Москвич 412 цена: купить автомобиль Moskvich 412 в Узбекистане - Avtoelon.uz,drop: below volume floor (55 < 99)
+59,vaz,2101,https://avtoelon.uz/avto/vaz/2101/,54,ВАЗ 2101 цена: Жигули 01 в Узбекистане - Avtoelon.uz,drop: below volume floor (54 < 99)

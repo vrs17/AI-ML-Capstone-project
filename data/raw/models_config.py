@@ -20,13 +20,13 @@ MODELS = {
     "vaz_vesta": "https://avtoelon.uz/avto/vaz/vesta/",  # 160 listings
     "chevrolet_monza": "https://avtoelon.uz/avto/chevrolet/monza/",  # 156 listings
     "chevrolet_epica": "https://avtoelon.uz/avto/chevrolet/epica/",  # 148 listings
-    "vaz_2121": "https://avtoelon.uz/avto/vaz/2121/",  # 127 listings
     "byd_chazor": "https://avtoelon.uz/avto/byd/chazor/",  # 118 listings
     "kia_sorento": "https://avtoelon.uz/avto/kia/sorento/",  # 116 listings
     "chery_tiggo_7_pro": "https://avtoelon.uz/avto/chery/tiggo-7-pro/",  # 112 listings
     "chery_arrizo_6_pro": "https://avtoelon.uz/avto/chery/arrizo-6-pro/",  # 104 listings
     "byd_song_plus_dm_i_champion": "https://avtoelon.uz/avto/byd/song-plus-dm-i-champion/",  # 102 listings
     "vaz_lada_r90": "https://avtoelon.uz/avto/vaz/lada-r90/",  # 100 listings
+    "kia_sportage": "https://avtoelon.uz/avto/kia/sportage/",  # 99 listings
 }
 
 MODEL_KEYWORDS = {
@@ -49,11 +49,11 @@ MODEL_KEYWORDS = {
     "vaz_vesta": ('vesta', 'веста'),
     "chevrolet_monza": ('monza', 'монза'),
     "chevrolet_epica": ('epica', 'эпика'),
-    "vaz_2121": ('2121',),
     "byd_chazor": ('chazor', 'чазор'),
     "kia_sorento": ('sorento', 'соренто'),
     "chery_tiggo_7_pro": ('tiggo 7 pro', 'tiggo7pro', 'тигго'),
     "chery_arrizo_6_pro": ('arrizo 6 pro', 'arrizo6pro', 'аризо', 'арризо'),
     "byd_song_plus_dm_i_champion": ('song', 'song plus', 'song plus dm i champion', 'songplusdmichampion', 'сонг'),
     "vaz_lada_r90": ('lada r90', 'ladar90', 'largus', 'r90', 'ларгус'),
+    "kia_sportage": ('sportage', 'спортаж', 'спортейдж'),
 }
