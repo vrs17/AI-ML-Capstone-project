@@ -105,7 +105,11 @@ def main() -> None:
     ap.add_argument("--top", type=int, default=40)
     ap.add_argument("--write-config", action="store_true",
                     help="also write data/raw/models_config.py for the scraper to import")
+    ap.add_argument("--exclude", default="",
+                    help="comma-separated labels to leave out (e.g. classes already "
+                         "collected elsewhere): chevrolet_cobalt,chevrolet_spark")
     args = ap.parse_args()
+    excluded = {e.strip().lower() for e in args.exclude.split(",") if e.strip()}
 
     if not DISCOVERED.exists():
         sys.exit(f"run the scraper with --discover first ({DISCOVERED} not found)")
@@ -116,12 +120,31 @@ def main() -> None:
         r["listings"] = int(r["listings"] or 0)
     rows.sort(key=lambda r: -r["listings"])
 
+    # An exclusion must cascade to the SAME CAR under other labels, or it silently
+    # re-collects what it was meant to skip: the site serves lacetti from gentra's pool,
+    # and daewoo/damas is chevrolet/damas with a different badge. Excluding "gentra" alone
+    # would leave "lacetti" unsuppressed (its alias parent is gone) and it would be scraped.
+    # So map each excluded label to its canonical body and exclude every label sharing it.
+    excluded_bodies = set()
+    for r in rows:
+        lbl = f'{r["brand"]}_{r["model"]}'.replace("-", "_").lower()
+        if lbl in excluded:
+            m = r["model"].lower()
+            excluded_bodies.add(SLUG_ALIASES.get(m, m))
+
     decisions = []
     kept, seen_twin = [], {}
     for r in rows:
         brand, model, n = r["brand"].lower(), r["model"].lower(), r["listings"]
         why = ""
-        if n < args.min_listings:
+        label = f"{brand}_{model}".replace("-", "_").lower()
+        body = SLUG_ALIASES.get(model, model)
+        if label in excluded:
+            why = "excluded by request (already collected)"
+        elif body in excluded_bodies:
+            why = (f"same car as an excluded class ('{body}' — alias or badge twin); "
+                   f"scraping it would re-collect those images")
+        elif n < args.min_listings:
             why = f"below volume floor ({n} < {args.min_listings})"
         elif model in SLUG_ALIASES and any(k["model"].lower() == SLUG_ALIASES[model]
                                            for k in kept):

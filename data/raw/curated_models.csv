@@ -1,16 +1,16 @@
 rank,brand,model,url,listings,page_title,decision
-1,chevrolet,gentra,https://avtoelon.uz/avto/chevrolet/gentra/,4452,Chevrolet Gentra цена: купить Шевроле Gentra в Узбекистане - Avtoelon.uz,keep
-2,chevrolet,lacetti,https://avtoelon.uz/avto/chevrolet/lacetti/,4452,Купить Шевроле Лачетти: цены машин Chevrolet Lacetti в Узбекистане — Avtoelon.uz,drop: same listing pool as gentra (site aliases the family; verified by identical count + first-page IDs)
-3,daewoo,lacetti,https://avtoelon.uz/avto/daewoo/lacetti/,4452,Daewoo Lacetti цена: купить Дэу Лачетти в Узбекистане - Avtoelon.uz,drop: same listing pool as gentra (site aliases the family; verified by identical count + first-page IDs)
-4,chevrolet,cobalt,https://avtoelon.uz/avto/chevrolet/cobalt/,2964,Chevrolet Cobalt в Узбекистане: Купить Шевроле Кобальт — Avtoelon.uz,keep
-5,chevrolet,damas,https://avtoelon.uz/avto/chevrolet/damas/,2307,Шевроле Дамас цена: купить Chevrolet Damas в Узбекистане — Avtoelon.uz,keep
-6,daewoo,damas,https://avtoelon.uz/avto/daewoo/damas/,2307,Daewoo Damas цена: купить Дэу Дамас в Узбекистане - Avtoelon.uz,"drop: brand twin of chevrolet/damas (2307) (same body, lower volume: 2307)"
-7,chevrolet,spark,https://avtoelon.uz/avto/chevrolet/spark/,2232,Купить автомобиль Chevrolet Spark в Узбекистане — Avtoelon.uz,keep
+1,chevrolet,gentra,https://avtoelon.uz/avto/chevrolet/gentra/,4452,Chevrolet Gentra цена: купить Шевроле Gentra в Узбекистане - Avtoelon.uz,drop: excluded by request (already collected)
+2,chevrolet,lacetti,https://avtoelon.uz/avto/chevrolet/lacetti/,4452,Купить Шевроле Лачетти: цены машин Chevrolet Lacetti в Узбекистане — Avtoelon.uz,drop: same car as an excluded class ('gentra' — alias or badge twin); scraping it would re-collect those images
+3,daewoo,lacetti,https://avtoelon.uz/avto/daewoo/lacetti/,4452,Daewoo Lacetti цена: купить Дэу Лачетти в Узбекистане - Avtoelon.uz,drop: same car as an excluded class ('gentra' — alias or badge twin); scraping it would re-collect those images
+4,chevrolet,cobalt,https://avtoelon.uz/avto/chevrolet/cobalt/,2964,Chevrolet Cobalt в Узбекистане: Купить Шевроле Кобальт — Avtoelon.uz,drop: excluded by request (already collected)
+5,chevrolet,damas,https://avtoelon.uz/avto/chevrolet/damas/,2307,Шевроле Дамас цена: купить Chevrolet Damas в Узбекистане — Avtoelon.uz,drop: excluded by request (already collected)
+6,daewoo,damas,https://avtoelon.uz/avto/daewoo/damas/,2307,Daewoo Damas цена: купить Дэу Дамас в Узбекистане - Avtoelon.uz,drop: same car as an excluded class ('damas' — alias or badge twin); scraping it would re-collect those images
+7,chevrolet,spark,https://avtoelon.uz/avto/chevrolet/spark/,2232,Купить автомобиль Chevrolet Spark в Узбекистане — Avtoelon.uz,drop: excluded by request (already collected)
 8,chevrolet,matiz,https://avtoelon.uz/avto/chevrolet/matiz/,1939,Chevrolet Matiz цена: купить Шевроле Матиз в Узбекистане — Avtoelon.uz,keep
 9,daewoo,matiz,https://avtoelon.uz/avto/daewoo/matiz/,1939,Daewoo Matiz (Standart) цена: купить Дэу Матиз (Стандарт) в Узбекистане - Avtoelon.uz,"drop: brand twin of chevrolet/matiz (1939) (same body, lower volume: 1939)"
 10,daewoo,matiz-best,https://avtoelon.uz/avto/daewoo/matiz-best/,1939,Daewoo Matiz Best цена: купить Дэу Матиз Бест в Узбекистане - Avtoelon.uz,drop: same listing pool as matiz (site aliases the family; verified by identical count + first-page IDs)
 11,chevrolet,nexia2,https://avtoelon.uz/avto/chevrolet/nexia2/,1784,Chevrolet Nexia 2 цена: купить 🚘 Шевроле Нексия 2 в Узбекистане — Avtoelon.uz,keep
-12,chevrolet,nexia3,https://avtoelon.uz/avto/chevrolet/nexia3/,1670,Chevrolet Nexia 3 цена: купить Шевроле Нексия 3 в Узбекистане — Avtoelon.uz,keep
+12,chevrolet,nexia3,https://avtoelon.uz/avto/chevrolet/nexia3/,1670,Chevrolet Nexia 3 цена: купить Шевроле Нексия 3 в Узбекистане — Avtoelon.uz,drop: excluded by request (already collected)
 13,daewoo,nexia,https://avtoelon.uz/avto/daewoo/nexia/,997,Daewoo Nexia цена: купить Дэу Нексия в Узбекистане - Avtoelon.uz,keep
 14,chevrolet,tracker-2,https://avtoelon.uz/avto/chevrolet/tracker-2/,923,Купить Chevrolet Tracker 2 в Узбекистане - Avtoelon.uz,keep
 15,chevrolet,labo,https://avtoelon.uz/avto/chevrolet/labo/,872,Шевроле Лабо цена: купить Chevrolet Labo в Узбекистане — Avtoelon.uz,keep
