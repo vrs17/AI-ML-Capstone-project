@@ -274,30 +274,74 @@ consistently preserved more data than crawling into a block. Across nine blocks,
 process kills, a two-hour machine sleep and several network flips, **nothing collected was
 ever lost** — the per-listing manifest writes made every interruption resumable.
 
-## Phase 4 — verification (partial, offline checks done during blocks)
+## Phase 4 — verification (2026-09-10, 27 folders present)
 
-**Label purity — good.** Contact sheets (`scripts/contact_sheets.py`, seeded sample of 20
-per class → `reports/contact_sheets/`) show each folder containing the right car: labo is
-consistently Labo micro-trucks, daewoo_nexia consistently the classic Nexia sedan. No
-wrong-model contamination found.
+All checks are read-only scripts, re-runnable; none modify `data/raw/`.
 
-**Composition — 78.7% vehicle-visible, but that is an upper bound.**
-`scripts/audit_composition.py` (read-only) over 540 sampled images:
+**Filenames and manifest — clean.** For every class: every file matches
+`<listing_id>_<n>.<ext>`, every file has a manifest row with the same path, and every
+manifest row that is not a duplicate pointer has its file on disk (scratchpad
+`check_manifest.py`; the only transient mismatch was the listing being downloaded at the
+moment of the check). Images per listing average 4.3–6.1 by class.
 
-| Class | vehicle-visible | | Class | vehicle-visible |
-|---|---|---|---|---|
-| matiz | 83.3% | | labo | 78.3% |
-| daewoo_nexia | 83.3% | | captiva | 76.7% |
-| cobalt | 81.7% | | gentra | 76.7% |
-| nexia2 | 80.0% | | damas | 68.3% |
-| tracker_2 | 80.0% | | | |
+**Label purity — 24 contact sheets viewed, two generic classes leak the newer generation.**
+Seeded 20-image sheets (`scripts/contact_sheets.py` → `reports/contact_sheets/`) for every
+class present. 22 classes show only the right car (a stray dealer photo of another car in
+1 of 20 chazor images; two phone-screenshot images in onix; sedan and SW Cross wagon both
+present in vesta, which is one model family on the site). Two are **mixed**:
 
-Validated against hand-labelled photos, the detector correctly rejects dashboards, seats and
-instrument clusters (0% car area) but **wrongly keeps engine bays (64–98%) and door cards
-(90%)** — they fill the frame with bodywork. Raising the area threshold makes this worse, not
-better, since an engine bay outscores a genuine side shot. True whole-car yield is therefore
-about **60–65%**, i.e. ~500–520 usable images per 800-image class. Separating detail shots
-needs shape reasoning or a purpose-trained classifier, not a detector-area rule.
+| Class | What the sheet shows | Why |
+|---|---|---|
+| chevrolet_tracker | ~3–4 of 20 sampled listings are the 2021+ Tracker (own class `tracker_2`) | sellers file the new car under the generic "Tracker" entry |
+| chevrolet_malibu | ~2 of 20 sampled listings are the Malibu 2 (own class `malibu2`) | same pattern |
 
-_(Remaining Phase 4 items — cross-model dedup over the full set, final per-model counts —
-run once collection completes.)_
+The newer-generation classes themselves (`tracker_2`, `malibu2`) are clean. Two independent
+signals agree with the sheets: the scrape-time hash skips crossed class boundaries only for
+tracker←tracker_2, malibu←malibu2 (and one sonet dealer listing reusing tracker photos), and
+the perceptual dedup found cross-class groups **only** for those two pairs. The fix is a
+year audit from the category listing cards (scratchpad `year_audit.py`, ~13 page loads),
+run when the site allows; a 2022+ car in the generic class belongs to the newer one. Until
+then, treat tracker/tracker_2 and malibu/malibu2 as noisy boundaries when reading a
+confusion matrix.
+
+**Duplicates — none left at byte or pixel level; 211 near-duplicates at perceptual level.**
+`scripts/deduplicate.py --dry-run` (SHA-256 of decoded pixels) over the 21,173 images present
+at the time found **0** duplicates within or across classes. That is because the scraper
+already skips byte-identical files at download time: the manifest holds 1,122 `duplicate_of`
+pointers, 1,110 within the same class and **12 across classes** (from 3 listings: one
+tracker listing whose photos were already stored under tracker_2, one malibu/malibu2 pair,
+one sonet listing reusing tracker photos) — those 12 sit in whichever class was scraped
+first. The perceptual pass (`--perceptual`, 64-bit dHash, catches re-encoded reposts) over
+22,406 images found **211 near-duplicates** inside classes and **24 images in 12 cross-class
+groups** — all tracker/tracker_2 or malibu/malibu2, e.g. malibu listing 7487252 and malibu2
+listing 7486043 are the same car posted twice. The final deduplicated set is produced with
+`--perceptual` into `data/dedup/` once collection ends (numbers in Phase 5).
+
+Incidentally, the dedup script crashed after hashing 21k images when printing box-drawing
+characters to a Windows cp1252 console — the same encoding bug the scraper hit on
+2026-08-27; fixed the same way (commit `cbe158f`).
+
+**Composition — detector-visible vehicle share per class (150 sampled each).**
+`scripts/audit_composition.py` (YOLO11s, vehicle box ≥12% of frame, read-only):
+
+Overall **75.6%** (3,061 of 4,050 sampled images; 150 per class, seed 42):
+
+| Class | visible | Class | visible | Class | visible |
+|---|---|---|---|---|---|
+| vaz_2106 | 80.7% | chev. matiz | 77.3% | chev. cobalt | 73.3% |
+| chev. equinox | 80.0% | byd song plus | 76.7% | chev. malibu2 | 73.3% |
+| chev. monza | 79.3% | daewoo nexia | 76.7% | kia_k_5 | 73.3% |
+| chev. tracker | 79.3% | byd_chazor | 76.0% | kia_sonet | 73.3% |
+| chev. tracker_2 | 79.3% | chev. nexia2 | 75.3% | chev. damas | 72.7% |
+| vaz_2107 | 79.3% | chev. onix | 75.3% | daewoo tico | 72.7% |
+| vaz_vesta | 79.3% | chev. labo | 74.7% | chev. gentra | 72.0% |
+| chev. malibu | 78.7% | chery_tiggo_7_pro | 74.0% | chev. epica | 70.0% |
+| chery_arrizo_6_pro | 78.0% | chev. captiva | 74.0% | kia_sorento | 66.0% |
+
+Validated against hand-labelled photos on 2026-08-31, the detector correctly rejects
+dashboards, seats and instrument clusters (0% car area) but **wrongly keeps engine bays
+(64–98%) and door cards (90%)** — they fill the frame with bodywork. Raising the area
+threshold makes this worse, since an engine bay outscores a genuine side shot. True whole-car
+yield is therefore about **60–65%** of the figures above, i.e. roughly 450–520 usable images
+per 800-image class and 280–420 for the inventory-limited ones. Separating detail shots needs
+shape reasoning or a purpose-trained classifier, not a detector-area rule.
