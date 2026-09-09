@@ -76,6 +76,12 @@ def discover_classes(src: Path) -> list[str]:
 
 
 def main() -> None:
+    # Windows consoles default to cp1252, which cannot print the box-drawing characters
+    # in the summary (seen live: crash after hashing 21k images). Same guard as the scraper.
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--src", type=Path, default=Path("data/raw"), help="root with one subfolder per model")
     ap.add_argument("--dst", type=Path, default=Path("data/dedup"), help="output root for the deduped set")
@@ -148,7 +154,7 @@ def main() -> None:
     if not args.dry_run:
         report.parent.mkdir(parents=True, exist_ok=True)
     if not args.dry_run or args.report:
-        with open(report, "w", newline="") as fh:
+        with open(report, "w", newline="", encoding="utf-8") as fh:
             w = csv.DictWriter(fh, fieldnames=["path", "class", "hash", "decision", "note"])
             w.writeheader()
             w.writerows(records)

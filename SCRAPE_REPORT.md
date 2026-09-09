@@ -175,53 +175,61 @@ distinct car from Nexia 3, confirmed on the contact sheets.
 
 Per-class target lowered 2000 → **800** to favour breadth over depth given the throttle.
 
-## Collection progress (2026-08-31, 22:50)
+## Collection progress (2026-09-10, 00:55)
 
-| Class | Images | Status |
-|---|---|---|
-| vaz_vesta | 821 | at target |
-| chevrolet_epica | 816 | at target |
-| vaz_2106 | 812 | at target |
-| vaz_2107 | 811 | at target |
-| kia_k_5 | 811 | at target |
-| chevrolet_tracker | 811 | at target |
-| chevrolet_malibu | 810 | at target |
-| chevrolet_nexia2 | 809 | at target |
-| chevrolet_captiva | 808 | at target |
-| chevrolet_onix | 807 | at target |
-| chevrolet_matiz | 807 | at target |
-| chevrolet_labo | 807 | at target |
-| daewoo_tico | 806 | at target |
-| daewoo_nexia | 806 | at target |
-| chevrolet_malibu2 | 806 | at target |
-| chevrolet_tracker_2 | 805 | at target |
-| chevrolet_equinox | 803 | at target |
-| chevrolet_monza | 719 | complete (inventory ceiling) |
-| kia_sonet | 691 | complete (inventory ceiling) |
-| byd_chazor | 617 | complete (inventory ceiling) |
-| kia_sorento | 446 | partial |
-| vaz_lada_r90 | 0 | **not started** |
-| kia_sportage | 0 | **not started** |
-| chery_tiggo_7_pro | 0 | **not started** |
-| chery_arrizo_6_pro | 0 | **not started** |
-| byd_song_plus_dm_i_champion | 0 | **not started** |
-| chevrolet_gentra | 2004 | pre-existing |
-| chevrolet_cobalt | 2007 | pre-existing |
-| chevrolet_damas | 681 | pre-existing |
+Session 13 (2026-09-10, 00:22–00:53, phone-hotspot IP 95.214.211.4) resumed the six
+unfinished classes with `--only` and the same slow settings (concurrency 2, delay 2). It
+finished kia_sorento, chery_tiggo_7_pro and chery_arrizo_6_pro, got byd_song_plus_dm_i_champion
+to 471, and then hit **block #10** after ~390 listings in 31 minutes — the same per-IP budget as
+before. The scraper was stopped at onset (both retries timed out, file count frozen for
+2 minutes); nothing was lost.
 
-**Total: 20,921 images**
+| Class | Images | Listings | Status |
+|---|---|---|---|
+| vaz_vesta | 821 | 152 | at target |
+| chevrolet_epica | 816 | 137 | at target |
+| vaz_2106 | 812 | 164 | at target |
+| chevrolet_tracker | 811 | 188 | at target |
+| kia_k_5 | 811 | 146 | at target |
+| vaz_2107 | 811 | 153 | at target |
+| chevrolet_malibu | 810 | 148 | at target |
+| chevrolet_nexia2 | 809 | 138 | at target |
+| chevrolet_captiva | 808 | 145 | at target |
+| chevrolet_labo | 807 | 171 | at target |
+| chevrolet_matiz | 807 | 151 | at target |
+| chevrolet_onix | 807 | 189 | at target |
+| chevrolet_malibu2 | 806 | 144 | at target |
+| daewoo_nexia | 806 | 135 | at target |
+| daewoo_tico | 806 | 172 | at target |
+| chevrolet_tracker_2 | 805 | 161 | at target |
+| chevrolet_equinox | 803 | 150 | at target |
+| chevrolet_monza | 719 | 155 | complete (inventory ceiling: 155 listings on the site) |
+| kia_sorento | 698 | 116 | complete (inventory ceiling: 116 listings on the site) |
+| kia_sonet | 691 | 147 | complete (inventory ceiling: 147 listings on the site) |
+| chery_tiggo_7_pro | 652 | 120 | complete (inventory ceiling: 120 listings on the site) |
+| byd_chazor | 617 | 127 | complete (inventory ceiling: 127 listings on the site) |
+| chery_arrizo_6_pro | 475 | 92 | complete (inventory ceiling: 92 listings on the site) |
+| byd_song_plus_dm_i_champion | 471 | 94 | **partial** — block #10 hit mid-class (94 of 126 listings done) |
+| vaz_lada_r90 | 0 | 0 | **not started** |
+| kia_sportage | 0 | 0 | **not started** |
+| chevrolet_cobalt | 2007 | 392 | pre-existing |
+| chevrolet_gentra | 2004 | 344 | pre-existing |
+| chevrolet_damas | 681 | 209 | pre-existing |
 
-**21 of 26 in-scope classes collected; 5 not started.** Every filename carries its
-listing_id, and `data/raw/manifest.csv` records every stored image with its SHA-256.
+**Total: 22,771 images** across 27 folders, every one recorded in
+`data/raw/manifest.csv` with its SHA-256; every filename is `<listing_id>_<n>.webp`.
 
-Classes below 800 are **inventory-limited, not shortfalls**: the site simply has no more
-listings for them (monza 156 listings, sonet 161, chazor 118). Re-running them adds zero
-images, which was verified directly — a second pass over monza and sonet saved 0.
+**23 of 26 in-scope classes complete; 1 partial; 2 not started.**
+
+Classes below 800 are **inventory-limited, not shortfalls**: the site has no more listings
+for them, so re-running adds zero images (verified directly on monza and sonet — a second
+pass saved 0). The three Chery/BYD/Kia classes collected this session came in at 475–698 from
+105–132 listings, exactly the 500–700 range predicted from their listing counts.
 
 ### Remaining work
-kia_sorento (446, partial) plus chery_tiggo_7_pro, chery_arrizo_6_pro,
-byd_song_plus_dm_i_champion, vaz_lada_r90, kia_sportage — all 99-112 listings, so expect
-roughly 500-650 images each. One clean session should finish them.
+byd_song_plus_dm_i_champion (471, ~32 listings left), vaz_lada_r90 (~110 listings) and
+kia_sportage (101 listings). A cooldown chain probes the site every 10 minutes after a 25-minute
+wait and relaunches automatically; a network switch resumes it immediately.
 
 ### Class-list changes during the run
 - 5 classes excluded as already collected (cobalt, spark, damas, gentra, nexia3), which
@@ -238,7 +246,9 @@ roughly 500-650 images each. One clean session should finish them.
 **Site throttle:** a per-IP budget of roughly 400-600 listings, then 1.5-2.5 hours of
 refused connections. Politeness settings do not prevent it (concurrency 3 reached ~330
 listings, concurrency 2 reached ~500-600). Switching networks resets the counter but not
-its size. Nine blocks were absorbed this way.
+its size. Ten blocks were absorbed this way; the tenth (2026-09-10) came after ~390
+listings in 31 minutes at concurrency 2, so the budget is closer to 400 than 600 on a
+fresh IP.
 
 **Local network faults are a different failure and need a different response.** Three
 distinct signatures appeared, and confusing them wastes hours:
