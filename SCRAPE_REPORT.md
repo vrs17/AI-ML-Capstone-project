@@ -284,25 +284,49 @@ manifest row that is not a duplicate pointer has its file on disk (scratchpad
 `check_manifest.py`; the only transient mismatch was the listing being downloaded at the
 moment of the check). Images per listing average 4.3–6.1 by class.
 
-**Label purity — 24 contact sheets viewed, two generic classes leak the newer generation.**
-Seeded 20-image sheets (`scripts/contact_sheets.py` → `reports/contact_sheets/`) for every
-class present. 22 classes show only the right car (a stray dealer photo of another car in
-1 of 20 chazor images; two phone-screenshot images in onix; sedan and SW Cross wagon both
-present in vesta, which is one model family on the site). Two are **mixed**:
+**Label purity — contact sheets clean for 22 classes; the two generic classes hide the newer
+generation, and it is far worse than the sheets suggested.** Seeded 20-image sheets
+(`scripts/contact_sheets.py` → `reports/contact_sheets/`) show the right car in every class except
+`chevrolet_tracker` and `chevrolet_malibu`, where some listings are the newer car that has its
+own class. Eyeballing 20 thumbnails put it at 3–4 and 2 of 20 listings. Two independent
+measurements say otherwise:
 
-| Class | What the sheet shows | Why |
-|---|---|---|
-| chevrolet_tracker | ~3–4 of 20 sampled listings are the 2021+ Tracker (own class `tracker_2`) | sellers file the new car under the generic "Tracker" entry |
-| chevrolet_malibu | ~2 of 20 sampled listings are the Malibu 2 (own class `malibu2`) | same pattern |
+1. *Listing years from the category pages* (`scripts/year_audit.py`, one page load per listing
+   page, run 2026-09-10 05:05 → `reports/generation_audit.csv`). The old Tracker (Trax-based) was
+   sold to 2020, the new one from 2021; Malibu 1 to 2016, Malibu 2 from 2017. Of 210 listings in
+   the generic "Tracker" category, **96 (46%) are 2022 or newer**. In our own tracker folder, 90 of
+   the 188 scraped listings were still on the site: 41 are 2022+ (140 images), 44 are ≤2020, 4 are
+   2021. Malibu: 3 of 84 matched listings are 2017+. The newer classes are clean the other way:
+   2% of `tracker_2` listings are ≤2020, none of `malibu2` are ≤2016.
+2. *A visual vote for the listings the site no longer shows* (`scripts/generation_vote.py` →
+   `reports/generation_vote_*.csv`): exterior shots only (YOLO vehicle box ≥12% of frame),
+   cropped to the car and embedded with the project's own ArcFace-trained ConvNeXt-Tiny
+   (`service/artifacts/model.pt`), then a class-balanced logistic regression trained on the
+   year-verified old listings vs the newer class. Listing-grouped 5-fold CV: **94.4% image
+   accuracy**, listing vote 88.6% on old / 99.4% on new (tracker), 100%/100% (malibu). Held-out
+   year-verified new-generation listings hiding inside the generic class: **34 of 35** voted new
+   (tracker), 3 of 3 (malibu).
 
-The newer-generation classes themselves (`tracker_2`, `malibu2`) are clean. Two independent
-signals agree with the sheets: the scrape-time hash skips crossed class boundaries only for
-tracker←tracker_2, malibu←malibu2 (and one sonet dealer listing reusing tracker photos), and
-the perceptual dedup found cross-class groups **only** for those two pairs. The fix is a
-year audit from the category listing cards (scratchpad `year_audit.py`, ~13 page loads),
-run when the site allows; a 2022+ car in the generic class belongs to the newer one. Until
-then, treat tracker/tracker_2 and malibu/malibu2 as noisy boundaries when reading a
-confusion matrix.
+Combined verdict for the generic classes (year first, visual vote where the year is unknown):
+
+| Class | Listings | Old generation | Newer generation | Undecided / conflict |
+|---|---|---|---|---|
+| chevrolet_tracker | 175 with files | 84 listings, 424 images | **87 listings, 375 images (46%)** | 4 listings, 12 images |
+| chevrolet_malibu | 143 with files | 134 listings, 757 images | 8 listings, 50 images (6%) | 1 listing, 3 images |
+
+Sellers simply file a 2023 Tracker under "Tracker". Three signals agree — the sheets, the scrape-time
+hash skips (cross-class only for these two pairs) and the perceptual dedup (cross-class groups only
+for these two pairs, e.g. malibu listing 7487252 = malibu2 listing 7486043, one car posted twice).
+
+**What was done about it — nothing to `data/raw/`, everything to the training set.** The raw folders
+stay exactly as scraped (the manifest must remain a truthful record of the source). Instead
+`reports/label_overrides.csv` lists the **95 listings (425 images)** to relabel
+(`listing_id,from_class,to_class,reason`), and `scripts/deduplicate.py --relabel` applies it while
+building `data/dedup/`: after it, tracker holds only the old body (≈436 images from 84 listings,
+below target but clean), tracker_2 gains the 375 (≈1,180), malibu ≈760, malibu2 ≈856. The undecided
+listings stay where the site put them and are flagged in the vote CSVs. Reversible by deleting one
+CSV. If the split is not wanted at all, merging tracker+tracker_2 into one class is the other
+consistent choice — what is not defensible is training on the raw folders as they are.
 
 **Duplicates — none left at byte or pixel level; 211 near-duplicates at perceptual level.**
 `scripts/deduplicate.py --dry-run` (SHA-256 of decoded pixels) over the 21,173 images present

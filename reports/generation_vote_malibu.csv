@@ -1,0 +1,286 @@
+class,listing_id,images,exterior_images,year_verdict,p_new,visual
+chevrolet_malibu,6966080,3,3,old-generation,0.022,old
+chevrolet_malibu,7069310,4,4,unknown (no longer listed),0.081,old
+chevrolet_malibu,7286489,7,5,unknown (no longer listed),0.028,old
+chevrolet_malibu,7346357,7,3,ambiguous (transition year),0.14,old
+chevrolet_malibu,7348539,4,4,unknown (no longer listed),0.005,old
+chevrolet_malibu,7368579,14,12,old-generation,0.024,old
+chevrolet_malibu,7369672,4,3,old-generation,0.024,old
+chevrolet_malibu,7386732,8,5,unknown (no longer listed),0.008,old
+chevrolet_malibu,7388165,8,8,unknown (no longer listed),0.074,old
+chevrolet_malibu,7390605,9,5,unknown (no longer listed),0.026,old
+chevrolet_malibu,7390654,5,4,unknown (no longer listed),0.174,old
+chevrolet_malibu,7390931,10,10,unknown (no longer listed),0.044,old
+chevrolet_malibu,7391235,7,6,old-generation,0.035,old
+chevrolet_malibu,7391571,6,3,unknown (no longer listed),0.025,old
+chevrolet_malibu,7395561,6,6,old-generation,0.003,old
+chevrolet_malibu,7400019,4,4,unknown (no longer listed),0.024,old
+chevrolet_malibu,7400034,7,7,unknown (no longer listed),0.995,new
+chevrolet_malibu,7400103,1,1,unknown (no longer listed),0.988,new
+chevrolet_malibu,7401596,8,7,unknown (no longer listed),0.851,new
+chevrolet_malibu,7401990,1,0,old-generation,,no exterior shot
+chevrolet_malibu,7402452,7,6,old-generation,0.036,old
+chevrolet_malibu,7403450,7,4,old-generation,0.043,old
+chevrolet_malibu,7403551,3,3,old-generation,0.008,old
+chevrolet_malibu,7403637,3,3,old-generation,0.011,old
+chevrolet_malibu,7405286,5,3,unknown (no longer listed),0.003,old
+chevrolet_malibu,7405503,1,1,old-generation,0.004,old
+chevrolet_malibu,7407341,7,7,old-generation,0.031,old
+chevrolet_malibu,7408367,5,5,old-generation,0.054,old
+chevrolet_malibu,7413336,5,4,unknown (no longer listed),0.019,old
+chevrolet_malibu,7417464,2,1,unknown (no longer listed),0.0,old
+chevrolet_malibu,7417710,11,7,unknown (no longer listed),0.022,old
+chevrolet_malibu,7417903,5,4,unknown (no longer listed),0.042,old
+chevrolet_malibu,7419570,6,5,old-generation,0.008,old
+chevrolet_malibu,7419612,3,3,old-generation,0.053,old
+chevrolet_malibu,7419711,3,3,old-generation,0.015,old
+chevrolet_malibu,7419712,3,2,old-generation,0.007,old
+chevrolet_malibu,7419756,3,2,old-generation,0.008,old
+chevrolet_malibu,7419956,3,3,old-generation,0.009,old
+chevrolet_malibu,7420071,3,2,old-generation,0.002,old
+chevrolet_malibu,7420086,13,11,old-generation,0.02,old
+chevrolet_malibu,7423484,8,8,unknown (no longer listed),0.002,old
+chevrolet_malibu,7423917,4,3,unknown (no longer listed),0.004,old
+chevrolet_malibu,7426276,9,8,old-generation,0.035,old
+chevrolet_malibu,7429556,15,8,unknown (no longer listed),0.019,old
+chevrolet_malibu,7432403,6,4,unknown (no longer listed),0.985,new
+chevrolet_malibu,7432730,1,1,unknown (no longer listed),0.003,old
+chevrolet_malibu,7433104,7,7,unknown (no longer listed),0.052,old
+chevrolet_malibu,7434023,4,3,unknown (no longer listed),0.041,old
+chevrolet_malibu,7434760,7,5,unknown (no longer listed),0.187,old
+chevrolet_malibu,7435987,2,2,old-generation,0.001,old
+chevrolet_malibu,7436135,9,7,old-generation,0.026,old
+chevrolet_malibu,7436388,10,5,new-generation,0.963,new
+chevrolet_malibu,7436503,6,6,old-generation,0.046,old
+chevrolet_malibu,7439457,4,4,unknown (no longer listed),0.051,old
+chevrolet_malibu,7442289,10,9,old-generation,0.038,old
+chevrolet_malibu,7447916,10,9,unknown (no longer listed),0.129,old
+chevrolet_malibu,7448366,2,2,unknown (no longer listed),0.99,new
+chevrolet_malibu,7448490,11,9,unknown (no longer listed),0.283,old
+chevrolet_malibu,7449312,1,1,old-generation,0.017,old
+chevrolet_malibu,7449375,4,4,old-generation,0.03,old
+chevrolet_malibu,7449906,3,2,old-generation,0.001,old
+chevrolet_malibu,7449970,3,3,old-generation,0.024,old
+chevrolet_malibu,7450093,2,2,old-generation,0.001,old
+chevrolet_malibu,7450474,3,3,old-generation,0.003,old
+chevrolet_malibu,7450518,3,3,unknown (no longer listed),0.006,old
+chevrolet_malibu,7450572,8,7,old-generation,0.006,old
+chevrolet_malibu,7453287,10,9,unknown (no longer listed),0.04,old
+chevrolet_malibu,7453809,8,6,old-generation,0.035,old
+chevrolet_malibu,7458891,4,4,old-generation,0.018,old
+chevrolet_malibu,7464312,6,2,unknown (no longer listed),0.078,old
+chevrolet_malibu,7465404,2,2,unknown (no longer listed),0.0,old
+chevrolet_malibu,7466125,8,8,old-generation,0.001,old
+chevrolet_malibu,7466451,3,3,old-generation,0.01,old
+chevrolet_malibu,7466672,3,3,old-generation,0.004,old
+chevrolet_malibu,7466852,3,3,old-generation,0.024,old
+chevrolet_malibu,7466958,5,5,old-generation,0.01,old
+chevrolet_malibu,7467298,1,1,old-generation,0.001,old
+chevrolet_malibu,7467799,4,3,old-generation,0.014,old
+chevrolet_malibu,7468541,3,3,old-generation,0.011,old
+chevrolet_malibu,7468546,3,3,old-generation,0.026,old
+chevrolet_malibu,7470048,1,1,old-generation,0.0,old
+chevrolet_malibu,7471332,14,8,old-generation,0.025,old
+chevrolet_malibu,7477081,5,5,unknown (no longer listed),0.004,old
+chevrolet_malibu,7480706,3,0,unknown (no longer listed),,no exterior shot
+chevrolet_malibu,7480718,17,6,unknown (no longer listed),0.193,old
+chevrolet_malibu,7480819,4,4,unknown (no longer listed),0.011,old
+chevrolet_malibu,7481442,6,5,unknown (no longer listed),0.007,old
+chevrolet_malibu,7482077,8,5,old-generation,0.015,old
+chevrolet_malibu,7482470,4,3,old-generation,0.058,old
+chevrolet_malibu,7483785,3,3,unknown (no longer listed),0.267,old
+chevrolet_malibu,7484051,5,3,old-generation,0.041,old
+chevrolet_malibu,7484331,1,1,old-generation,0.001,old
+chevrolet_malibu,7484373,4,3,unknown (no longer listed),0.001,old
+chevrolet_malibu,7484418,10,8,unknown (no longer listed),0.213,old
+chevrolet_malibu,7484485,4,2,old-generation,0.002,old
+chevrolet_malibu,7484805,6,5,old-generation,0.03,old
+chevrolet_malibu,7485324,7,7,old-generation,0.035,old
+chevrolet_malibu,7485469,9,9,old-generation,0.02,old
+chevrolet_malibu,7485481,13,12,unknown (no longer listed),0.031,old
+chevrolet_malibu,7485571,9,9,unknown (no longer listed),0.039,old
+chevrolet_malibu,7486810,6,6,old-generation,0.018,old
+chevrolet_malibu,7486843,6,6,old-generation,0.031,old
+chevrolet_malibu,7486875,8,5,old-generation,0.017,old
+chevrolet_malibu,7487234,10,7,new-generation,0.918,new
+chevrolet_malibu,7487252,6,4,new-generation,0.985,new
+chevrolet_malibu,7487329,6,6,unknown (no longer listed),0.006,old
+chevrolet_malibu,7487585,3,3,old-generation,0.005,old
+chevrolet_malibu,7488127,4,4,old-generation,0.034,old
+chevrolet_malibu,7488159,8,7,old-generation,0.053,old
+chevrolet_malibu,7495092,8,8,old-generation,0.013,old
+chevrolet_malibu,7496249,8,8,old-generation,0.043,old
+chevrolet_malibu,7496525,6,5,unknown (no longer listed),0.01,old
+chevrolet_malibu,7496679,9,7,unknown (no longer listed),0.095,old
+chevrolet_malibu,7496734,8,6,unknown (no longer listed),0.153,old
+chevrolet_malibu,7497415,4,3,unknown (no longer listed),0.003,old
+chevrolet_malibu,7497475,5,5,unknown (no longer listed),0.126,old
+chevrolet_malibu,7497583,1,1,unknown (no longer listed),0.003,old
+chevrolet_malibu,7497932,12,9,unknown (no longer listed),0.041,old
+chevrolet_malibu,7498281,1,1,unknown (no longer listed),0.158,old
+chevrolet_malibu,7498486,3,3,unknown (no longer listed),0.01,old
+chevrolet_malibu,7498722,4,4,unknown (no longer listed),0.24,old
+chevrolet_malibu,7498810,6,6,old-generation,0.023,old
+chevrolet_malibu,7499018,2,1,old-generation,0.003,old
+chevrolet_malibu,7499680,4,2,unknown (no longer listed),0.1,old
+chevrolet_malibu,7499693,4,4,unknown (no longer listed),0.0,old
+chevrolet_malibu,7500509,4,4,old-generation,0.018,old
+chevrolet_malibu,7501137,6,5,old-generation,0.016,old
+chevrolet_malibu,7501228,6,5,unknown (no longer listed),0.097,old
+chevrolet_malibu,7501233,5,3,old-generation,0.032,old
+chevrolet_malibu,7501271,11,7,old-generation,0.045,old
+chevrolet_malibu,7501513,5,4,old-generation,0.01,old
+chevrolet_malibu,7501516,7,5,old-generation,0.017,old
+chevrolet_malibu,7501680,17,10,old-generation,0.041,old
+chevrolet_malibu,7501971,4,3,old-generation,0.007,old
+chevrolet_malibu,7502282,4,3,unknown (no longer listed),0.066,old
+chevrolet_malibu,7502450,2,2,old-generation,0.003,old
+chevrolet_malibu,7502845,2,2,old-generation,0.003,old
+chevrolet_malibu,7502896,2,2,old-generation,0.0,old
+chevrolet_malibu,7502916,2,2,old-generation,0.002,old
+chevrolet_malibu,7503031,5,4,unknown (no longer listed),0.02,old
+chevrolet_malibu,7503634,1,1,unknown (no longer listed),0.008,old
+chevrolet_malibu,7504368,5,4,old-generation,0.003,old
+chevrolet_malibu,7504867,11,10,old-generation,0.039,old
+chevrolet_malibu2,7000141,5,5,new-generation,0.937,new
+chevrolet_malibu2,7110399,10,9,unknown (no longer listed),0.987,new
+chevrolet_malibu2,7256352,3,3,new-generation,0.999,new
+chevrolet_malibu2,7257423,5,5,unknown (no longer listed),0.927,new
+chevrolet_malibu2,7293403,7,6,unknown (no longer listed),0.978,new
+chevrolet_malibu2,7327353,10,8,unknown (no longer listed),0.934,new
+chevrolet_malibu2,7328813,4,3,new-generation,0.992,new
+chevrolet_malibu2,7387928,4,4,unknown (no longer listed),0.983,new
+chevrolet_malibu2,7388769,7,7,new-generation,0.962,new
+chevrolet_malibu2,7389199,7,3,unknown (no longer listed),0.922,new
+chevrolet_malibu2,7390279,2,2,unknown (no longer listed),0.915,new
+chevrolet_malibu2,7390781,1,1,unknown (no longer listed),0.998,new
+chevrolet_malibu2,7397322,5,4,unknown (no longer listed),0.959,new
+chevrolet_malibu2,7403441,5,5,unknown (no longer listed),0.987,new
+chevrolet_malibu2,7405007,6,3,unknown (no longer listed),0.998,new
+chevrolet_malibu2,7405145,6,5,unknown (no longer listed),0.975,new
+chevrolet_malibu2,7408535,7,5,unknown (no longer listed),0.963,new
+chevrolet_malibu2,7420466,6,5,new-generation,0.992,new
+chevrolet_malibu2,7422343,2,2,unknown (no longer listed),0.997,new
+chevrolet_malibu2,7422587,3,2,unknown (no longer listed),0.999,new
+chevrolet_malibu2,7423798,4,4,unknown (no longer listed),0.987,new
+chevrolet_malibu2,7436439,7,7,new-generation,0.897,new
+chevrolet_malibu2,7437026,5,4,unknown (no longer listed),0.985,new
+chevrolet_malibu2,7437261,6,6,unknown (no longer listed),0.991,new
+chevrolet_malibu2,7437642,5,2,unknown (no longer listed),1.0,new
+chevrolet_malibu2,7438176,4,4,new-generation,0.972,new
+chevrolet_malibu2,7445326,1,1,unknown (no longer listed),1.0,new
+chevrolet_malibu2,7446664,8,6,unknown (no longer listed),0.988,new
+chevrolet_malibu2,7447994,6,4,unknown (no longer listed),0.974,new
+chevrolet_malibu2,7448954,11,7,new-generation,0.966,new
+chevrolet_malibu2,7450702,7,6,unknown (no longer listed),0.955,new
+chevrolet_malibu2,7451425,2,1,unknown (no longer listed),0.896,new
+chevrolet_malibu2,7451497,5,4,unknown (no longer listed),0.979,new
+chevrolet_malibu2,7451576,1,1,unknown (no longer listed),0.968,new
+chevrolet_malibu2,7453225,7,4,unknown (no longer listed),0.986,new
+chevrolet_malibu2,7453347,5,5,unknown (no longer listed),0.995,new
+chevrolet_malibu2,7453525,8,5,unknown (no longer listed),0.979,new
+chevrolet_malibu2,7453592,8,4,unknown (no longer listed),0.864,new
+chevrolet_malibu2,7453662,1,0,unknown (no longer listed),,no exterior shot
+chevrolet_malibu2,7456532,4,3,new-generation,0.986,new
+chevrolet_malibu2,7458068,3,2,unknown (no longer listed),0.999,new
+chevrolet_malibu2,7458077,8,5,new-generation,0.986,new
+chevrolet_malibu2,7458721,9,5,unknown (no longer listed),0.965,new
+chevrolet_malibu2,7464255,4,2,unknown (no longer listed),0.976,new
+chevrolet_malibu2,7464797,13,8,unknown (no longer listed),0.941,new
+chevrolet_malibu2,7465591,2,1,new-generation,1.0,new
+chevrolet_malibu2,7466010,8,5,new-generation,0.975,new
+chevrolet_malibu2,7466473,8,6,unknown (no longer listed),0.987,new
+chevrolet_malibu2,7467607,7,6,new-generation,0.96,new
+chevrolet_malibu2,7468042,5,5,unknown (no longer listed),0.989,new
+chevrolet_malibu2,7468365,3,3,unknown (no longer listed),0.999,new
+chevrolet_malibu2,7468621,7,6,unknown (no longer listed),0.983,new
+chevrolet_malibu2,7468991,4,4,unknown (no longer listed),0.981,new
+chevrolet_malibu2,7469178,4,4,unknown (no longer listed),1.0,new
+chevrolet_malibu2,7469189,3,3,unknown (no longer listed),0.998,new
+chevrolet_malibu2,7470342,1,1,unknown (no longer listed),0.982,new
+chevrolet_malibu2,7470416,4,2,unknown (no longer listed),0.996,new
+chevrolet_malibu2,7470816,5,4,unknown (no longer listed),0.983,new
+chevrolet_malibu2,7471524,6,3,new-generation,0.934,new
+chevrolet_malibu2,7474176,6,5,new-generation,1.0,new
+chevrolet_malibu2,7475893,7,5,unknown (no longer listed),0.964,new
+chevrolet_malibu2,7478075,5,5,unknown (no longer listed),0.981,new
+chevrolet_malibu2,7479438,10,6,unknown (no longer listed),0.981,new
+chevrolet_malibu2,7482137,10,6,new-generation,0.964,new
+chevrolet_malibu2,7482177,6,4,new-generation,0.996,new
+chevrolet_malibu2,7484761,5,3,unknown (no longer listed),0.977,new
+chevrolet_malibu2,7484774,7,2,unknown (no longer listed),0.996,new
+chevrolet_malibu2,7484797,6,5,unknown (no longer listed),0.972,new
+chevrolet_malibu2,7484812,5,4,unknown (no longer listed),0.995,new
+chevrolet_malibu2,7485018,10,5,unknown (no longer listed),0.988,new
+chevrolet_malibu2,7485031,10,7,unknown (no longer listed),0.993,new
+chevrolet_malibu2,7485046,2,2,unknown (no longer listed),1.0,new
+chevrolet_malibu2,7485181,3,2,unknown (no longer listed),1.0,new
+chevrolet_malibu2,7485307,6,5,new-generation,0.973,new
+chevrolet_malibu2,7485308,6,5,unknown (no longer listed),0.949,new
+chevrolet_malibu2,7485364,6,4,unknown (no longer listed),0.965,new
+chevrolet_malibu2,7485372,9,5,new-generation,0.99,new
+chevrolet_malibu2,7485648,5,5,unknown (no longer listed),0.998,new
+chevrolet_malibu2,7485723,5,5,unknown (no longer listed),1.0,new
+chevrolet_malibu2,7485725,4,4,unknown (no longer listed),1.0,new
+chevrolet_malibu2,7485729,3,3,unknown (no longer listed),0.999,new
+chevrolet_malibu2,7486043,6,4,unknown (no longer listed),0.996,new
+chevrolet_malibu2,7486195,3,3,unknown (no longer listed),0.989,new
+chevrolet_malibu2,7487081,8,6,unknown (no longer listed),0.988,new
+chevrolet_malibu2,7487418,6,3,unknown (no longer listed),0.988,new
+chevrolet_malibu2,7488677,9,4,unknown (no longer listed),0.958,new
+chevrolet_malibu2,7489075,5,5,unknown (no longer listed),0.947,new
+chevrolet_malibu2,7489215,4,4,new-generation,0.993,new
+chevrolet_malibu2,7489437,11,8,unknown (no longer listed),0.983,new
+chevrolet_malibu2,7490298,7,5,unknown (no longer listed),0.996,new
+chevrolet_malibu2,7492694,9,8,unknown (no longer listed),0.952,new
+chevrolet_malibu2,7492856,4,4,unknown (no longer listed),1.0,new
+chevrolet_malibu2,7492958,4,4,new-generation,0.997,new
+chevrolet_malibu2,7498352,7,5,unknown (no longer listed),0.982,new
+chevrolet_malibu2,7499656,14,9,new-generation,0.937,new
+chevrolet_malibu2,7501052,2,1,unknown (no longer listed),0.999,new
+chevrolet_malibu2,7501577,13,12,unknown (no longer listed),0.985,new
+chevrolet_malibu2,7501599,3,3,unknown (no longer listed),0.996,new
+chevrolet_malibu2,7501605,4,4,unknown (no longer listed),0.998,new
+chevrolet_malibu2,7501612,3,3,unknown (no longer listed),0.997,new
+chevrolet_malibu2,7501618,4,4,unknown (no longer listed),0.985,new
+chevrolet_malibu2,7501633,9,9,unknown (no longer listed),0.995,new
+chevrolet_malibu2,7501826,10,9,unknown (no longer listed),0.996,new
+chevrolet_malibu2,7501828,9,5,unknown (no longer listed),0.995,new
+chevrolet_malibu2,7501846,8,5,unknown (no longer listed),0.965,new
+chevrolet_malibu2,7501857,4,3,unknown (no longer listed),0.994,new
+chevrolet_malibu2,7501917,1,1,unknown (no longer listed),0.999,new
+chevrolet_malibu2,7501932,9,8,unknown (no longer listed),0.994,new
+chevrolet_malibu2,7501947,9,7,unknown (no longer listed),0.962,new
+chevrolet_malibu2,7501957,4,3,unknown (no longer listed),0.975,new
+chevrolet_malibu2,7502008,7,7,unknown (no longer listed),0.945,new
+chevrolet_malibu2,7502071,3,3,new-generation,0.947,new
+chevrolet_malibu2,7502221,2,2,unknown (no longer listed),0.999,new
+chevrolet_malibu2,7502249,2,2,unknown (no longer listed),1.0,new
+chevrolet_malibu2,7502259,3,3,unknown (no longer listed),0.994,new
+chevrolet_malibu2,7502270,7,7,new-generation,0.973,new
+chevrolet_malibu2,7502299,2,2,unknown (no longer listed),0.999,new
+chevrolet_malibu2,7502351,6,6,unknown (no longer listed),0.993,new
+chevrolet_malibu2,7502387,4,4,unknown (no longer listed),0.981,new
+chevrolet_malibu2,7502403,5,4,unknown (no longer listed),0.965,new
+chevrolet_malibu2,7502542,2,2,unknown (no longer listed),0.985,new
+chevrolet_malibu2,7502570,6,5,unknown (no longer listed),0.998,new
+chevrolet_malibu2,7502636,4,2,unknown (no longer listed),0.995,new
+chevrolet_malibu2,7502650,2,2,unknown (no longer listed),0.999,new
+chevrolet_malibu2,7502709,10,9,unknown (no longer listed),0.938,new
+chevrolet_malibu2,7502725,13,5,unknown (no longer listed),0.992,new
+chevrolet_malibu2,7502783,19,13,unknown (no longer listed),0.974,new
+chevrolet_malibu2,7502812,1,1,unknown (no longer listed),0.924,new
+chevrolet_malibu2,7502842,2,2,unknown (no longer listed),0.999,new
+chevrolet_malibu2,7502910,2,2,unknown (no longer listed),0.997,new
+chevrolet_malibu2,7503028,2,2,unknown (no longer listed),0.992,new
+chevrolet_malibu2,7503029,8,4,unknown (no longer listed),0.984,new
+chevrolet_malibu2,7503150,2,2,unknown (no longer listed),0.996,new
+chevrolet_malibu2,7503454,1,1,unknown (no longer listed),0.999,new
+chevrolet_malibu2,7503843,8,6,new-generation,0.995,new
+chevrolet_malibu2,7503850,8,5,unknown (no longer listed),0.957,new
+chevrolet_malibu2,7503951,8,5,unknown (no longer listed),0.952,new
+chevrolet_malibu2,7503974,3,3,unknown (no longer listed),0.999,new
+chevrolet_malibu2,7504072,4,3,unknown (no longer listed),0.986,new
+chevrolet_malibu2,7504078,10,8,unknown (no longer listed),0.982,new
+chevrolet_malibu2,7504236,4,4,unknown (no longer listed),0.96,new
+chevrolet_malibu2,7504272,7,5,unknown (no longer listed),0.985,new

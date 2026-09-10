@@ -1,0 +1,332 @@
+class,listing_id,images,exterior_images,year_verdict,p_new,visual
+chevrolet_tracker,5702501,1,1,unknown (no longer listed),0.998,new
+chevrolet_tracker,6978393,1,1,unknown (no longer listed),0.866,new
+chevrolet_tracker,7217319,5,4,old-generation,0.006,old
+chevrolet_tracker,7288490,4,4,unknown (no longer listed),0.987,new
+chevrolet_tracker,7336659,7,6,new-generation,0.948,new
+chevrolet_tracker,7340873,4,2,unknown (no longer listed),0.003,old
+chevrolet_tracker,7353914,4,2,unknown (no longer listed),0.0,old
+chevrolet_tracker,7354943,3,3,unknown (no longer listed),0.022,old
+chevrolet_tracker,7387260,5,5,unknown (no longer listed),0.012,old
+chevrolet_tracker,7387536,4,4,unknown (no longer listed),0.878,new
+chevrolet_tracker,7387698,4,2,unknown (no longer listed),0.034,old
+chevrolet_tracker,7387718,4,2,unknown (no longer listed),0.001,old
+chevrolet_tracker,7391161,7,7,unknown (no longer listed),0.88,new
+chevrolet_tracker,7391494,2,2,unknown (no longer listed),0.687,new
+chevrolet_tracker,7391642,3,1,unknown (no longer listed),0.997,new
+chevrolet_tracker,7391646,3,3,unknown (no longer listed),0.914,new
+chevrolet_tracker,7399940,2,2,unknown (no longer listed),0.0,old
+chevrolet_tracker,7400139,8,7,unknown (no longer listed),0.712,new
+chevrolet_tracker,7400188,6,6,unknown (no longer listed),0.054,old
+chevrolet_tracker,7400255,5,4,unknown (no longer listed),0.821,new
+chevrolet_tracker,7401595,2,2,unknown (no longer listed),0.964,new
+chevrolet_tracker,7401612,5,5,unknown (no longer listed),0.86,new
+chevrolet_tracker,7401849,6,3,unknown (no longer listed),0.782,new
+chevrolet_tracker,7402438,6,6,unknown (no longer listed),0.911,new
+chevrolet_tracker,7403541,3,3,new-generation,0.998,new
+chevrolet_tracker,7403554,3,3,new-generation,0.995,new
+chevrolet_tracker,7404196,4,3,old-generation,0.267,old
+chevrolet_tracker,7404198,4,4,old-generation,0.004,old
+chevrolet_tracker,7405150,3,3,new-generation,0.962,new
+chevrolet_tracker,7407259,3,1,new-generation,0.987,new
+chevrolet_tracker,7407483,2,2,old-generation,0.014,old
+chevrolet_tracker,7407742,9,8,new-generation,0.983,new
+chevrolet_tracker,7418148,6,5,unknown (no longer listed),0.093,old
+chevrolet_tracker,7419593,5,5,new-generation,0.981,new
+chevrolet_tracker,7420043,5,4,old-generation,0.015,old
+chevrolet_tracker,7420053,3,2,old-generation,0.003,old
+chevrolet_tracker,7420182,9,5,ambiguous (transition year),0.985,new
+chevrolet_tracker,7420213,8,7,new-generation,0.837,new
+chevrolet_tracker,7420244,1,1,new-generation,0.992,new
+chevrolet_tracker,7421096,5,5,old-generation,0.024,old
+chevrolet_tracker,7421442,1,1,new-generation,0.995,new
+chevrolet_tracker,7421603,5,4,old-generation,0.006,old
+chevrolet_tracker,7421851,5,4,unknown (no longer listed),0.973,new
+chevrolet_tracker,7423302,6,5,new-generation,0.907,new
+chevrolet_tracker,7423679,5,4,new-generation,0.932,new
+chevrolet_tracker,7432027,5,5,unknown (no longer listed),0.22,old
+chevrolet_tracker,7432898,1,1,unknown (no longer listed),0.005,old
+chevrolet_tracker,7434187,2,2,unknown (no longer listed),0.982,new
+chevrolet_tracker,7434199,6,5,unknown (no longer listed),0.967,new
+chevrolet_tracker,7435247,9,8,unknown (no longer listed),0.975,new
+chevrolet_tracker,7435667,3,3,ambiguous (transition year),0.579,uncertain
+chevrolet_tracker,7435773,3,1,old-generation,0.035,old
+chevrolet_tracker,7435864,4,2,new-generation,0.767,new
+chevrolet_tracker,7436169,5,4,new-generation,0.986,new
+chevrolet_tracker,7436173,4,3,new-generation,0.783,new
+chevrolet_tracker,7436400,2,2,old-generation,0.015,old
+chevrolet_tracker,7436792,5,5,old-generation,0.008,old
+chevrolet_tracker,7436830,5,4,old-generation,0.067,old
+chevrolet_tracker,7436869,3,3,old-generation,0.019,old
+chevrolet_tracker,7437678,8,6,old-generation,0.026,old
+chevrolet_tracker,7447515,4,4,unknown (no longer listed),0.787,new
+chevrolet_tracker,7448010,4,4,unknown (no longer listed),0.902,new
+chevrolet_tracker,7448035,4,4,unknown (no longer listed),0.965,new
+chevrolet_tracker,7448050,4,2,unknown (no longer listed),0.751,new
+chevrolet_tracker,7448122,6,6,unknown (no longer listed),0.978,new
+chevrolet_tracker,7448229,3,2,unknown (no longer listed),0.8,new
+chevrolet_tracker,7448331,4,2,unknown (no longer listed),0.014,old
+chevrolet_tracker,7448436,6,5,unknown (no longer listed),0.991,new
+chevrolet_tracker,7449086,7,6,unknown (no longer listed),0.301,old
+chevrolet_tracker,7449868,3,3,new-generation,0.873,new
+chevrolet_tracker,7450036,3,3,old-generation,0.151,old
+chevrolet_tracker,7450071,4,4,new-generation,0.882,new
+chevrolet_tracker,7450196,5,5,old-generation,0.013,old
+chevrolet_tracker,7450425,5,3,old-generation,0.0,old
+chevrolet_tracker,7451642,7,6,old-generation,0.022,old
+chevrolet_tracker,7451739,6,5,old-generation,0.01,old
+chevrolet_tracker,7451856,4,3,old-generation,0.03,old
+chevrolet_tracker,7452363,1,1,new-generation,0.929,new
+chevrolet_tracker,7453356,7,6,old-generation,0.01,old
+chevrolet_tracker,7453508,5,4,new-generation,0.886,new
+chevrolet_tracker,7454571,1,1,new-generation,0.994,new
+chevrolet_tracker,7456543,5,5,unknown (no longer listed),0.114,old
+chevrolet_tracker,7461697,3,3,new-generation,0.995,new
+chevrolet_tracker,7463304,6,5,unknown (no longer listed),0.308,old
+chevrolet_tracker,7463386,8,5,unknown (no longer listed),0.082,old
+chevrolet_tracker,7463630,2,1,unknown (no longer listed),0.974,new
+chevrolet_tracker,7464003,7,6,unknown (no longer listed),0.991,new
+chevrolet_tracker,7464465,1,1,unknown (no longer listed),0.403,uncertain
+chevrolet_tracker,7464479,3,3,unknown (no longer listed),0.854,new
+chevrolet_tracker,7464501,1,1,unknown (no longer listed),0.042,old
+chevrolet_tracker,7464509,9,8,unknown (no longer listed),0.148,old
+chevrolet_tracker,7464562,4,4,unknown (no longer listed),0.987,new
+chevrolet_tracker,7464651,6,4,unknown (no longer listed),0.267,old
+chevrolet_tracker,7464716,7,5,unknown (no longer listed),0.982,new
+chevrolet_tracker,7464780,6,5,unknown (no longer listed),0.849,new
+chevrolet_tracker,7464782,5,5,unknown (no longer listed),0.973,new
+chevrolet_tracker,7464783,2,1,unknown (no longer listed),0.991,new
+chevrolet_tracker,7465016,6,4,old-generation,0.024,old
+chevrolet_tracker,7465336,2,2,unknown (no longer listed),0.971,new
+chevrolet_tracker,7465582,3,3,old-generation,0.026,old
+chevrolet_tracker,7465693,5,4,unknown (no longer listed),0.971,new
+chevrolet_tracker,7466522,3,2,old-generation,0.007,old
+chevrolet_tracker,7466630,3,3,ambiguous (transition year),0.942,new
+chevrolet_tracker,7466664,3,3,old-generation,0.116,old
+chevrolet_tracker,7466668,3,2,old-generation,0.014,old
+chevrolet_tracker,7466706,3,3,new-generation,0.84,new
+chevrolet_tracker,7466808,5,5,old-generation,0.016,old
+chevrolet_tracker,7467234,3,3,new-generation,0.967,new
+chevrolet_tracker,7468402,6,6,unknown (no longer listed),0.977,new
+chevrolet_tracker,7468791,12,10,unknown (no longer listed),0.216,old
+chevrolet_tracker,7470616,7,4,new-generation,0.989,new
+chevrolet_tracker,7470641,5,5,ambiguous (transition year),0.971,new
+chevrolet_tracker,7470721,5,3,old-generation,0.033,old
+chevrolet_tracker,7471212,1,1,new-generation,0.988,new
+chevrolet_tracker,7471708,10,8,unknown (no longer listed),0.237,old
+chevrolet_tracker,7472375,6,6,new-generation,0.81,new
+chevrolet_tracker,7472389,4,3,old-generation,0.004,old
+chevrolet_tracker,7480214,5,5,unknown (no longer listed),0.966,new
+chevrolet_tracker,7480378,4,2,unknown (no longer listed),0.846,new
+chevrolet_tracker,7481602,4,3,unknown (no longer listed),0.949,new
+chevrolet_tracker,7481818,17,11,unknown (no longer listed),0.322,old
+chevrolet_tracker,7482217,6,4,unknown (no longer listed),0.987,new
+chevrolet_tracker,7482247,4,4,unknown (no longer listed),0.83,new
+chevrolet_tracker,7482495,4,4,unknown (no longer listed),0.172,old
+chevrolet_tracker,7483496,3,3,new-generation,0.665,new
+chevrolet_tracker,7483497,4,4,new-generation,0.957,new
+chevrolet_tracker,7483694,4,3,old-generation,0.008,old
+chevrolet_tracker,7483906,4,4,unknown (no longer listed),0.298,old
+chevrolet_tracker,7485356,4,4,unknown (no longer listed),0.986,new
+chevrolet_tracker,7485507,6,6,new-generation,0.97,new
+chevrolet_tracker,7485738,4,3,old-generation,0.0,old
+chevrolet_tracker,7486176,3,2,old-generation,0.04,old
+chevrolet_tracker,7487089,5,3,unknown (no longer listed),0.902,new
+chevrolet_tracker,7487871,7,5,old-generation,0.005,old
+chevrolet_tracker,7492686,6,5,unknown (no longer listed),0.384,uncertain
+chevrolet_tracker,7494243,5,5,unknown (no longer listed),0.096,old
+chevrolet_tracker,7495242,8,7,old-generation,0.027,old
+chevrolet_tracker,7497089,7,5,unknown (no longer listed),0.048,old
+chevrolet_tracker,7497186,3,3,unknown (no longer listed),0.833,new
+chevrolet_tracker,7497213,4,4,unknown (no longer listed),0.956,new
+chevrolet_tracker,7498185,9,5,old-generation,0.032,old
+chevrolet_tracker,7498215,4,4,unknown (no longer listed),0.01,old
+chevrolet_tracker,7498239,4,3,unknown (no longer listed),0.839,new
+chevrolet_tracker,7498369,6,4,unknown (no longer listed),0.995,new
+chevrolet_tracker,7498451,4,3,unknown (no longer listed),0.983,new
+chevrolet_tracker,7498756,3,3,unknown (no longer listed),0.972,new
+chevrolet_tracker,7499323,4,4,unknown (no longer listed),0.256,old
+chevrolet_tracker,7499336,6,5,unknown (no longer listed),0.008,old
+chevrolet_tracker,7499560,5,3,unknown (no longer listed),0.045,old
+chevrolet_tracker,7499651,5,4,unknown (no longer listed),0.023,old
+chevrolet_tracker,7500193,1,1,old-generation,0.0,old
+chevrolet_tracker,7500573,3,3,old-generation,0.013,old
+chevrolet_tracker,7500633,4,4,new-generation,0.856,new
+chevrolet_tracker,7500817,6,5,old-generation,0.034,old
+chevrolet_tracker,7501120,5,3,unknown (no longer listed),0.115,old
+chevrolet_tracker,7501198,5,5,old-generation,0.048,old
+chevrolet_tracker,7501249,4,4,unknown (no longer listed),0.012,old
+chevrolet_tracker,7501941,6,4,unknown (no longer listed),0.211,old
+chevrolet_tracker,7502150,5,5,new-generation,0.863,new
+chevrolet_tracker,7502223,2,2,new-generation,0.01,old
+chevrolet_tracker,7502251,3,3,new-generation,0.977,new
+chevrolet_tracker,7502334,5,4,unknown (no longer listed),0.723,new
+chevrolet_tracker,7502365,3,3,old-generation,0.014,old
+chevrolet_tracker,7502555,1,1,old-generation,0.001,old
+chevrolet_tracker,7502717,2,2,unknown (no longer listed),0.126,old
+chevrolet_tracker,7502765,2,2,unknown (no longer listed),0.029,old
+chevrolet_tracker,7503135,4,4,new-generation,0.955,new
+chevrolet_tracker,7503470,7,7,old-generation,0.01,old
+chevrolet_tracker,7503653,8,5,unknown (no longer listed),0.021,old
+chevrolet_tracker,7503670,11,8,unknown (no longer listed),0.167,old
+chevrolet_tracker,7504040,11,8,unknown (no longer listed),0.107,old
+chevrolet_tracker,7504060,5,3,new-generation,0.844,new
+chevrolet_tracker,7504259,4,2,old-generation,0.135,old
+chevrolet_tracker,7504541,4,3,old-generation,0.005,old
+chevrolet_tracker,7504731,5,4,unknown (no longer listed),0.012,old
+chevrolet_tracker_2,7354497,6,6,unknown (no longer listed),0.991,new
+chevrolet_tracker_2,7358904,2,2,unknown (no longer listed),0.99,new
+chevrolet_tracker_2,7368897,3,3,unknown (no longer listed),0.989,new
+chevrolet_tracker_2,7374092,4,3,unknown (no longer listed),0.983,new
+chevrolet_tracker_2,7380977,12,9,unknown (no longer listed),0.97,new
+chevrolet_tracker_2,7390136,9,6,unknown (no longer listed),0.981,new
+chevrolet_tracker_2,7390578,8,7,unknown (no longer listed),0.949,new
+chevrolet_tracker_2,7391962,7,7,unknown (no longer listed),0.998,new
+chevrolet_tracker_2,7394593,9,7,new-generation,0.972,new
+chevrolet_tracker_2,7394943,4,4,unknown (no longer listed),0.998,new
+chevrolet_tracker_2,7405293,6,5,unknown (no longer listed),0.98,new
+chevrolet_tracker_2,7405345,2,2,unknown (no longer listed),0.83,new
+chevrolet_tracker_2,7405997,1,1,unknown (no longer listed),0.983,new
+chevrolet_tracker_2,7406035,2,2,unknown (no longer listed),0.977,new
+chevrolet_tracker_2,7406963,5,0,unknown (no longer listed),,no exterior shot
+chevrolet_tracker_2,7406968,3,3,unknown (no longer listed),0.997,new
+chevrolet_tracker_2,7406971,5,3,unknown (no longer listed),0.971,new
+chevrolet_tracker_2,7407063,6,6,unknown (no longer listed),0.999,new
+chevrolet_tracker_2,7407068,7,7,new-generation,0.95,new
+chevrolet_tracker_2,7407182,10,8,unknown (no longer listed),0.981,new
+chevrolet_tracker_2,7421588,5,4,unknown (no longer listed),0.982,new
+chevrolet_tracker_2,7421926,2,2,new-generation,0.997,new
+chevrolet_tracker_2,7422028,7,7,unknown (no longer listed),0.936,new
+chevrolet_tracker_2,7432748,6,6,unknown (no longer listed),0.968,new
+chevrolet_tracker_2,7434265,4,4,new-generation,0.954,new
+chevrolet_tracker_2,7436515,8,6,unknown (no longer listed),0.94,new
+chevrolet_tracker_2,7437622,7,6,unknown (no longer listed),0.989,new
+chevrolet_tracker_2,7437889,8,5,unknown (no longer listed),0.987,new
+chevrolet_tracker_2,7438117,9,9,unknown (no longer listed),0.987,new
+chevrolet_tracker_2,7438851,4,4,unknown (no longer listed),0.996,new
+chevrolet_tracker_2,7438979,8,5,unknown (no longer listed),0.986,new
+chevrolet_tracker_2,7439059,9,6,unknown (no longer listed),0.979,new
+chevrolet_tracker_2,7441205,5,4,unknown (no longer listed),0.944,new
+chevrolet_tracker_2,7442226,11,6,new-generation,0.956,new
+chevrolet_tracker_2,7443924,2,2,unknown (no longer listed),0.99,new
+chevrolet_tracker_2,7444111,1,1,unknown (no longer listed),0.873,new
+chevrolet_tracker_2,7444801,5,4,unknown (no longer listed),0.923,new
+chevrolet_tracker_2,7445487,6,5,new-generation,0.969,new
+chevrolet_tracker_2,7447623,6,6,unknown (no longer listed),0.953,new
+chevrolet_tracker_2,7447984,8,6,unknown (no longer listed),0.997,new
+chevrolet_tracker_2,7449125,9,6,unknown (no longer listed),0.983,new
+chevrolet_tracker_2,7450974,7,5,unknown (no longer listed),0.946,new
+chevrolet_tracker_2,7451470,5,5,new-generation,0.963,new
+chevrolet_tracker_2,7451790,9,5,unknown (no longer listed),0.979,new
+chevrolet_tracker_2,7451904,8,5,unknown (no longer listed),0.9,new
+chevrolet_tracker_2,7452217,4,4,unknown (no longer listed),0.949,new
+chevrolet_tracker_2,7452587,3,3,unknown (no longer listed),0.996,new
+chevrolet_tracker_2,7452589,3,3,unknown (no longer listed),0.986,new
+chevrolet_tracker_2,7452793,3,3,unknown (no longer listed),0.956,new
+chevrolet_tracker_2,7452893,5,3,unknown (no longer listed),0.991,new
+chevrolet_tracker_2,7453261,4,2,unknown (no longer listed),0.985,new
+chevrolet_tracker_2,7453324,6,5,unknown (no longer listed),0.976,new
+chevrolet_tracker_2,7454478,5,3,unknown (no longer listed),0.971,new
+chevrolet_tracker_2,7456190,9,7,unknown (no longer listed),0.998,new
+chevrolet_tracker_2,7458836,4,3,new-generation,0.978,new
+chevrolet_tracker_2,7462453,1,1,new-generation,0.999,new
+chevrolet_tracker_2,7463517,1,1,unknown (no longer listed),0.962,new
+chevrolet_tracker_2,7463572,5,4,new-generation,0.991,new
+chevrolet_tracker_2,7463601,2,2,new-generation,0.973,new
+chevrolet_tracker_2,7464394,5,5,new-generation,0.991,new
+chevrolet_tracker_2,7465434,6,5,unknown (no longer listed),0.974,new
+chevrolet_tracker_2,7466450,3,3,unknown (no longer listed),0.979,new
+chevrolet_tracker_2,7468424,4,4,unknown (no longer listed),0.983,new
+chevrolet_tracker_2,7468472,1,1,unknown (no longer listed),0.994,new
+chevrolet_tracker_2,7468520,8,8,unknown (no longer listed),0.984,new
+chevrolet_tracker_2,7469020,2,2,unknown (no longer listed),0.979,new
+chevrolet_tracker_2,7469545,7,6,unknown (no longer listed),0.983,new
+chevrolet_tracker_2,7470803,10,6,new-generation,0.963,new
+chevrolet_tracker_2,7471000,4,3,new-generation,0.946,new
+chevrolet_tracker_2,7471525,3,3,unknown (no longer listed),0.987,new
+chevrolet_tracker_2,7474871,1,1,new-generation,0.99,new
+chevrolet_tracker_2,7475912,7,4,new-generation,0.972,new
+chevrolet_tracker_2,7478345,6,6,unknown (no longer listed),0.916,new
+chevrolet_tracker_2,7480340,6,5,unknown (no longer listed),0.917,new
+chevrolet_tracker_2,7481745,6,4,new-generation,0.941,new
+chevrolet_tracker_2,7483571,9,8,unknown (no longer listed),0.953,new
+chevrolet_tracker_2,7484274,1,1,unknown (no longer listed),0.972,new
+chevrolet_tracker_2,7484978,4,3,unknown (no longer listed),0.999,new
+chevrolet_tracker_2,7485121,8,5,new-generation,0.959,new
+chevrolet_tracker_2,7485295,5,5,unknown (no longer listed),0.884,new
+chevrolet_tracker_2,7485763,4,2,unknown (no longer listed),0.974,new
+chevrolet_tracker_2,7486073,10,7,unknown (no longer listed),0.992,new
+chevrolet_tracker_2,7486270,4,3,unknown (no longer listed),0.992,new
+chevrolet_tracker_2,7486289,9,8,unknown (no longer listed),0.988,new
+chevrolet_tracker_2,7486307,8,7,unknown (no longer listed),0.974,new
+chevrolet_tracker_2,7486491,5,4,unknown (no longer listed),0.985,new
+chevrolet_tracker_2,7486864,8,3,unknown (no longer listed),0.977,new
+chevrolet_tracker_2,7487289,9,8,new-generation,0.933,new
+chevrolet_tracker_2,7487976,5,4,new-generation,0.969,new
+chevrolet_tracker_2,7488770,5,4,unknown (no longer listed),0.989,new
+chevrolet_tracker_2,7488923,8,5,unknown (no longer listed),0.984,new
+chevrolet_tracker_2,7489657,3,3,new-generation,0.99,new
+chevrolet_tracker_2,7492768,5,5,unknown (no longer listed),0.998,new
+chevrolet_tracker_2,7493136,3,3,unknown (no longer listed),0.947,new
+chevrolet_tracker_2,7494596,7,5,new-generation,0.93,new
+chevrolet_tracker_2,7495359,19,15,unknown (no longer listed),0.965,new
+chevrolet_tracker_2,7497350,4,4,unknown (no longer listed),0.995,new
+chevrolet_tracker_2,7497420,4,4,unknown (no longer listed),0.972,new
+chevrolet_tracker_2,7497602,9,6,new-generation,0.984,new
+chevrolet_tracker_2,7498195,11,7,unknown (no longer listed),0.973,new
+chevrolet_tracker_2,7499250,1,1,unknown (no longer listed),0.972,new
+chevrolet_tracker_2,7499613,6,6,unknown (no longer listed),0.923,new
+chevrolet_tracker_2,7500048,3,3,new-generation,0.982,new
+chevrolet_tracker_2,7500264,5,5,unknown (no longer listed),0.981,new
+chevrolet_tracker_2,7500451,8,8,unknown (no longer listed),0.984,new
+chevrolet_tracker_2,7500829,3,3,unknown (no longer listed),0.964,new
+chevrolet_tracker_2,7501048,5,5,new-generation,0.969,new
+chevrolet_tracker_2,7501117,3,3,unknown (no longer listed),0.977,new
+chevrolet_tracker_2,7501122,5,4,new-generation,0.954,new
+chevrolet_tracker_2,7501203,10,7,unknown (no longer listed),0.961,new
+chevrolet_tracker_2,7501265,7,5,unknown (no longer listed),0.978,new
+chevrolet_tracker_2,7501604,8,7,unknown (no longer listed),0.964,new
+chevrolet_tracker_2,7501768,5,4,unknown (no longer listed),0.934,new
+chevrolet_tracker_2,7502012,1,1,unknown (no longer listed),0.952,new
+chevrolet_tracker_2,7502014,5,5,unknown (no longer listed),0.959,new
+chevrolet_tracker_2,7502095,1,0,unknown (no longer listed),,no exterior shot
+chevrolet_tracker_2,7502115,6,5,unknown (no longer listed),0.955,new
+chevrolet_tracker_2,7502146,6,5,unknown (no longer listed),0.95,new
+chevrolet_tracker_2,7502175,2,2,unknown (no longer listed),0.993,new
+chevrolet_tracker_2,7502228,2,2,unknown (no longer listed),0.993,new
+chevrolet_tracker_2,7502248,2,2,unknown (no longer listed),0.992,new
+chevrolet_tracker_2,7502255,3,3,unknown (no longer listed),0.949,new
+chevrolet_tracker_2,7502306,3,3,unknown (no longer listed),0.968,new
+chevrolet_tracker_2,7502364,1,1,unknown (no longer listed),0.852,new
+chevrolet_tracker_2,7502368,1,1,unknown (no longer listed),0.986,new
+chevrolet_tracker_2,7502374,2,2,unknown (no longer listed),0.991,new
+chevrolet_tracker_2,7502400,4,3,unknown (no longer listed),0.956,new
+chevrolet_tracker_2,7502497,2,2,unknown (no longer listed),0.979,new
+chevrolet_tracker_2,7502537,9,6,unknown (no longer listed),0.987,new
+chevrolet_tracker_2,7502544,2,2,unknown (no longer listed),0.995,new
+chevrolet_tracker_2,7502552,2,2,unknown (no longer listed),0.997,new
+chevrolet_tracker_2,7502559,2,2,unknown (no longer listed),0.996,new
+chevrolet_tracker_2,7502632,9,3,unknown (no longer listed),0.978,new
+chevrolet_tracker_2,7502658,4,3,unknown (no longer listed),0.969,new
+chevrolet_tracker_2,7502720,6,5,unknown (no longer listed),0.996,new
+chevrolet_tracker_2,7502723,2,2,unknown (no longer listed),0.995,new
+chevrolet_tracker_2,7502738,2,2,unknown (no longer listed),0.995,new
+chevrolet_tracker_2,7502784,3,3,unknown (no longer listed),0.977,new
+chevrolet_tracker_2,7502791,2,2,unknown (no longer listed),0.993,new
+chevrolet_tracker_2,7502830,5,5,unknown (no longer listed),0.998,new
+chevrolet_tracker_2,7502864,4,3,unknown (no longer listed),0.953,new
+chevrolet_tracker_2,7502915,5,5,unknown (no longer listed),0.991,new
+chevrolet_tracker_2,7502943,2,2,unknown (no longer listed),0.998,new
+chevrolet_tracker_2,7502944,5,3,unknown (no longer listed),0.985,new
+chevrolet_tracker_2,7503065,2,2,unknown (no longer listed),0.969,new
+chevrolet_tracker_2,7503090,8,7,unknown (no longer listed),0.997,new
+chevrolet_tracker_2,7503096,2,2,unknown (no longer listed),0.981,new
+chevrolet_tracker_2,7503104,4,3,unknown (no longer listed),0.988,new
+chevrolet_tracker_2,7503164,2,2,unknown (no longer listed),0.982,new
+chevrolet_tracker_2,7503174,7,5,unknown (no longer listed),0.994,new
+chevrolet_tracker_2,7503254,6,6,unknown (no longer listed),0.99,new
+chevrolet_tracker_2,7503458,7,6,unknown (no longer listed),0.967,new
+chevrolet_tracker_2,7503886,6,5,unknown (no longer listed),0.993,new
+chevrolet_tracker_2,7503890,8,2,unknown (no longer listed),0.948,new
+chevrolet_tracker_2,7503914,4,4,unknown (no longer listed),0.993,new
+chevrolet_tracker_2,7503948,4,3,unknown (no longer listed),0.944,new

@@ -1,0 +1,642 @@
+class,listing_id,year,verdict,flag,images
+chevrolet_tracker,5702501,,unknown (no longer listed),,1
+chevrolet_tracker,6978393,,unknown (no longer listed),,1
+chevrolet_tracker,7217319,2020,old-generation,,5
+chevrolet_tracker,7288490,,unknown (no longer listed),,4
+chevrolet_tracker,7336659,2023,new-generation,MISLABELLED,7
+chevrolet_tracker,7340873,,unknown (no longer listed),,4
+chevrolet_tracker,7353914,,unknown (no longer listed),,4
+chevrolet_tracker,7354943,,unknown (no longer listed),,3
+chevrolet_tracker,7387260,,unknown (no longer listed),,5
+chevrolet_tracker,7387536,,unknown (no longer listed),,4
+chevrolet_tracker,7387698,,unknown (no longer listed),,4
+chevrolet_tracker,7387718,,unknown (no longer listed),,4
+chevrolet_tracker,7391161,,unknown (no longer listed),,7
+chevrolet_tracker,7391494,,unknown (no longer listed),,2
+chevrolet_tracker,7391642,,unknown (no longer listed),,3
+chevrolet_tracker,7391646,,unknown (no longer listed),,3
+chevrolet_tracker,7399940,,unknown (no longer listed),,2
+chevrolet_tracker,7400139,,unknown (no longer listed),,8
+chevrolet_tracker,7400188,,unknown (no longer listed),,6
+chevrolet_tracker,7400255,,unknown (no longer listed),,5
+chevrolet_tracker,7401595,,unknown (no longer listed),,2
+chevrolet_tracker,7401612,,unknown (no longer listed),,5
+chevrolet_tracker,7401849,,unknown (no longer listed),,6
+chevrolet_tracker,7402438,,unknown (no longer listed),,6
+chevrolet_tracker,7403541,2024,new-generation,MISLABELLED,3
+chevrolet_tracker,7403554,2024,new-generation,MISLABELLED,3
+chevrolet_tracker,7404196,2020,old-generation,,4
+chevrolet_tracker,7404198,2019,old-generation,,4
+chevrolet_tracker,7405150,2024,new-generation,MISLABELLED,3
+chevrolet_tracker,7407259,2025,new-generation,MISLABELLED,3
+chevrolet_tracker,7407483,2019,old-generation,,2
+chevrolet_tracker,7407742,2025,new-generation,MISLABELLED,9
+chevrolet_tracker,7418148,,unknown (no longer listed),,6
+chevrolet_tracker,7419593,2025,new-generation,MISLABELLED,5
+chevrolet_tracker,7420033,2019,old-generation,,0
+chevrolet_tracker,7420043,2019,old-generation,,5
+chevrolet_tracker,7420053,2019,old-generation,,3
+chevrolet_tracker,7420182,2021,ambiguous (transition year),,9
+chevrolet_tracker,7420213,2023,new-generation,MISLABELLED,8
+chevrolet_tracker,7420244,2023,new-generation,MISLABELLED,1
+chevrolet_tracker,7421096,2019,old-generation,,5
+chevrolet_tracker,7421442,2023,new-generation,MISLABELLED,1
+chevrolet_tracker,7421603,2019,old-generation,,5
+chevrolet_tracker,7421851,,unknown (no longer listed),,5
+chevrolet_tracker,7423302,2023,new-generation,MISLABELLED,6
+chevrolet_tracker,7423679,2026,new-generation,MISLABELLED,5
+chevrolet_tracker,7432027,,unknown (no longer listed),,5
+chevrolet_tracker,7432898,,unknown (no longer listed),,1
+chevrolet_tracker,7434187,,unknown (no longer listed),,2
+chevrolet_tracker,7434199,,unknown (no longer listed),,6
+chevrolet_tracker,7435247,,unknown (no longer listed),,9
+chevrolet_tracker,7435667,2021,ambiguous (transition year),,3
+chevrolet_tracker,7435773,2020,old-generation,,3
+chevrolet_tracker,7435864,2023,new-generation,MISLABELLED,4
+chevrolet_tracker,7436014,2023,new-generation,MISLABELLED,0
+chevrolet_tracker,7436169,2024,new-generation,MISLABELLED,5
+chevrolet_tracker,7436173,2023,new-generation,MISLABELLED,4
+chevrolet_tracker,7436400,2019,old-generation,,2
+chevrolet_tracker,7436792,2019,old-generation,,5
+chevrolet_tracker,7436830,2020,old-generation,,5
+chevrolet_tracker,7436869,2019,old-generation,,3
+chevrolet_tracker,7437678,2020,old-generation,,8
+chevrolet_tracker,7447515,,unknown (no longer listed),,4
+chevrolet_tracker,7448006,,unknown (no longer listed),,0
+chevrolet_tracker,7448010,,unknown (no longer listed),,4
+chevrolet_tracker,7448035,,unknown (no longer listed),,4
+chevrolet_tracker,7448039,,unknown (no longer listed),,0
+chevrolet_tracker,7448050,,unknown (no longer listed),,4
+chevrolet_tracker,7448122,,unknown (no longer listed),,6
+chevrolet_tracker,7448229,,unknown (no longer listed),,3
+chevrolet_tracker,7448331,,unknown (no longer listed),,4
+chevrolet_tracker,7448436,,unknown (no longer listed),,6
+chevrolet_tracker,7449086,,unknown (no longer listed),,7
+chevrolet_tracker,7449868,2022,new-generation,MISLABELLED,3
+chevrolet_tracker,7450036,2020,old-generation,,3
+chevrolet_tracker,7450071,2025,new-generation,MISLABELLED,4
+chevrolet_tracker,7450196,2019,old-generation,,5
+chevrolet_tracker,7450425,2019,old-generation,,5
+chevrolet_tracker,7451642,2020,old-generation,,7
+chevrolet_tracker,7451739,2019,old-generation,,6
+chevrolet_tracker,7451856,2019,old-generation,,4
+chevrolet_tracker,7452363,2024,new-generation,MISLABELLED,1
+chevrolet_tracker,7453356,2020,old-generation,,7
+chevrolet_tracker,7453508,2023,new-generation,MISLABELLED,5
+chevrolet_tracker,7454571,2024,new-generation,MISLABELLED,1
+chevrolet_tracker,7456543,,unknown (no longer listed),,5
+chevrolet_tracker,7461697,2024,new-generation,MISLABELLED,3
+chevrolet_tracker,7463304,,unknown (no longer listed),,6
+chevrolet_tracker,7463386,,unknown (no longer listed),,8
+chevrolet_tracker,7463630,,unknown (no longer listed),,2
+chevrolet_tracker,7464003,,unknown (no longer listed),,7
+chevrolet_tracker,7464465,,unknown (no longer listed),,1
+chevrolet_tracker,7464479,,unknown (no longer listed),,3
+chevrolet_tracker,7464501,,unknown (no longer listed),,1
+chevrolet_tracker,7464509,,unknown (no longer listed),,9
+chevrolet_tracker,7464562,,unknown (no longer listed),,4
+chevrolet_tracker,7464651,,unknown (no longer listed),,6
+chevrolet_tracker,7464716,,unknown (no longer listed),,7
+chevrolet_tracker,7464780,,unknown (no longer listed),,6
+chevrolet_tracker,7464782,,unknown (no longer listed),,5
+chevrolet_tracker,7464783,,unknown (no longer listed),,2
+chevrolet_tracker,7465016,2020,old-generation,,6
+chevrolet_tracker,7465336,,unknown (no longer listed),,2
+chevrolet_tracker,7465582,2020,old-generation,,3
+chevrolet_tracker,7465693,,unknown (no longer listed),,5
+chevrolet_tracker,7466522,2019,old-generation,,3
+chevrolet_tracker,7466630,2021,ambiguous (transition year),,3
+chevrolet_tracker,7466664,2020,old-generation,,3
+chevrolet_tracker,7466668,2020,old-generation,,3
+chevrolet_tracker,7466706,2023,new-generation,MISLABELLED,3
+chevrolet_tracker,7466808,2020,old-generation,,5
+chevrolet_tracker,7467082,2024,new-generation,MISLABELLED,0
+chevrolet_tracker,7467234,2023,new-generation,MISLABELLED,3
+chevrolet_tracker,7468402,,unknown (no longer listed),,6
+chevrolet_tracker,7468791,,unknown (no longer listed),,12
+chevrolet_tracker,7470616,2025,new-generation,MISLABELLED,7
+chevrolet_tracker,7470641,2021,ambiguous (transition year),,5
+chevrolet_tracker,7470721,2019,old-generation,,5
+chevrolet_tracker,7471212,2026,new-generation,MISLABELLED,1
+chevrolet_tracker,7471708,,unknown (no longer listed),,10
+chevrolet_tracker,7472375,2024,new-generation,MISLABELLED,6
+chevrolet_tracker,7472389,2019,old-generation,,4
+chevrolet_tracker,7480214,,unknown (no longer listed),,5
+chevrolet_tracker,7480378,,unknown (no longer listed),,4
+chevrolet_tracker,7481602,,unknown (no longer listed),,4
+chevrolet_tracker,7481818,,unknown (no longer listed),,17
+chevrolet_tracker,7482217,,unknown (no longer listed),,6
+chevrolet_tracker,7482247,,unknown (no longer listed),,4
+chevrolet_tracker,7482495,,unknown (no longer listed),,4
+chevrolet_tracker,7483496,2023,new-generation,MISLABELLED,3
+chevrolet_tracker,7483497,2022,new-generation,MISLABELLED,4
+chevrolet_tracker,7483694,2020,old-generation,,4
+chevrolet_tracker,7483906,,unknown (no longer listed),,4
+chevrolet_tracker,7484978,,unknown (no longer listed),,0
+chevrolet_tracker,7485356,,unknown (no longer listed),,4
+chevrolet_tracker,7485507,2025,new-generation,MISLABELLED,6
+chevrolet_tracker,7485738,2020,old-generation,,4
+chevrolet_tracker,7486176,2020,old-generation,,3
+chevrolet_tracker,7487089,,unknown (no longer listed),,5
+chevrolet_tracker,7487871,2019,old-generation,,7
+chevrolet_tracker,7492686,,unknown (no longer listed),,6
+chevrolet_tracker,7494243,,unknown (no longer listed),,5
+chevrolet_tracker,7495242,2020,old-generation,,8
+chevrolet_tracker,7497089,,unknown (no longer listed),,7
+chevrolet_tracker,7497186,,unknown (no longer listed),,3
+chevrolet_tracker,7497213,,unknown (no longer listed),,4
+chevrolet_tracker,7498185,2019,old-generation,,9
+chevrolet_tracker,7498215,,unknown (no longer listed),,4
+chevrolet_tracker,7498239,,unknown (no longer listed),,4
+chevrolet_tracker,7498369,,unknown (no longer listed),,6
+chevrolet_tracker,7498451,,unknown (no longer listed),,4
+chevrolet_tracker,7498756,,unknown (no longer listed),,3
+chevrolet_tracker,7499323,,unknown (no longer listed),,4
+chevrolet_tracker,7499336,,unknown (no longer listed),,6
+chevrolet_tracker,7499560,,unknown (no longer listed),,5
+chevrolet_tracker,7499651,,unknown (no longer listed),,5
+chevrolet_tracker,7500193,2020,old-generation,,1
+chevrolet_tracker,7500573,2017,old-generation,,3
+chevrolet_tracker,7500599,2025,new-generation,MISLABELLED,0
+chevrolet_tracker,7500633,2023,new-generation,MISLABELLED,4
+chevrolet_tracker,7500635,,unknown (no longer listed),,0
+chevrolet_tracker,7500756,2023,new-generation,MISLABELLED,0
+chevrolet_tracker,7500817,2019,old-generation,,6
+chevrolet_tracker,7501120,,unknown (no longer listed),,5
+chevrolet_tracker,7501198,2020,old-generation,,5
+chevrolet_tracker,7501249,,unknown (no longer listed),,4
+chevrolet_tracker,7501941,,unknown (no longer listed),,6
+chevrolet_tracker,7502056,,unknown (no longer listed),,0
+chevrolet_tracker,7502150,2022,new-generation,MISLABELLED,5
+chevrolet_tracker,7502223,2024,new-generation,MISLABELLED,2
+chevrolet_tracker,7502251,2023,new-generation,MISLABELLED,3
+chevrolet_tracker,7502334,,unknown (no longer listed),,5
+chevrolet_tracker,7502365,2020,old-generation,,3
+chevrolet_tracker,7502555,2020,old-generation,,1
+chevrolet_tracker,7502717,,unknown (no longer listed),,2
+chevrolet_tracker,7502765,,unknown (no longer listed),,2
+chevrolet_tracker,7502921,,unknown (no longer listed),,0
+chevrolet_tracker,7503131,2024,new-generation,MISLABELLED,0
+chevrolet_tracker,7503134,2024,new-generation,MISLABELLED,0
+chevrolet_tracker,7503135,2024,new-generation,MISLABELLED,4
+chevrolet_tracker,7503470,2020,old-generation,,7
+chevrolet_tracker,7503653,,unknown (no longer listed),,8
+chevrolet_tracker,7503670,,unknown (no longer listed),,11
+chevrolet_tracker,7504040,,unknown (no longer listed),,11
+chevrolet_tracker,7504060,2023,new-generation,MISLABELLED,5
+chevrolet_tracker,7504259,2019,old-generation,,4
+chevrolet_tracker,7504541,2019,old-generation,,4
+chevrolet_tracker,7504731,,unknown (no longer listed),,5
+chevrolet_tracker_2,7354497,,unknown (no longer listed),,6
+chevrolet_tracker_2,7358904,,unknown (no longer listed),,2
+chevrolet_tracker_2,7368897,,unknown (no longer listed),,3
+chevrolet_tracker_2,7374092,,unknown (no longer listed),,4
+chevrolet_tracker_2,7380977,,unknown (no longer listed),,12
+chevrolet_tracker_2,7390136,,unknown (no longer listed),,9
+chevrolet_tracker_2,7390578,,unknown (no longer listed),,8
+chevrolet_tracker_2,7391962,,unknown (no longer listed),,7
+chevrolet_tracker_2,7394593,2023,new-generation,,9
+chevrolet_tracker_2,7394943,,unknown (no longer listed),,4
+chevrolet_tracker_2,7405293,,unknown (no longer listed),,6
+chevrolet_tracker_2,7405345,,unknown (no longer listed),,2
+chevrolet_tracker_2,7405997,,unknown (no longer listed),,1
+chevrolet_tracker_2,7406035,,unknown (no longer listed),,2
+chevrolet_tracker_2,7406933,,unknown (no longer listed),,0
+chevrolet_tracker_2,7406943,,unknown (no longer listed),,0
+chevrolet_tracker_2,7406961,,unknown (no longer listed),,0
+chevrolet_tracker_2,7406963,,unknown (no longer listed),,5
+chevrolet_tracker_2,7406968,,unknown (no longer listed),,3
+chevrolet_tracker_2,7406971,,unknown (no longer listed),,5
+chevrolet_tracker_2,7407063,,unknown (no longer listed),,6
+chevrolet_tracker_2,7407068,2023,new-generation,,7
+chevrolet_tracker_2,7407182,,unknown (no longer listed),,10
+chevrolet_tracker_2,7421588,,unknown (no longer listed),,5
+chevrolet_tracker_2,7421926,2023,new-generation,,2
+chevrolet_tracker_2,7422028,,unknown (no longer listed),,7
+chevrolet_tracker_2,7432748,,unknown (no longer listed),,6
+chevrolet_tracker_2,7434265,2023,new-generation,,4
+chevrolet_tracker_2,7436515,,unknown (no longer listed),,8
+chevrolet_tracker_2,7437622,,unknown (no longer listed),,7
+chevrolet_tracker_2,7437889,,unknown (no longer listed),,8
+chevrolet_tracker_2,7438117,,unknown (no longer listed),,9
+chevrolet_tracker_2,7438851,,unknown (no longer listed),,4
+chevrolet_tracker_2,7438979,,unknown (no longer listed),,8
+chevrolet_tracker_2,7439059,,unknown (no longer listed),,9
+chevrolet_tracker_2,7441205,,unknown (no longer listed),,5
+chevrolet_tracker_2,7442226,2024,new-generation,,11
+chevrolet_tracker_2,7443924,,unknown (no longer listed),,2
+chevrolet_tracker_2,7444111,,unknown (no longer listed),,1
+chevrolet_tracker_2,7444801,,unknown (no longer listed),,5
+chevrolet_tracker_2,7445487,2024,new-generation,,6
+chevrolet_tracker_2,7447623,,unknown (no longer listed),,6
+chevrolet_tracker_2,7447984,,unknown (no longer listed),,8
+chevrolet_tracker_2,7449125,,unknown (no longer listed),,9
+chevrolet_tracker_2,7450974,,unknown (no longer listed),,7
+chevrolet_tracker_2,7451470,2023,new-generation,,5
+chevrolet_tracker_2,7451790,,unknown (no longer listed),,9
+chevrolet_tracker_2,7451881,,unknown (no longer listed),,0
+chevrolet_tracker_2,7451904,,unknown (no longer listed),,8
+chevrolet_tracker_2,7452217,,unknown (no longer listed),,4
+chevrolet_tracker_2,7452587,,unknown (no longer listed),,3
+chevrolet_tracker_2,7452589,,unknown (no longer listed),,3
+chevrolet_tracker_2,7452793,,unknown (no longer listed),,3
+chevrolet_tracker_2,7452893,,unknown (no longer listed),,5
+chevrolet_tracker_2,7453261,,unknown (no longer listed),,4
+chevrolet_tracker_2,7453324,,unknown (no longer listed),,6
+chevrolet_tracker_2,7454478,,unknown (no longer listed),,5
+chevrolet_tracker_2,7456190,,unknown (no longer listed),,9
+chevrolet_tracker_2,7458836,2024,new-generation,,4
+chevrolet_tracker_2,7462453,2025,new-generation,,1
+chevrolet_tracker_2,7463517,,unknown (no longer listed),,1
+chevrolet_tracker_2,7463572,2023,new-generation,,5
+chevrolet_tracker_2,7463601,2023,new-generation,,2
+chevrolet_tracker_2,7464394,2025,new-generation,,5
+chevrolet_tracker_2,7465434,,unknown (no longer listed),,6
+chevrolet_tracker_2,7466450,,unknown (no longer listed),,3
+chevrolet_tracker_2,7468424,,unknown (no longer listed),,4
+chevrolet_tracker_2,7468472,,unknown (no longer listed),,1
+chevrolet_tracker_2,7468520,,unknown (no longer listed),,8
+chevrolet_tracker_2,7469020,,unknown (no longer listed),,2
+chevrolet_tracker_2,7469545,,unknown (no longer listed),,7
+chevrolet_tracker_2,7470803,2023,new-generation,,10
+chevrolet_tracker_2,7471000,2023,new-generation,,4
+chevrolet_tracker_2,7471525,,unknown (no longer listed),,3
+chevrolet_tracker_2,7474871,2024,new-generation,,1
+chevrolet_tracker_2,7475912,2024,new-generation,,7
+chevrolet_tracker_2,7478345,,unknown (no longer listed),,6
+chevrolet_tracker_2,7480340,,unknown (no longer listed),,6
+chevrolet_tracker_2,7481745,2024,new-generation,,6
+chevrolet_tracker_2,7483571,,unknown (no longer listed),,9
+chevrolet_tracker_2,7484274,,unknown (no longer listed),,1
+chevrolet_tracker_2,7484978,,unknown (no longer listed),,4
+chevrolet_tracker_2,7485121,2026,new-generation,,8
+chevrolet_tracker_2,7485295,,unknown (no longer listed),,5
+chevrolet_tracker_2,7485763,,unknown (no longer listed),,4
+chevrolet_tracker_2,7486067,,unknown (no longer listed),,0
+chevrolet_tracker_2,7486073,,unknown (no longer listed),,10
+chevrolet_tracker_2,7486270,,unknown (no longer listed),,4
+chevrolet_tracker_2,7486289,,unknown (no longer listed),,9
+chevrolet_tracker_2,7486307,,unknown (no longer listed),,8
+chevrolet_tracker_2,7486491,,unknown (no longer listed),,5
+chevrolet_tracker_2,7486864,,unknown (no longer listed),,8
+chevrolet_tracker_2,7487289,2023,new-generation,,9
+chevrolet_tracker_2,7487976,2023,new-generation,,5
+chevrolet_tracker_2,7488770,,unknown (no longer listed),,5
+chevrolet_tracker_2,7488923,,unknown (no longer listed),,8
+chevrolet_tracker_2,7489657,2023,new-generation,,3
+chevrolet_tracker_2,7492768,,unknown (no longer listed),,5
+chevrolet_tracker_2,7493136,,unknown (no longer listed),,3
+chevrolet_tracker_2,7494596,2024,new-generation,,7
+chevrolet_tracker_2,7495359,,unknown (no longer listed),,19
+chevrolet_tracker_2,7497350,,unknown (no longer listed),,4
+chevrolet_tracker_2,7497420,,unknown (no longer listed),,4
+chevrolet_tracker_2,7497602,2023,new-generation,,9
+chevrolet_tracker_2,7498195,,unknown (no longer listed),,11
+chevrolet_tracker_2,7499250,,unknown (no longer listed),,1
+chevrolet_tracker_2,7499613,,unknown (no longer listed),,6
+chevrolet_tracker_2,7500048,2024,new-generation,,3
+chevrolet_tracker_2,7500264,,unknown (no longer listed),,5
+chevrolet_tracker_2,7500451,,unknown (no longer listed),,8
+chevrolet_tracker_2,7500829,,unknown (no longer listed),,3
+chevrolet_tracker_2,7501048,2023,new-generation,,5
+chevrolet_tracker_2,7501117,,unknown (no longer listed),,3
+chevrolet_tracker_2,7501122,2025,new-generation,,5
+chevrolet_tracker_2,7501203,,unknown (no longer listed),,10
+chevrolet_tracker_2,7501265,,unknown (no longer listed),,7
+chevrolet_tracker_2,7501604,,unknown (no longer listed),,8
+chevrolet_tracker_2,7501768,,unknown (no longer listed),,5
+chevrolet_tracker_2,7502012,,unknown (no longer listed),,1
+chevrolet_tracker_2,7502014,,unknown (no longer listed),,5
+chevrolet_tracker_2,7502095,,unknown (no longer listed),,1
+chevrolet_tracker_2,7502115,,unknown (no longer listed),,6
+chevrolet_tracker_2,7502146,,unknown (no longer listed),,6
+chevrolet_tracker_2,7502175,,unknown (no longer listed),,2
+chevrolet_tracker_2,7502228,,unknown (no longer listed),,2
+chevrolet_tracker_2,7502248,,unknown (no longer listed),,2
+chevrolet_tracker_2,7502255,,unknown (no longer listed),,3
+chevrolet_tracker_2,7502306,,unknown (no longer listed),,3
+chevrolet_tracker_2,7502364,,unknown (no longer listed),,1
+chevrolet_tracker_2,7502368,,unknown (no longer listed),,1
+chevrolet_tracker_2,7502374,,unknown (no longer listed),,2
+chevrolet_tracker_2,7502400,,unknown (no longer listed),,4
+chevrolet_tracker_2,7502497,,unknown (no longer listed),,2
+chevrolet_tracker_2,7502537,,unknown (no longer listed),,9
+chevrolet_tracker_2,7502544,,unknown (no longer listed),,2
+chevrolet_tracker_2,7502552,,unknown (no longer listed),,2
+chevrolet_tracker_2,7502559,,unknown (no longer listed),,2
+chevrolet_tracker_2,7502632,,unknown (no longer listed),,9
+chevrolet_tracker_2,7502658,,unknown (no longer listed),,4
+chevrolet_tracker_2,7502720,,unknown (no longer listed),,6
+chevrolet_tracker_2,7502723,,unknown (no longer listed),,2
+chevrolet_tracker_2,7502738,,unknown (no longer listed),,2
+chevrolet_tracker_2,7502784,,unknown (no longer listed),,3
+chevrolet_tracker_2,7502791,,unknown (no longer listed),,2
+chevrolet_tracker_2,7502830,,unknown (no longer listed),,5
+chevrolet_tracker_2,7502864,,unknown (no longer listed),,4
+chevrolet_tracker_2,7502915,,unknown (no longer listed),,5
+chevrolet_tracker_2,7502943,,unknown (no longer listed),,2
+chevrolet_tracker_2,7502944,,unknown (no longer listed),,5
+chevrolet_tracker_2,7503065,,unknown (no longer listed),,2
+chevrolet_tracker_2,7503090,,unknown (no longer listed),,8
+chevrolet_tracker_2,7503096,,unknown (no longer listed),,2
+chevrolet_tracker_2,7503104,,unknown (no longer listed),,4
+chevrolet_tracker_2,7503164,,unknown (no longer listed),,2
+chevrolet_tracker_2,7503174,,unknown (no longer listed),,7
+chevrolet_tracker_2,7503254,,unknown (no longer listed),,6
+chevrolet_tracker_2,7503458,,unknown (no longer listed),,7
+chevrolet_tracker_2,7503886,,unknown (no longer listed),,6
+chevrolet_tracker_2,7503890,,unknown (no longer listed),,8
+chevrolet_tracker_2,7503914,,unknown (no longer listed),,4
+chevrolet_tracker_2,7503948,,unknown (no longer listed),,4
+chevrolet_malibu,6966080,2013,old-generation,,3
+chevrolet_malibu,7069310,,unknown (no longer listed),,4
+chevrolet_malibu,7286489,,unknown (no longer listed),,7
+chevrolet_malibu,7346357,2016,ambiguous (transition year),,7
+chevrolet_malibu,7348539,,unknown (no longer listed),,4
+chevrolet_malibu,7368579,2014,old-generation,,14
+chevrolet_malibu,7369672,2012,old-generation,,4
+chevrolet_malibu,7386732,,unknown (no longer listed),,8
+chevrolet_malibu,7388165,,unknown (no longer listed),,8
+chevrolet_malibu,7390605,,unknown (no longer listed),,9
+chevrolet_malibu,7390654,,unknown (no longer listed),,5
+chevrolet_malibu,7390931,,unknown (no longer listed),,10
+chevrolet_malibu,7391235,2012,old-generation,,7
+chevrolet_malibu,7391571,,unknown (no longer listed),,6
+chevrolet_malibu,7395561,2013,old-generation,,6
+chevrolet_malibu,7400019,,unknown (no longer listed),,4
+chevrolet_malibu,7400034,,unknown (no longer listed),,7
+chevrolet_malibu,7400103,,unknown (no longer listed),,1
+chevrolet_malibu,7401596,,unknown (no longer listed),,8
+chevrolet_malibu,7401990,2015,old-generation,,1
+chevrolet_malibu,7402452,2013,old-generation,,7
+chevrolet_malibu,7403450,2012,old-generation,,7
+chevrolet_malibu,7403551,2014,old-generation,,3
+chevrolet_malibu,7403637,2014,old-generation,,3
+chevrolet_malibu,7405286,,unknown (no longer listed),,5
+chevrolet_malibu,7405503,2014,old-generation,,1
+chevrolet_malibu,7407341,2014,old-generation,,7
+chevrolet_malibu,7408367,2013,old-generation,,5
+chevrolet_malibu,7413336,,unknown (no longer listed),,5
+chevrolet_malibu,7417464,,unknown (no longer listed),,2
+chevrolet_malibu,7417710,,unknown (no longer listed),,11
+chevrolet_malibu,7417903,,unknown (no longer listed),,5
+chevrolet_malibu,7419519,2012,old-generation,,0
+chevrolet_malibu,7419570,2012,old-generation,,6
+chevrolet_malibu,7419612,2014,old-generation,,3
+chevrolet_malibu,7419711,2012,old-generation,,3
+chevrolet_malibu,7419712,2013,old-generation,,3
+chevrolet_malibu,7419756,2013,old-generation,,3
+chevrolet_malibu,7419956,2014,old-generation,,3
+chevrolet_malibu,7420071,2013,old-generation,,3
+chevrolet_malibu,7420086,2015,old-generation,,13
+chevrolet_malibu,7423484,,unknown (no longer listed),,8
+chevrolet_malibu,7423917,,unknown (no longer listed),,4
+chevrolet_malibu,7426276,2013,old-generation,,9
+chevrolet_malibu,7429556,,unknown (no longer listed),,15
+chevrolet_malibu,7432403,,unknown (no longer listed),,6
+chevrolet_malibu,7432730,,unknown (no longer listed),,1
+chevrolet_malibu,7433104,,unknown (no longer listed),,7
+chevrolet_malibu,7434023,,unknown (no longer listed),,4
+chevrolet_malibu,7434760,,unknown (no longer listed),,7
+chevrolet_malibu,7435987,2012,old-generation,,2
+chevrolet_malibu,7436135,2013,old-generation,,9
+chevrolet_malibu,7436388,2023,new-generation,MISLABELLED,10
+chevrolet_malibu,7436503,2012,old-generation,,6
+chevrolet_malibu,7439457,,unknown (no longer listed),,4
+chevrolet_malibu,7442289,2013,old-generation,,10
+chevrolet_malibu,7447916,,unknown (no longer listed),,10
+chevrolet_malibu,7448366,,unknown (no longer listed),,2
+chevrolet_malibu,7448490,,unknown (no longer listed),,11
+chevrolet_malibu,7449312,2012,old-generation,,1
+chevrolet_malibu,7449375,2014,old-generation,,4
+chevrolet_malibu,7449906,2015,old-generation,,3
+chevrolet_malibu,7449970,2014,old-generation,,3
+chevrolet_malibu,7450093,2014,old-generation,,2
+chevrolet_malibu,7450474,2012,old-generation,,3
+chevrolet_malibu,7450518,,unknown (no longer listed),,3
+chevrolet_malibu,7450572,2012,old-generation,,8
+chevrolet_malibu,7453287,,unknown (no longer listed),,10
+chevrolet_malibu,7453809,2012,old-generation,,8
+chevrolet_malibu,7456532,,unknown (no longer listed),,0
+chevrolet_malibu,7458891,2012,old-generation,,4
+chevrolet_malibu,7464312,,unknown (no longer listed),,6
+chevrolet_malibu,7465404,,unknown (no longer listed),,2
+chevrolet_malibu,7466125,2015,old-generation,,8
+chevrolet_malibu,7466451,2014,old-generation,,3
+chevrolet_malibu,7466672,2014,old-generation,,3
+chevrolet_malibu,7466852,2014,old-generation,,3
+chevrolet_malibu,7466958,2012,old-generation,,5
+chevrolet_malibu,7467298,2012,old-generation,,1
+chevrolet_malibu,7467799,2012,old-generation,,4
+chevrolet_malibu,7468541,2012,old-generation,,3
+chevrolet_malibu,7468546,2012,old-generation,,3
+chevrolet_malibu,7470048,2013,old-generation,,1
+chevrolet_malibu,7471332,2013,old-generation,,14
+chevrolet_malibu,7477081,,unknown (no longer listed),,5
+chevrolet_malibu,7480706,,unknown (no longer listed),,3
+chevrolet_malibu,7480718,,unknown (no longer listed),,17
+chevrolet_malibu,7480819,,unknown (no longer listed),,4
+chevrolet_malibu,7481424,,unknown (no longer listed),,0
+chevrolet_malibu,7481442,,unknown (no longer listed),,6
+chevrolet_malibu,7482077,2012,old-generation,,8
+chevrolet_malibu,7482470,2013,old-generation,,4
+chevrolet_malibu,7483785,,unknown (no longer listed),,3
+chevrolet_malibu,7484051,2013,old-generation,,5
+chevrolet_malibu,7484285,,unknown (no longer listed),,0
+chevrolet_malibu,7484331,2013,old-generation,,1
+chevrolet_malibu,7484373,,unknown (no longer listed),,4
+chevrolet_malibu,7484418,,unknown (no longer listed),,10
+chevrolet_malibu,7484485,2014,old-generation,,4
+chevrolet_malibu,7484805,2014,old-generation,,6
+chevrolet_malibu,7485324,2013,old-generation,,7
+chevrolet_malibu,7485469,2013,old-generation,,9
+chevrolet_malibu,7485481,,unknown (no longer listed),,13
+chevrolet_malibu,7485571,,unknown (no longer listed),,9
+chevrolet_malibu,7486810,2013,old-generation,,6
+chevrolet_malibu,7486843,2013,old-generation,,6
+chevrolet_malibu,7486875,2012,old-generation,,8
+chevrolet_malibu,7487234,2021,new-generation,MISLABELLED,10
+chevrolet_malibu,7487252,2018,new-generation,MISLABELLED,6
+chevrolet_malibu,7487329,,unknown (no longer listed),,6
+chevrolet_malibu,7487585,2015,old-generation,,3
+chevrolet_malibu,7488127,2015,old-generation,,4
+chevrolet_malibu,7488159,2013,old-generation,,8
+chevrolet_malibu,7495092,2015,old-generation,,8
+chevrolet_malibu,7496249,2012,old-generation,,8
+chevrolet_malibu,7496525,,unknown (no longer listed),,6
+chevrolet_malibu,7496679,,unknown (no longer listed),,9
+chevrolet_malibu,7496734,,unknown (no longer listed),,8
+chevrolet_malibu,7497415,,unknown (no longer listed),,4
+chevrolet_malibu,7497475,,unknown (no longer listed),,5
+chevrolet_malibu,7497583,,unknown (no longer listed),,1
+chevrolet_malibu,7497932,,unknown (no longer listed),,12
+chevrolet_malibu,7498281,,unknown (no longer listed),,1
+chevrolet_malibu,7498486,,unknown (no longer listed),,3
+chevrolet_malibu,7498722,,unknown (no longer listed),,4
+chevrolet_malibu,7498810,2013,old-generation,,6
+chevrolet_malibu,7499018,2013,old-generation,,2
+chevrolet_malibu,7499680,,unknown (no longer listed),,4
+chevrolet_malibu,7499693,,unknown (no longer listed),,4
+chevrolet_malibu,7500509,2013,old-generation,,4
+chevrolet_malibu,7500922,2012,old-generation,,0
+chevrolet_malibu,7501137,2012,old-generation,,6
+chevrolet_malibu,7501228,,unknown (no longer listed),,6
+chevrolet_malibu,7501233,2013,old-generation,,5
+chevrolet_malibu,7501271,2013,old-generation,,11
+chevrolet_malibu,7501513,2012,old-generation,,5
+chevrolet_malibu,7501516,2013,old-generation,,7
+chevrolet_malibu,7501680,2013,old-generation,,17
+chevrolet_malibu,7501971,2013,old-generation,,4
+chevrolet_malibu,7502282,,unknown (no longer listed),,4
+chevrolet_malibu,7502450,2013,old-generation,,2
+chevrolet_malibu,7502845,2015,old-generation,,2
+chevrolet_malibu,7502896,2015,old-generation,,2
+chevrolet_malibu,7502916,2015,old-generation,,2
+chevrolet_malibu,7503031,,unknown (no longer listed),,5
+chevrolet_malibu,7503634,,unknown (no longer listed),,1
+chevrolet_malibu,7504368,2013,old-generation,,5
+chevrolet_malibu,7504867,2013,old-generation,,11
+chevrolet_malibu2,7000141,2020,new-generation,,5
+chevrolet_malibu2,7110399,,unknown (no longer listed),,10
+chevrolet_malibu2,7256352,2019,new-generation,,3
+chevrolet_malibu2,7257423,,unknown (no longer listed),,5
+chevrolet_malibu2,7293403,,unknown (no longer listed),,7
+chevrolet_malibu2,7327353,,unknown (no longer listed),,10
+chevrolet_malibu2,7328813,2021,new-generation,,4
+chevrolet_malibu2,7387928,,unknown (no longer listed),,4
+chevrolet_malibu2,7388769,2018,new-generation,,7
+chevrolet_malibu2,7389199,,unknown (no longer listed),,7
+chevrolet_malibu2,7390279,,unknown (no longer listed),,2
+chevrolet_malibu2,7390781,,unknown (no longer listed),,1
+chevrolet_malibu2,7397322,,unknown (no longer listed),,5
+chevrolet_malibu2,7403441,,unknown (no longer listed),,5
+chevrolet_malibu2,7405007,,unknown (no longer listed),,6
+chevrolet_malibu2,7405145,,unknown (no longer listed),,6
+chevrolet_malibu2,7408535,,unknown (no longer listed),,7
+chevrolet_malibu2,7420466,2018,new-generation,,6
+chevrolet_malibu2,7422343,,unknown (no longer listed),,2
+chevrolet_malibu2,7422587,,unknown (no longer listed),,3
+chevrolet_malibu2,7423798,,unknown (no longer listed),,4
+chevrolet_malibu2,7436439,2018,new-generation,,7
+chevrolet_malibu2,7437026,,unknown (no longer listed),,5
+chevrolet_malibu2,7437261,,unknown (no longer listed),,6
+chevrolet_malibu2,7437642,,unknown (no longer listed),,5
+chevrolet_malibu2,7438176,2018,new-generation,,4
+chevrolet_malibu2,7445326,,unknown (no longer listed),,1
+chevrolet_malibu2,7446664,,unknown (no longer listed),,8
+chevrolet_malibu2,7447994,,unknown (no longer listed),,6
+chevrolet_malibu2,7448954,2021,new-generation,,11
+chevrolet_malibu2,7450702,,unknown (no longer listed),,7
+chevrolet_malibu2,7451425,,unknown (no longer listed),,2
+chevrolet_malibu2,7451497,,unknown (no longer listed),,5
+chevrolet_malibu2,7451576,,unknown (no longer listed),,1
+chevrolet_malibu2,7453225,,unknown (no longer listed),,7
+chevrolet_malibu2,7453347,,unknown (no longer listed),,5
+chevrolet_malibu2,7453525,,unknown (no longer listed),,8
+chevrolet_malibu2,7453592,,unknown (no longer listed),,8
+chevrolet_malibu2,7453662,,unknown (no longer listed),,1
+chevrolet_malibu2,7456528,,unknown (no longer listed),,0
+chevrolet_malibu2,7456532,2019,new-generation,,4
+chevrolet_malibu2,7458068,,unknown (no longer listed),,3
+chevrolet_malibu2,7458077,2020,new-generation,,8
+chevrolet_malibu2,7458721,,unknown (no longer listed),,9
+chevrolet_malibu2,7464255,,unknown (no longer listed),,4
+chevrolet_malibu2,7464797,,unknown (no longer listed),,13
+chevrolet_malibu2,7465591,2024,new-generation,,2
+chevrolet_malibu2,7466010,2023,new-generation,,8
+chevrolet_malibu2,7466473,,unknown (no longer listed),,8
+chevrolet_malibu2,7467607,2018,new-generation,,7
+chevrolet_malibu2,7468042,,unknown (no longer listed),,5
+chevrolet_malibu2,7468365,,unknown (no longer listed),,3
+chevrolet_malibu2,7468621,,unknown (no longer listed),,7
+chevrolet_malibu2,7468991,,unknown (no longer listed),,4
+chevrolet_malibu2,7469178,,unknown (no longer listed),,4
+chevrolet_malibu2,7469189,,unknown (no longer listed),,3
+chevrolet_malibu2,7470342,,unknown (no longer listed),,1
+chevrolet_malibu2,7470416,,unknown (no longer listed),,4
+chevrolet_malibu2,7470816,,unknown (no longer listed),,5
+chevrolet_malibu2,7471524,2018,new-generation,,6
+chevrolet_malibu2,7474176,2023,new-generation,,6
+chevrolet_malibu2,7475893,,unknown (no longer listed),,7
+chevrolet_malibu2,7478075,,unknown (no longer listed),,5
+chevrolet_malibu2,7479438,,unknown (no longer listed),,10
+chevrolet_malibu2,7482137,2022,new-generation,,10
+chevrolet_malibu2,7482177,2020,new-generation,,6
+chevrolet_malibu2,7484761,,unknown (no longer listed),,5
+chevrolet_malibu2,7484774,,unknown (no longer listed),,7
+chevrolet_malibu2,7484797,,unknown (no longer listed),,6
+chevrolet_malibu2,7484812,,unknown (no longer listed),,5
+chevrolet_malibu2,7485018,,unknown (no longer listed),,10
+chevrolet_malibu2,7485031,,unknown (no longer listed),,10
+chevrolet_malibu2,7485046,,unknown (no longer listed),,2
+chevrolet_malibu2,7485180,,unknown (no longer listed),,0
+chevrolet_malibu2,7485181,,unknown (no longer listed),,3
+chevrolet_malibu2,7485307,2023,new-generation,,6
+chevrolet_malibu2,7485308,,unknown (no longer listed),,6
+chevrolet_malibu2,7485364,,unknown (no longer listed),,6
+chevrolet_malibu2,7485372,2020,new-generation,,9
+chevrolet_malibu2,7485648,,unknown (no longer listed),,5
+chevrolet_malibu2,7485723,,unknown (no longer listed),,5
+chevrolet_malibu2,7485725,,unknown (no longer listed),,4
+chevrolet_malibu2,7485729,,unknown (no longer listed),,3
+chevrolet_malibu2,7486043,,unknown (no longer listed),,6
+chevrolet_malibu2,7486195,,unknown (no longer listed),,3
+chevrolet_malibu2,7487081,,unknown (no longer listed),,8
+chevrolet_malibu2,7487418,,unknown (no longer listed),,6
+chevrolet_malibu2,7488677,,unknown (no longer listed),,9
+chevrolet_malibu2,7489075,,unknown (no longer listed),,5
+chevrolet_malibu2,7489215,2018,new-generation,,4
+chevrolet_malibu2,7489437,,unknown (no longer listed),,11
+chevrolet_malibu2,7490298,,unknown (no longer listed),,7
+chevrolet_malibu2,7492694,,unknown (no longer listed),,9
+chevrolet_malibu2,7492856,,unknown (no longer listed),,4
+chevrolet_malibu2,7492958,2023,new-generation,,4
+chevrolet_malibu2,7498352,,unknown (no longer listed),,7
+chevrolet_malibu2,7499656,2020,new-generation,,14
+chevrolet_malibu2,7501052,,unknown (no longer listed),,2
+chevrolet_malibu2,7501577,,unknown (no longer listed),,13
+chevrolet_malibu2,7501599,,unknown (no longer listed),,3
+chevrolet_malibu2,7501605,,unknown (no longer listed),,4
+chevrolet_malibu2,7501612,,unknown (no longer listed),,3
+chevrolet_malibu2,7501618,,unknown (no longer listed),,4
+chevrolet_malibu2,7501633,,unknown (no longer listed),,9
+chevrolet_malibu2,7501826,,unknown (no longer listed),,10
+chevrolet_malibu2,7501828,,unknown (no longer listed),,9
+chevrolet_malibu2,7501846,,unknown (no longer listed),,8
+chevrolet_malibu2,7501857,,unknown (no longer listed),,4
+chevrolet_malibu2,7501917,,unknown (no longer listed),,1
+chevrolet_malibu2,7501932,,unknown (no longer listed),,9
+chevrolet_malibu2,7501947,,unknown (no longer listed),,9
+chevrolet_malibu2,7501957,,unknown (no longer listed),,4
+chevrolet_malibu2,7502008,,unknown (no longer listed),,7
+chevrolet_malibu2,7502071,2020,new-generation,,3
+chevrolet_malibu2,7502221,,unknown (no longer listed),,2
+chevrolet_malibu2,7502249,,unknown (no longer listed),,2
+chevrolet_malibu2,7502259,,unknown (no longer listed),,3
+chevrolet_malibu2,7502270,2023,new-generation,,7
+chevrolet_malibu2,7502299,,unknown (no longer listed),,2
+chevrolet_malibu2,7502351,,unknown (no longer listed),,6
+chevrolet_malibu2,7502387,,unknown (no longer listed),,4
+chevrolet_malibu2,7502403,,unknown (no longer listed),,5
+chevrolet_malibu2,7502542,,unknown (no longer listed),,2
+chevrolet_malibu2,7502570,,unknown (no longer listed),,6
+chevrolet_malibu2,7502636,,unknown (no longer listed),,4
+chevrolet_malibu2,7502650,,unknown (no longer listed),,2
+chevrolet_malibu2,7502709,,unknown (no longer listed),,10
+chevrolet_malibu2,7502725,,unknown (no longer listed),,13
+chevrolet_malibu2,7502783,,unknown (no longer listed),,19
+chevrolet_malibu2,7502812,,unknown (no longer listed),,1
+chevrolet_malibu2,7502842,,unknown (no longer listed),,2
+chevrolet_malibu2,7502910,,unknown (no longer listed),,2
+chevrolet_malibu2,7503028,,unknown (no longer listed),,2
+chevrolet_malibu2,7503029,,unknown (no longer listed),,8
+chevrolet_malibu2,7503150,,unknown (no longer listed),,2
+chevrolet_malibu2,7503454,,unknown (no longer listed),,1
+chevrolet_malibu2,7503843,2018,new-generation,,8
+chevrolet_malibu2,7503850,,unknown (no longer listed),,8
+chevrolet_malibu2,7503951,,unknown (no longer listed),,8
+chevrolet_malibu2,7503974,,unknown (no longer listed),,3
+chevrolet_malibu2,7504072,,unknown (no longer listed),,4
+chevrolet_malibu2,7504078,,unknown (no longer listed),,10
+chevrolet_malibu2,7504236,,unknown (no longer listed),,4
+chevrolet_malibu2,7504272,,unknown (no longer listed),,7

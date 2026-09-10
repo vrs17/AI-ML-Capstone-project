@@ -88,6 +88,10 @@ def main() -> None:
     ap.add_argument("--perceptual", action="store_true", help="use dHash (catches re-encodes) instead of exact pixel hash")
     ap.add_argument("--dry-run", action="store_true", help="report only; do not copy any files")
     ap.add_argument("--report", type=Path, default=None, help="report CSV path (default: <dst>/dedup_report.csv)")
+    ap.add_argument("--relabel", type=Path, default=None,
+                    help="CSV with columns listing_id,from_class,to_class: files of that listing found under "
+                         "from_class are written to to_class instead (source folders untouched). Used for the "
+                         "generation audit in reports/label_overrides.csv")
     args = ap.parse_args()
 
     if not args.src.is_dir():
@@ -96,6 +100,12 @@ def main() -> None:
     if not classes:
         sys.exit(f"no class subfolders found in {args.src}")
     hasher = dhash if args.perceptual else content_hash
+    overrides: dict[tuple[str, str], str] = {}
+    if args.relabel:
+        with open(args.relabel, encoding="utf-8") as fh:
+            for row in csv.DictReader(fh):
+                overrides[(row["from_class"], row["listing_id"])] = row["to_class"]
+        print(f"relabel: {len(overrides)} listing overrides from {args.relabel}")
     print(f"classes: {classes}")
     print(f"hashing: {'dHash (perceptual)' if args.perceptual else 'SHA-256 pixels (exact)'}\n")
 
@@ -113,7 +123,8 @@ def main() -> None:
                 errors += 1
                 records.append({"path": str(p), "class": cls, "hash": "", "decision": "error", "note": str(e)[:120]})
                 continue
-            groups[h].append((cls, p))
+            lid = p.name.split("_", 1)[0]
+            groups[h].append((overrides.get((cls, lid), cls), p))
 
     # decide per hash group
     dst = args.dst
@@ -163,8 +174,8 @@ def main() -> None:
     total_in = sum(len(m) for m in groups.values()) + errors
     total_kept = sum(kept_per_class.values())
     print("── per-class kept ──")
-    for c in classes:
-        print(f"  {c:10s} {kept_per_class.get(c, 0)}")
+    for c in sorted(set(classes) | set(kept_per_class)):
+        print(f"  {c:28s} {kept_per_class.get(c, 0)}")
     print("\n── totals ──")
     print(f"  scanned            : {total_in}")
     print(f"  unique kept        : {total_kept}")
