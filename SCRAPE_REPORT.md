@@ -1,6 +1,6 @@
-# Scrape Report — avtoelon.uz collection run (2026-08-27, overnight)
+# Scrape Report — avtoelon.uz collection run (2026-08-27 to 2026-09-10)
 
-Status: **IN PROGRESS** — this file is updated as phases complete.
+Status: **COMPLETE** (2026-09-10). Collection, verification and the deduplicated training set are done.
 
 ## Phase 0 — scraper verification against the live site (gate)
 
@@ -175,61 +175,56 @@ distinct car from Nexia 3, confirmed on the contact sheets.
 
 Per-class target lowered 2000 → **800** to favour breadth over depth given the throttle.
 
-## Collection progress (2026-09-10, 00:55)
+## Collection, final state (2026-09-10, 05:25)
 
-Session 13 (2026-09-10, 00:22–00:53, phone-hotspot IP 95.214.211.4) resumed the six
-unfinished classes with `--only` and the same slow settings (concurrency 2, delay 2). It
-finished kia_sorento, chery_tiggo_7_pro and chery_arrizo_6_pro, got byd_song_plus_dm_i_champion
-to 471, and then hit **block #10** after ~390 listings in 31 minutes — the same per-IP budget as
-before. The scraper was stopped at onset (both retries timed out, file count frozen for
-2 minutes); nothing was lost.
+Session 13 (2026-09-10, phone-hotspot IP 95.214.211.4) resumed the six unfinished classes with
+`--only` and the same slow settings (concurrency 2, delay 2). It finished kia_sorento,
+chery_tiggo_7_pro and chery_arrizo_6_pro, hit **block #10** after ~390 listings (00:53), sat
+through a 3.5-hour hotspot outage (01:19 to 05:00, `ERR_NAME_NOT_RESOLVED`, the network signature
+rather than the throttle), then the cooldown chain relaunched at 05:09 and finished
+byd_song_plus_dm_i_champion, vaz_lada_r90 and kia_sportage by 05:25. Nothing was lost at any step.
 
-| Class | Images | Listings | Status |
-|---|---|---|---|
-| vaz_vesta | 821 | 152 | at target |
-| chevrolet_epica | 816 | 137 | at target |
-| vaz_2106 | 812 | 164 | at target |
-| chevrolet_tracker | 811 | 188 | at target |
-| kia_k_5 | 811 | 146 | at target |
-| vaz_2107 | 811 | 153 | at target |
-| chevrolet_malibu | 810 | 148 | at target |
-| chevrolet_nexia2 | 809 | 138 | at target |
-| chevrolet_captiva | 808 | 145 | at target |
-| chevrolet_labo | 807 | 171 | at target |
-| chevrolet_matiz | 807 | 151 | at target |
-| chevrolet_onix | 807 | 189 | at target |
-| chevrolet_malibu2 | 806 | 144 | at target |
-| daewoo_nexia | 806 | 135 | at target |
-| daewoo_tico | 806 | 172 | at target |
-| chevrolet_tracker_2 | 805 | 161 | at target |
-| chevrolet_equinox | 803 | 150 | at target |
-| chevrolet_monza | 719 | 155 | complete (inventory ceiling: 155 listings on the site) |
-| kia_sorento | 698 | 116 | complete (inventory ceiling: 116 listings on the site) |
-| kia_sonet | 691 | 147 | complete (inventory ceiling: 147 listings on the site) |
-| chery_tiggo_7_pro | 652 | 120 | complete (inventory ceiling: 120 listings on the site) |
-| byd_chazor | 617 | 127 | complete (inventory ceiling: 127 listings on the site) |
-| chery_arrizo_6_pro | 475 | 92 | complete (inventory ceiling: 92 listings on the site) |
-| byd_song_plus_dm_i_champion | 471 | 94 | **partial** — block #10 hit mid-class (94 of 126 listings done) |
-| vaz_lada_r90 | 0 | 0 | **not started** |
-| kia_sportage | 0 | 0 | **not started** |
-| chevrolet_cobalt | 2007 | 392 | pre-existing |
-| chevrolet_gentra | 2004 | 344 | pre-existing |
-| chevrolet_damas | 681 | 209 | pre-existing |
+| Class | Raw images | Listings | Status | In data/dedup |
+|---|---|---|---|---|
+| vaz_vesta | 821 | 152 | at target | 807 |
+| chevrolet_epica | 816 | 137 | at target | 813 |
+| vaz_2106 | 812 | 164 | at target | 801 |
+| chevrolet_tracker | 811 | 188 | at target | 433 |
+| kia_k_5 | 811 | 146 | at target | 805 |
+| vaz_2107 | 811 | 153 | at target | 804 |
+| chevrolet_malibu | 810 | 148 | at target | 737 |
+| chevrolet_nexia2 | 809 | 138 | at target | 801 |
+| chevrolet_captiva | 808 | 145 | at target | 798 |
+| chevrolet_labo | 807 | 171 | at target | 802 |
+| chevrolet_matiz | 807 | 151 | at target | 804 |
+| chevrolet_onix | 807 | 189 | at target | 795 |
+| chevrolet_malibu2 | 806 | 144 | at target | 842 |
+| daewoo_nexia | 806 | 135 | at target | 803 |
+| daewoo_tico | 806 | 172 | at target | 805 |
+| chevrolet_tracker_2 | 805 | 161 | at target | 1172 |
+| chevrolet_equinox | 803 | 150 | at target | 802 |
+| chevrolet_monza | 719 | 155 | complete, inventory ceiling (155 listings on the site) | 707 |
+| kia_sorento | 698 | 116 | complete, inventory ceiling (116 listings on the site) | 662 |
+| kia_sonet | 691 | 147 | complete, inventory ceiling (147 listings on the site) | 689 |
+| chery_tiggo_7_pro | 652 | 120 | complete, inventory ceiling (120 listings on the site) | 651 |
+| byd_chazor | 617 | 127 | complete, inventory ceiling (127 listings on the site) | 614 |
+| vaz_lada_r90 | 603 | 110 | complete, inventory ceiling (110 listings on the site) | 602 |
+| byd_song_plus_dm_i_champion | 582 | 114 | complete, inventory ceiling (114 listings on the site) | 564 |
+| kia_sportage | 550 | 100 | complete, inventory ceiling (100 listings on the site) | 544 |
+| chery_arrizo_6_pro | 475 | 92 | complete, inventory ceiling (92 listings on the site) | 468 |
+| chevrolet_cobalt | 2007 | 392 | pre-existing | 1999 |
+| chevrolet_gentra | 2004 | 344 | pre-existing | 1985 |
+| chevrolet_damas | 681 | 209 | pre-existing | 678 |
 
-**Total: 22,771 images** across 27 folders, every one recorded in
-`data/raw/manifest.csv` with its SHA-256; every filename is `<listing_id>_<n>.webp`.
+**Total: 24,035 raw images** in 29 folders, every one recorded in
+`data/raw/manifest.csv` with its SHA-256 (25,273 rows, 1,238 of them duplicate
+pointers for images skipped at download); every filename is `<listing_id>_<n>.webp`.
 
-**23 of 26 in-scope classes complete; 1 partial; 2 not started.**
-
-Classes below 800 are **inventory-limited, not shortfalls**: the site has no more listings
-for them, so re-running adds zero images (verified directly on monza and sonet — a second
-pass saved 0). The three Chery/BYD/Kia classes collected this session came in at 475–698 from
-105–132 listings, exactly the 500–700 range predicted from their listing counts.
-
-### Remaining work
-byd_song_plus_dm_i_champion (471, ~32 listings left), vaz_lada_r90 (~110 listings) and
-kia_sportage (101 listings). A cooldown chain probes the site every 10 minutes after a 25-minute
-wait and relaunches automatically; a network switch resumes it immediately.
+**All 26 in-scope classes complete: 17 at the 800 target, 9 at their inventory ceiling.**
+Classes below 800 are inventory-limited, not shortfalls: the site has no more listings for them
+(verified directly: a second pass over monza and sonet saved 0). The Chery/BYD/Kia/Lada classes
+collected this session came in at 475 to 698 from 92 to 120 listings, i.e. the 500 to 700 range
+predicted from their listing counts; kia_sportage stopped at 550 (100 listings).
 
 ### Class-list changes during the run
 - 5 classes excluded as already collected (cobalt, spark, damas, gentra, nexia3), which
@@ -274,7 +269,7 @@ consistently preserved more data than crawling into a block. Across nine blocks,
 process kills, a two-hour machine sleep and several network flips, **nothing collected was
 ever lost** — the per-listing manifest writes made every interruption resumable.
 
-## Phase 4 — verification (2026-09-10, 27 folders present)
+## Phase 4 — verification (2026-09-10, all 29 folders)
 
 All checks are read-only scripts, re-runnable; none modify `data/raw/`.
 
@@ -338,8 +333,11 @@ one sonet listing reusing tracker photos) — those 12 sit in whichever class wa
 first. The perceptual pass (`--perceptual`, 64-bit dHash, catches re-encoded reposts) over
 22,406 images found **211 near-duplicates** inside classes and **24 images in 12 cross-class
 groups** — all tracker/tracker_2 or malibu/malibu2, e.g. malibu listing 7487252 and malibu2
-listing 7486043 are the same car posted twice. The final deduplicated set is produced with
-`--perceptual` into `data/dedup/` once collection ends (numbers in Phase 5).
+listing 7486043 are the same car posted twice. The final training set was built at 05:30 with
+`scripts/deduplicate.py --src data/raw --dst data/dedup --perceptual --relabel reports/label_overrides.csv`:
+**24,035 scanned, 23,787 kept, 248 near-duplicates dropped, no cross-label images left to quarantine**
+(the 24 found in the dry run were all tracker/malibu pairs, which the relabel now puts in one class), 95 listings relabelled by the generation audit. `data/dedup/` holds
+23,787 images across 29 classes (per-class counts in the table above).
 
 Incidentally, the dedup script crashed after hashing 21k images when printing box-drawing
 characters to a Windows cp1252 console — the same encoding bug the scraper hit on
@@ -348,19 +346,20 @@ characters to a Windows cp1252 console — the same encoding bug the scraper hit
 **Composition — detector-visible vehicle share per class (150 sampled each).**
 `scripts/audit_composition.py` (YOLO11s, vehicle box ≥12% of frame, read-only):
 
-Overall **75.6%** (3,061 of 4,050 sampled images; 150 per class, seed 42):
+Overall **75.3%** (3,276 of 4,350 sampled images; 150 per class, seed 42, all 29 folders):
 
 | Class | visible | Class | visible | Class | visible |
 |---|---|---|---|---|---|
-| vaz_2106 | 80.7% | chev. matiz | 77.3% | chev. cobalt | 73.3% |
-| chev. equinox | 80.0% | byd song plus | 76.7% | chev. malibu2 | 73.3% |
-| chev. monza | 79.3% | daewoo nexia | 76.7% | kia_k_5 | 73.3% |
-| chev. tracker | 79.3% | byd_chazor | 76.0% | kia_sonet | 73.3% |
-| chev. tracker_2 | 79.3% | chev. nexia2 | 75.3% | chev. damas | 72.7% |
-| vaz_2107 | 79.3% | chev. onix | 75.3% | daewoo tico | 72.7% |
-| vaz_vesta | 79.3% | chev. labo | 74.7% | chev. gentra | 72.0% |
-| chev. malibu | 78.7% | chery_tiggo_7_pro | 74.0% | chev. epica | 70.0% |
-| chery_arrizo_6_pro | 78.0% | chev. captiva | 74.0% | kia_sorento | 66.0% |
+| byd song plus | 81.3% | daewoo nexia | 76.7% | chev. gentra | 73.3% |
+| chev. equinox | 81.3% | byd_chazor | 76.0% | chev. damas | 72.7% |
+| chev. monza | 80.7% | chev. matiz | 76.0% | vaz_lada_r90 | 72.7% |
+| vaz_2107 | 80.7% | chev. nexia2 | 76.0% | chev. captiva | 72.0% |
+| chev. tracker | 79.3% | kia_sonet | 76.0% | chev. cobalt | 72.0% |
+| chery_arrizo_6_pro | 78.7% | chev. malibu | 75.3% | chev. malibu2 | 72.0% |
+| vaz_vesta | 78.0% | chev. onix | 75.3% | kia_sportage | 70.7% |
+| chery_tiggo_7_pro | 77.3% | daewoo tico | 74.7% | chev. epica | 69.3% |
+| chev. tracker_2 | 77.3% | vaz_2106 | 74.7% | kia_sorento | 63.3% |
+| chev. labo | 76.7% | kia_k_5 | 74.0% |  |  |
 
 Validated against hand-labelled photos on 2026-08-31, the detector correctly rejects
 dashboards, seats and instrument clusters (0% car area) but **wrongly keeps engine bays
@@ -369,3 +368,42 @@ threshold makes this worse, since an engine bay outscores a genuine side shot. T
 yield is therefore about **60–65%** of the figures above, i.e. roughly 450–520 usable images
 per 800-image class and 280–420 for the inventory-limited ones. Separating detail shots needs
 shape reasoning or a purpose-trained classifier, not a detector-area rule.
+
+## Phase 5, deliverables and how to reproduce
+
+| Artefact | What it is |
+|---|---|
+| `data/raw/<class>/` | 24,035 as-scraped images, 29 folders, filenames `<listing_id>_<n>.webp` (git-ignored) |
+| `data/raw/manifest.csv` | one row per image URL: class, listing id/url, image url, local path, SHA-256, duplicate pointer |
+| `data/raw/models_config.py` | the 26-class list + title keywords the scraper imported (generated, committed) |
+| `data/dedup/<class>/` | the training set: 23,787 images after perceptual dedup and the generation relabel; no `_ambiguous/` folder was needed |
+| `reports/contact_sheets/*.jpg` | seeded 20-image sheet per class (spot-check) |
+| `reports/composition_audit.csv` | detector-visible vehicle share per class |
+| `reports/generation_audit.csv`, `generation_vote_*.csv`, `label_overrides.csv` | the tracker/malibu generation audit and the 95-listing relabel list |
+| `scripts/` | `avtoelon_scraper.py`, `curate_models.py`, `deduplicate.py --relabel`, `contact_sheets.py`, `audit_composition.py`, `year_audit.py`, `generation_vote.py` |
+
+Reproduce from scratch (Windows, real Chrome, see the environment note):
+
+```bash
+./service/.venv/Scripts/python.exe scripts/avtoelon_scraper.py --discover 60 --channel chrome
+./service/.venv/Scripts/python.exe scripts/curate_models.py --min-listings 99 --top 40 --write-config --exclude chevrolet_cobalt,chevrolet_spark,chevrolet_damas,chevrolet_gentra,chevrolet_nexia3,vaz_2121
+./service/.venv/Scripts/python.exe -u scripts/avtoelon_scraper.py --target-images 800 --max-pages 30 --concurrency 2 --delay 2 --channel chrome
+./service/.venv/Scripts/python.exe scripts/year_audit.py --classes chevrolet_tracker,chevrolet_malibu,chevrolet_tracker_2,chevrolet_malibu2 --max-pages 10
+./service/.venv/Scripts/python.exe scripts/generation_vote.py tracker
+./service/.venv/Scripts/python.exe scripts/generation_vote.py malibu
+./service/.venv/Scripts/python.exe scripts/deduplicate.py --src data/raw --dst data/dedup --perceptual --relabel reports/label_overrides.csv
+```
+
+Expect the per-IP throttle (about 400 listings, then 1.5 to 2.5 h) and plan for network changes;
+the manifest makes every restart a resume.
+
+### Honest limits
+- **Composition:** about 75% of images show the vehicle, and only about 60 to 65% are whole-car
+  exterior shots; the rest are interiors, engine bays and details. Class folders are listing
+  photo sets, not curated exterior galleries.
+- **Generation split:** `chevrolet_tracker` after relabel is the old body only and lands below
+  target (433 images in data/dedup); 4 tracker and 1 malibu listings stay undecided.
+- **Coverage:** classes were chosen by listing volume on one marketplace; rare models are absent
+  by design, and Toyota does not appear at all (159 listings across 44 models on the whole site).
+- **Site aliases:** lacetti/gentra and matiz/matiz-best are one listing pool each; brand twins
+  (Daewoo/Chevrolet Damas, Matiz, Labo) were collapsed to the higher-volume badge.

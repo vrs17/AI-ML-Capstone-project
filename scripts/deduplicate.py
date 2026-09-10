@@ -62,7 +62,7 @@ def content_hash(im: "Image.Image") -> str:
 def dhash(im: "Image.Image", size: int = 8) -> str:
     """64-bit difference hash as hex — catches structure-preserving re-encodes."""
     small = im.convert("L").resize((size + 1, size), Image.LANCZOS)
-    px = list(small.getdata())
+    px = small.tobytes()  # raw 8-bit "L" pixels, row-major; same values as the deprecated getdata()
     bits = 0
     for row in range(size):
         base = row * (size + 1)

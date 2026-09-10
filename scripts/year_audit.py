@@ -14,7 +14,7 @@ from avtoelon_scraper import PAGE_PARAM, LISTING_LINK_SELECTOR, LISTING_HREF_RE,
 from playwright.async_api import async_playwright  # noqa: E402
 
 YEAR_RE = re.compile(r"(?<!\d)(19[89]\d|20[0-2]\d)(?!\d)")
-JS = """els => els.map(e => {
+JS = r"""els => els.map(e => {
   const c = e.closest('[class*="list-item"], [class*="card"], li, article, [class*="item"]') || e.parentElement.parentElement;
   return {href: e.href, text: (c && c.innerText ? c.innerText : '').replace(/\s+/g, ' ').slice(0, 400)};
 })"""

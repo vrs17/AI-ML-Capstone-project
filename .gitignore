@@ -47,3 +47,6 @@ service/artifacts/*
 !service/artifacts/config.json
 service/*.onnx
 service/artifacts/*.onnx
+
+# generated training set (scripts/deduplicate.py); regenerate, do not commit
+data/dedup/
